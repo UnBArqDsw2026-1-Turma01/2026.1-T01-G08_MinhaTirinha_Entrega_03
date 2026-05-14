@@ -7,7 +7,7 @@ import { createClient } from '@supabase/supabase-js';
     {
       provide: 'SUPABASE_CLIENT',
       useFactory: () => {
-        // O Guilherme deve te passar as chaves reais depois
+        // chaves com o flyan
         return createClient('URL_DO_SUPABASE', 'CHAVE_ANON_DO_SUPABASE');
       },
     },
