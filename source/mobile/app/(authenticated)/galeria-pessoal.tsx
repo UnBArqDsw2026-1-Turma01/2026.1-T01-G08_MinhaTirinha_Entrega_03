@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
-  Image,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -45,30 +44,9 @@ export default function Library() {
       <View style={styles.backgroundOrbSmall} />
 
       <View style={styles.page}>
-        <View style={styles.heroCard}>
-          <View style={styles.heroTopRow}>
-            <View>
-              <Text style={styles.kicker}>Galeria pessoal</Text>
-              <Text style={styles.title}>Tirinhas iniciadas</Text>
-            </View>
-            <View style={styles.heroBadge}>
-              <Ionicons name="albums-outline" size={18} color="#7D7A78" />
-              <Text style={styles.heroBadgeText}>{startedComics.length} itens</Text>
-            </View>
-          </View>
-
-          <View style={styles.heroIllustration}>
-            <Image
-              source={require("../../assets/images/logo-minha-tirinha.png")}
-              style={styles.heroLogo}
-            />
-            <View style={styles.heroIllustrationTextBlock}>
-              <Text style={styles.heroIllustrationTitle}>Leitura em progresso</Text>
-              <Text style={styles.heroIllustrationText}>
-                Escolha uma capa para continuar de onde parou.
-              </Text>
-            </View>
-          </View>
+        <View style={styles.titleContainer}>
+          <Text style={styles.kicker}>Galeria pessoal</Text>
+          <Text style={styles.title}>Tirinhas iniciadas</Text>
         </View>
 
         {selectedComic ? (
@@ -163,24 +141,8 @@ const styles = StyleSheet.create({
     borderRadius: 90,
     backgroundColor: "rgba(249, 216, 230, 0.5)",
   },
-  heroCard: {
-    borderRadius: 28,
-    padding: 18,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    borderWidth: 1,
-    borderColor: "rgba(144, 129, 119, 0.12)",
-    shadowColor: "#B9AFA3",
-    shadowOpacity: 0.14,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 4,
-    gap: 14,
-  },
-  heroTopRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    gap: 12,
+  titleContainer: {
+    marginBottom: 12,
   },
   kicker: {
     fontFamily: "Farsan_400Regular",
@@ -192,52 +154,6 @@ const styles = StyleSheet.create({
     fontFamily: "Iceberg_400Regular",
     fontSize: 30,
     color: "#6F6A66",
-  },
-  heroBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: "#F6EEDB",
-  },
-  heroBadgeText: {
-    fontSize: 13,
-    color: "#7D7A78",
-    fontWeight: "600",
-  },
-  subtitle: {
-    color: "#8D877F",
-    lineHeight: 20,
-    fontSize: 14,
-  },
-  heroIllustration: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    padding: 14,
-    borderRadius: 22,
-    backgroundColor: "#F4F1E3",
-  },
-  heroLogo: {
-    width: 62,
-    height: 62,
-    borderRadius: 18,
-  },
-  heroIllustrationTextBlock: {
-    flex: 1,
-    gap: 4,
-  },
-  heroIllustrationTitle: {
-    color: "#706A66",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  heroIllustrationText: {
-    color: "#948D85",
-    fontSize: 13,
-    lineHeight: 18,
   },
   selectionBar: {
     flexDirection: "row",

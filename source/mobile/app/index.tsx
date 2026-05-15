@@ -19,7 +19,7 @@ export default function Index() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const continueWithoutGoogle = () => {
-    router.replace(`/library?user_id=${TEST_USER_ID}`)
+    router.replace(`/galeria-pessoal?user_id=${TEST_USER_ID}`)
   }
 
   return (
@@ -39,7 +39,7 @@ export default function Index() {
               await GoogleSignin.hasPlayServices()
               const response = await GoogleSignin.signIn()
               if (isSuccessResponse(response)) {
-                router.replace(`/library?user_id=${TEST_USER_ID}`)
+                router.replace(`/galeria-pessoal?user_id=${TEST_USER_ID}`)
               }
             } catch (error: any) {
               router.replace('/error')
