@@ -6,6 +6,7 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="galeria-pessoal" options={{ headerShown: false }} />
       <Stack.Screen name="comic/[comicId]" options={{ headerShown: false }} />
+      <Stack.Screen name="cavalete" options={{ headerShown: false }} />
     </Stack>
   );
 }

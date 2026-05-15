@@ -1,3 +1,28 @@
+/**
+ * ==========================================
+ * TELA: Galeria Pessoal
+ * ==========================================
+ * 
+ * Exibe todas as tirinhas que o usuário iniciou ler.
+ * 
+ *  ARQUITETURA:
+ * - ComicCardFactory: Prepara dados dos comics
+ * - decorateComicCard: Adiciona estilos calculados
+ * - ComicSelectionObserver: Gerencia seleção de comics
+ * - OpenComicCommand: Executa abertura de comics
+ * 
+ *   PARA O BACKEND:
+ * - Certifique que GET /comics/started?user_id={userId} retorna StartedComic[]
+ * - Valide ownerId para garantir que user_id == ownerId (segurança)
+ * - Todas as cores devem estar em formato hex válido
+ * 
+ *  PARA O FRONTEND:
+ * - User_id é extraído dos query params da URL
+ * - A FlatList renderiza em 2 colunas (numColumns={2})
+ * - Animação suave ao clicar um card (press effect)
+ * - Mostra barra de "Comic X selecionada" quando um comic é escolhido
+ * - Mostra estado vazio se não houver tirinhas iniciadas
+ */
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
@@ -19,36 +44,82 @@ import {
 } from "../../lib/started-comics";
 
 export default function Library() {
+  /**
+   *  SETUP: Hooks e Estado
+   */
+  
+  // Router para navegação entre telas
   const router = useRouter();
+  
+  // Extrai user_id dos query params da URL
+  // Exemplos: galeria-pessoal?user_id=user-001
   const { user_id } = useLocalSearchParams<{ user_id?: string | string[] }>();
+  
+  /**
+   *  Observer Pattern: Gerencia seleção de comics
+   * - useRef garante que seja a mesma instância em todos os renders
+   * - Sem useRef, observer seria recriado a cada render (ruim!)
+   */
   const selectionObserver = useRef(new ComicSelectionObserver()).current;
+  
+  // State que armazena qual comic está selecionado
+  // Atualizado quando o observer dispara notificação
   const [selectedComic, setSelectedComic] = useState<StartedComic | null>(null);
 
+  /**
+   *  Fetch dos dados: Todos os comics do usuário
+   * - useMemo garante que fetch só acontece quando user_id muda
+   * - Retorna array vazio se user_id for undefined
+   */
   const startedComics = useMemo(() => getStartedComicsByUser(user_id), [user_id]);
 
+  /**
+   *  Command Pattern: Prepara ação de abrir comic
+   * - Encapsula: notificar seleção + navegar
+   * - useMemo para não recriar a cada render
+   * - Passa router.push como callback
+   */
   const openComicCommand = useMemo(
     () =>
       new OpenComicCommand((comic) => {
+        // Normaliza user_id (pode ser string ou array)
         const resolvedUserId = Array.isArray(user_id) ? user_id[0] : user_id;
+        
+        // Encoda query param para evitar caracteres especiais
         const query = resolvedUserId ? `?user_id=${encodeURIComponent(resolvedUserId)}` : "";
+        
+        // Navega para tela de leitura do comic específico
         router.push(`/comic/${comic.id}${query}`);
       }, selectionObserver),
     [router, selectionObserver, user_id],
   );
 
+  /**
+   *  Observer Listener: Atualiza UI quando comic é selecionado
+   * - subscribe() retorna função de cleanup (auto remove listener)
+   * - Só roda uma vez (dependency array = [selectionObserver])
+   */
   useEffect(() => selectionObserver.subscribe(setSelectedComic), [selectionObserver]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Decorações de fundo (orbs visuais) */}
       <View style={styles.backgroundOrbLarge} />
       <View style={styles.backgroundOrbSmall} />
 
       <View style={styles.page}>
+        {/* Cabeçalho minimalista */}
         <View style={styles.titleContainer}>
           <Text style={styles.kicker}>Galeria pessoal</Text>
           <Text style={styles.title}>Tirinhas iniciadas</Text>
         </View>
 
+        {/**
+         *  Barra de Seleção
+         * - Aparece apenas quando um comic está selecionado (selectedComic != null)
+         * - Feedback visual: mostra qual comic está pronto para abrir
+         * - Desaparece quando nenhum está selecionado
+         */}
         {selectedComic ? (
           <View style={styles.selectionBar}>
             <Ionicons name="sparkles-outline" size={18} color="#8C80C8" />
@@ -56,6 +127,13 @@ export default function Library() {
           </View>
         ) : null}
 
+        {/**
+         *  Renderização da Galeria
+         * 
+         * Dois cenários:
+         * 1. Vazio: Mostra mensagem se user não tiver tirinhas iniciadas
+         * 2. Com dados: FlatList em 2 colunas com cards
+         */}
         {startedComics.length === 0 ? (
           <View style={styles.emptyState}>
             <View style={styles.emptyIconWrap}>
@@ -64,6 +142,14 @@ export default function Library() {
             <Text style={styles.emptyText}>Você ainda não possui tirinhas iniciadas.</Text>
           </View>
         ) : (
+          /**
+           *  FlatList: Exibe comics em grid 2x2
+           * 
+           * Propriedades importantes:
+           * - numColumns={2}: Layout em 2 colunas
+           * - keyExtractor: ID único para React (performance)
+           * - showsVerticalScrollIndicator={false}: Remove scrollbar
+           */
           <FlatList
             data={startedComics}
             keyExtractor={(item) => String(item.id)}
@@ -72,25 +158,63 @@ export default function Library() {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => {
+              /**
+               *  Pipeline de Transformação:
+               * 
+               * 1. ComicCardFactory.create(item)
+               *    - Adiciona progressLabel e statusLabel
+               *    - Lógica: se progress >= 60 → "Em avanço", senão → "Para continuar"
+               * 
+               * 2. decorateComicCard(...)
+               *    - Adiciona cores calculadas (shellTone, borderTone)
+               *    - Cria variações de opacidade da cor accent
+               * 
+               * Resultado: comic pronto para renderização visual
+               */
               const comic = decorateComicCard(ComicCardFactory.create(item));
 
               return (
                 <Pressable
                   style={({ pressed }) => [styles.cardShell, pressed && styles.cardShellPressed]}
+                  // Executa Command ao clicar
                   onPress={() => openComicCommand.execute(item)}
                 >
+                  {/* 
+                    *  Glow Effect: Brilho atrás do card
+                    * - Usa shellTone (cor com 18% opacidade)
+                    * - Cria efeito de profundidade
+                  */}
                   <View style={[styles.cardGlow, { backgroundColor: comic.shellTone }]} />
+                  
+                  {/*
+                    *  Card Principal
+                    * - borderColor usa borderTone (40% opacidade)
+                    * - Cada card é independente e reutilizável
+                  */}
                   <View style={[styles.card, { borderColor: comic.borderTone }]}>
+                    {/*
+                      *  Seção de Capa
+                      * - backgroundColor: coverTone (cor única por tirinha)
+                      * - Ribbon: elemento decorativo
+                      * - Label: sigla da tirinha (ex: "AQP")
+                      * - Accent: barra de cor que diferencia
+                    */}
                     <View style={[styles.cover, { backgroundColor: comic.coverTone }]}>
                       <View style={styles.coverRibbon} />
                       <Text style={[styles.coverLabel, { color: comic.accent }]}>{comic.coverLabel}</Text>
                       <View style={[styles.coverAccent, { backgroundColor: comic.accent }]} />
                     </View>
 
+                    {/* Título da tirinha (máximo 2 linhas) */}
                     <Text style={styles.cardTitle} numberOfLines={2}>
                       {comic.title}
                     </Text>
 
+                    {/*
+                      *  Linha de Metadados
+                      * - Progress Pill: mostra "X% concluído" com cor accent
+                      * - Chevron: indica navegação
+                    */}
                     <View style={styles.cardMetaRow}>
                       <View style={[styles.progressPill, { backgroundColor: `${comic.accent}22` }]}>
                         <Text style={[styles.progressText, { color: comic.accent }]}>
@@ -100,6 +224,7 @@ export default function Library() {
                       <Ionicons name="chevron-forward" size={18} color="#B4ADA6" />
                     </View>
 
+                    {/* Status da tirinha: "Em avanço" ou "Para continuar" */}
                     <Text style={styles.cardStatus}>{comic.statusLabel}</Text>
                   </View>
                 </Pressable>

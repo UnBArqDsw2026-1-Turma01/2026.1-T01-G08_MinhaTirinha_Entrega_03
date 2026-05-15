@@ -9,7 +9,8 @@ import { useRouter } from 'expo-router'
 import { Image } from 'expo-image'
 
 export default function Index() {
-  const TEST_USER_ID = 'user-001'
+  // ID de teste alinhado com o mock atual do front
+  const TEST_USER_ID = '1'
 
   GoogleSignin.configure({
     webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID!,

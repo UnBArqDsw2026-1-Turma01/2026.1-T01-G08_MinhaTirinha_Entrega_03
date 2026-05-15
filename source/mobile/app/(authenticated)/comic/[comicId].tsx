@@ -16,9 +16,18 @@ export default function ComicDetailScreen() {
   const { comicId, user_id } = useLocalSearchParams<{ comicId?: string | string[]; user_id?: string | string[] }>();
 
   const comic = useMemo(() => getComicById(comicId), [comicId]);
-  const resolvedUserId = Array.isArray(user_id) ? user_id[0] : user_id;
+  const resolvedUserId = Number(Array.isArray(user_id) ? user_id[0] : user_id);
 
-  const canOpen = Boolean(comic && resolvedUserId && comic.ownerId === resolvedUserId);
+  const canOpen = Boolean(comic && Number.isFinite(resolvedUserId) && comic.ownerId === resolvedUserId);
+
+  const goToCavalete = () => {
+    if (!comic || !canOpen) {
+      return;
+    }
+
+    const query = `?comicId=${comic.id}&user_id=${resolvedUserId}`;
+    router.push(`/cavalete${query}`);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -44,20 +53,21 @@ export default function ComicDetailScreen() {
           </View>
         ) : (
           <View style={styles.detailCard}>
-            <View style={[styles.cover, { backgroundColor: comic.coverTone }]}>
+            <View style={[styles.coverBackdrop, { backgroundColor: comic.coverTone }]}>
+              <View style={[styles.coverGlow, { backgroundColor: comic.accent }]} />
               <View style={styles.coverRibbon} />
               <Image
                 source={require("../../../assets/images/logo-minha-tirinha.png")}
                 style={styles.coverLogo}
               />
-              <Text style={[styles.coverLabel, { color: comic.accent }]}>{comic.coverLabel}</Text>
-              <View style={[styles.coverBubble, { backgroundColor: comic.accent }]} />
+              <View style={styles.coverInfoBlock}>
+                <Text style={[styles.coverLabel, { color: comic.accent }]}>{comic.coverLabel}</Text>
+                <Text style={styles.coverTitle}>{comic.title}</Text>
+                <Text style={styles.coverSubtitle}>{comic.subtitle}</Text>
+              </View>
             </View>
 
             <View style={styles.infoBlock}>
-              <Text style={styles.title}>{comic.title}</Text>
-              <Text style={styles.subtitle}>{comic.subtitle}</Text>
-
               <View style={styles.progressRow}>
                 <View style={[styles.progressBarTrack, { backgroundColor: `${comic.accent}22` }]}>
                   <View
@@ -72,17 +82,14 @@ export default function ComicDetailScreen() {
 
               <View style={styles.metaRow}>
                 <View style={styles.metaChip}>
-                  <Ionicons name="person-outline" size={16} color="#847D76" />
-                  <Text style={styles.metaChipText}>{resolvedUserId}</Text>
-                </View>
-                <View style={styles.metaChip}>
-                  <Ionicons name="lock-open-outline" size={16} color="#847D76" />
-                  <Text style={styles.metaChipText}>Conteúdo correspondente</Text>
+                  <Ionicons name="images-outline" size={16} color="#847D76" />
+                  <Text style={styles.metaChipText}>Pré-visualização do quadrinho</Text>
                 </View>
               </View>
 
-              <Pressable style={styles.primaryButton} onPress={() => router.back()}>
-                <Text style={styles.primaryButtonText}>Abrir tirinha</Text>
+              <Pressable style={styles.primaryButton} onPress={goToCavalete}>
+                <Ionicons name="color-palette-outline" size={18} color="#FFFFFF" />
+                <Text style={styles.primaryButtonText}>Ir para o cavalete</Text>
               </Pressable>
             </View>
           </View>
@@ -132,12 +139,22 @@ const styles = StyleSheet.create({
     elevation: 4,
     gap: 14,
   },
-  cover: {
-    minHeight: 340,
+  coverBackdrop: {
+    minHeight: 360,
     borderRadius: 26,
     padding: 18,
     overflow: "hidden",
     justifyContent: "space-between",
+    position: "relative",
+  },
+  coverGlow: {
+    position: "absolute",
+    right: -54,
+    bottom: -54,
+    width: 180,
+    height: 180,
+    borderRadius: 180,
+    opacity: 0.18,
   },
   coverRibbon: {
     width: 74,
@@ -151,32 +168,27 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     opacity: 0.88,
   },
+  coverInfoBlock: {
+    gap: 8,
+    maxWidth: "92%",
+  },
   coverLabel: {
     fontFamily: "Iceberg_400Regular",
-    fontSize: 52,
+    fontSize: 48,
     letterSpacing: 2,
   },
-  coverBubble: {
-    position: "absolute",
-    right: -18,
-    bottom: -18,
-    width: 120,
-    height: 120,
-    borderRadius: 120,
-    opacity: 0.22,
+  coverTitle: {
+    fontFamily: "Iceberg_400Regular",
+    fontSize: 24,
+    color: "#6F6A66",
+  },
+  coverSubtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#857E77",
   },
   infoBlock: {
     gap: 12,
-  },
-  title: {
-    fontFamily: "Iceberg_400Regular",
-    fontSize: 28,
-    color: "#69645F",
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: "#8C857E",
   },
   progressRow: {
     gap: 8,
@@ -215,14 +227,18 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   primaryButton: {
-    alignSelf: "flex-start",
+    alignSelf: "stretch",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
     paddingHorizontal: 18,
-    paddingVertical: 13,
+    paddingVertical: 14,
     borderRadius: 18,
-    backgroundColor: "#E6D8F3",
+    backgroundColor: "#675A89",
   },
   primaryButtonText: {
-    color: "#675A89",
+    color: "#FFFFFF",
     fontWeight: "800",
     fontSize: 14,
   },
