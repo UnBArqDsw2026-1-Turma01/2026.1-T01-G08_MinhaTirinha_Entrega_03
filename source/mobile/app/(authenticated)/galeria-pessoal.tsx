@@ -13,17 +13,16 @@
  * 
  *   PARA O BACKEND:
  * - Certifique que GET /comics/started?user_id={userId} retorna StartedComic[]
- * - Valide ownerId para garantir que user_id == ownerId (segurança)
+ * - Envie category e paineis pintados para o frontend calcular progresso
  * - Todas as cores devem estar em formato hex válido
  * 
  *  PARA O FRONTEND:
  * - User_id é extraído dos query params da URL
  * - A FlatList renderiza em 2 colunas (numColumns={2})
  * - Animação suave ao clicar um card (press effect)
- * - Mostra barra de "Comic X selecionada" quando um comic é escolhido
  * - Mostra estado vazio se não houver tirinhas iniciadas
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   FlatList,
   Pressable,
@@ -37,10 +36,9 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   ComicCardFactory,
   ComicSelectionObserver,
+  OpenComicCommand,
   decorateComicCard,
   getStartedComicsByUser,
-  OpenComicCommand,
-  type StartedComic,
 } from "../../lib/started-comics";
 
 export default function Library() {
@@ -54,52 +52,28 @@ export default function Library() {
   // Extrai user_id dos query params da URL
   // Exemplos: galeria-pessoal?user_id=user-001
   const { user_id } = useLocalSearchParams<{ user_id?: string | string[] }>();
-  
-  /**
-   *  Observer Pattern: Gerencia seleção de comics
-   * - useRef garante que seja a mesma instância em todos os renders
-   * - Sem useRef, observer seria recriado a cada render (ruim!)
-   */
+
+  // Observer ativo para manter o padrão de notificação desacoplado do card.
   const selectionObserver = useRef(new ComicSelectionObserver()).current;
   
-  // State que armazena qual comic está selecionado
-  // Atualizado quando o observer dispara notificação
-  const [selectedComic, setSelectedComic] = useState<StartedComic | null>(null);
-
-  /**
+  /*
    *  Fetch dos dados: Todos os comics do usuário
    * - useMemo garante que fetch só acontece quando user_id muda
    * - Retorna array vazio se user_id for undefined
    */
   const startedComics = useMemo(() => getStartedComicsByUser(user_id), [user_id]);
 
-  /**
-   *  Command Pattern: Prepara ação de abrir comic
-   * - Encapsula: notificar seleção + navegar
-   * - useMemo para não recriar a cada render
-   * - Passa router.push como callback
-   */
   const openComicCommand = useMemo(
     () =>
       new OpenComicCommand((comic) => {
-        // Normaliza user_id (pode ser string ou array)
         const resolvedUserId = Array.isArray(user_id) ? user_id[0] : user_id;
-        
-        // Encoda query param para evitar caracteres especiais
         const query = resolvedUserId ? `?user_id=${encodeURIComponent(resolvedUserId)}` : "";
-        
-        // Navega para tela de leitura do comic específico
         router.push(`/comic/${comic.id}${query}`);
       }, selectionObserver),
     [router, selectionObserver, user_id],
   );
 
-  /**
-   *  Observer Listener: Atualiza UI quando comic é selecionado
-   * - subscribe() retorna função de cleanup (auto remove listener)
-   * - Só roda uma vez (dependency array = [selectionObserver])
-   */
-  useEffect(() => selectionObserver.subscribe(setSelectedComic), [selectionObserver]);
+  useEffect(() => selectionObserver.subscribe(() => undefined), [selectionObserver]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -113,19 +87,6 @@ export default function Library() {
           <Text style={styles.kicker}>Galeria pessoal</Text>
           <Text style={styles.title}>Tirinhas iniciadas</Text>
         </View>
-
-        {/**
-         *  Barra de Seleção
-         * - Aparece apenas quando um comic está selecionado (selectedComic != null)
-         * - Feedback visual: mostra qual comic está pronto para abrir
-         * - Desaparece quando nenhum está selecionado
-         */}
-        {selectedComic ? (
-          <View style={styles.selectionBar}>
-            <Ionicons name="sparkles-outline" size={18} color="#8C80C8" />
-            <Text style={styles.selectionBarText}>{selectedComic.title} selecionada</Text>
-          </View>
-        ) : null}
 
         {/**
          *  Renderização da Galeria
@@ -162,8 +123,8 @@ export default function Library() {
                *  Pipeline de Transformação:
                * 
                * 1. ComicCardFactory.create(item)
-               *    - Adiciona progressLabel e statusLabel
-               *    - Lógica: se progress >= 60 → "Em avanço", senão → "Para continuar"
+               *    - Calcula progresso por paineis pintados e adiciona labels
+               *    - Exibe a category no card
                * 
                * 2. decorateComicCard(...)
                *    - Adiciona cores calculadas (shellTone, borderTone)
@@ -176,7 +137,6 @@ export default function Library() {
               return (
                 <Pressable
                   style={({ pressed }) => [styles.cardShell, pressed && styles.cardShellPressed]}
-                  // Executa Command ao clicar
                   onPress={() => openComicCommand.execute(item)}
                 >
                   {/* 
@@ -209,6 +169,8 @@ export default function Library() {
                     <Text style={styles.cardTitle} numberOfLines={2}>
                       {comic.title}
                     </Text>
+
+                    <Text style={styles.cardCategory}>{comic.category}</Text>
 
                     {/*
                       *  Linha de Metadados
@@ -280,20 +242,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "#6F6A66",
   },
-  selectionBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 16,
-    backgroundColor: "rgba(140, 128, 200, 0.12)",
-  },
-  selectionBarText: {
-    color: "#6E639D",
-    fontSize: 13,
-    fontWeight: "600",
-  },
   listContent: {
     paddingBottom: 22,
     gap: 14,
@@ -363,6 +311,11 @@ const styles = StyleSheet.create({
     color: "#645D57",
     fontWeight: "700",
     lineHeight: 20,
+  },
+  cardCategory: {
+    color: "#8D867F",
+    fontSize: 12,
+    fontWeight: "600",
   },
   cardMetaRow: {
     flexDirection: "row",

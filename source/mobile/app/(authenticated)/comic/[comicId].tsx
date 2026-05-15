@@ -11,21 +11,23 @@ import {
 } from "react-native";
 import { getComicById } from "../../../lib/started-comics";
 
+const COMIC_EXAMPLE_IMAGE = require("../../../assets/images/exemplo-quadrinho.png");
+
 export default function ComicDetailScreen() {
   const router = useRouter();
   const { comicId, user_id } = useLocalSearchParams<{ comicId?: string | string[]; user_id?: string | string[] }>();
 
   const comic = useMemo(() => getComicById(comicId), [comicId]);
-  const resolvedUserId = Number(Array.isArray(user_id) ? user_id[0] : user_id);
-
-  const canOpen = Boolean(comic && Number.isFinite(resolvedUserId) && comic.ownerId === resolvedUserId);
+  const coverSource = comic?.imageUrl ? { uri: comic.imageUrl } : COMIC_EXAMPLE_IMAGE;
+  const resolvedUserId = Array.isArray(user_id) ? user_id[0] : user_id;
 
   const goToCavalete = () => {
-    if (!comic || !canOpen) {
+    if (!comic) {
       return;
     }
 
-    const query = `?comicId=${comic.id}&user_id=${resolvedUserId}`;
+    const userQuery = resolvedUserId ? `&user_id=${encodeURIComponent(resolvedUserId)}` : "";
+    const query = `?comicId=${comic.id}${userQuery}`;
     router.push(`/cavalete${query}`);
   };
 
@@ -44,22 +46,11 @@ export default function ComicDetailScreen() {
               A tirinha solicitada não está disponível neste catálogo visual.
             </Text>
           </View>
-        ) : !canOpen ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>Acesso restrito</Text>
-            <Text style={styles.emptyText}>
-              Esta tirinha não pertence à sua conta.
-            </Text>
-          </View>
         ) : (
           <View style={styles.detailCard}>
             <View style={[styles.coverBackdrop, { backgroundColor: comic.coverTone }]}>
               <View style={[styles.coverGlow, { backgroundColor: comic.accent }]} />
-              <View style={styles.coverRibbon} />
-              <Image
-                source={require("../../../assets/images/logo-minha-tirinha.png")}
-                style={styles.coverLogo}
-              />
+              <Image source={coverSource} style={styles.coverImage} contentFit="cover" />
               <View style={styles.coverInfoBlock}>
                 <Text style={[styles.coverLabel, { color: comic.accent }]}>{comic.coverLabel}</Text>
                 <Text style={styles.coverTitle}>{comic.title}</Text>
@@ -77,13 +68,13 @@ export default function ComicDetailScreen() {
                     ]}
                   />
                 </View>
-                <Text style={styles.progressText}>{comic.progress}% concluído</Text>
+                <Text style={styles.progressText}>{comic.progressLabel}</Text>
               </View>
 
               <View style={styles.metaRow}>
                 <View style={styles.metaChip}>
-                  <Ionicons name="images-outline" size={16} color="#847D76" />
-                  <Text style={styles.metaChipText}>Pré-visualização do quadrinho</Text>
+                  <Ionicons name="layers-outline" size={16} color="#847D76" />
+                  <Text style={styles.metaChipText}>{comic.category}</Text>
                 </View>
               </View>
 
@@ -156,21 +147,18 @@ const styles = StyleSheet.create({
     borderRadius: 180,
     opacity: 0.18,
   },
-  coverRibbon: {
-    width: 74,
-    height: 12,
-    borderRadius: 999,
-    backgroundColor: "rgba(255, 255, 255, 0.76)",
-  },
-  coverLogo: {
-    width: 84,
-    height: 84,
-    borderRadius: 22,
-    opacity: 0.88,
+  coverImage: {
+    position: "absolute",
+    inset: 0,
   },
   coverInfoBlock: {
+    alignSelf: "flex-start",
     gap: 8,
     maxWidth: "92%",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: "rgba(255, 255, 255, 0.76)",
   },
   coverLabel: {
     fontFamily: "Iceberg_400Regular",

@@ -23,13 +23,12 @@ const AVAILABLE_COLORS = [
 
 export default function CavaleteScreen() {
   const router = useRouter();
-  const { comicId, user_id } = useLocalSearchParams<{ comicId?: string | string[]; user_id?: string | string[] }>();
+  const { comicId } = useLocalSearchParams<{ comicId?: string | string[] }>();
 
   // Etapa seguinte do fluxo iniciado no Command da tela anterior.
   const resolvedComicId = useMemo(() => (Array.isArray(comicId) ? comicId[0] : comicId), [comicId]);
   const [selectedPanel, setSelectedPanel] = useState<number | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(true);
 
   const canContinue = Boolean(selectedPanel && selectedColor);
 
@@ -49,41 +48,12 @@ export default function CavaleteScreen() {
             quer trabalhar e quais cores usar.
           </Text>
 
-          {/* Botão de pré-visualização: mostra o estado atual antes de pintar */}
-          <Pressable
-            style={styles.previewButton}
-            onPress={() => setShowPreview((currentValue) => !currentValue)}
-          >
-            <Ionicons name="eye-outline" size={18} color="#675A89" />
-            <Text style={styles.previewButtonText}>
-              {showPreview ? "Ocultar pré-visualização" : "Pré-visualização"}
-            </Text>
-          </Pressable>
-
           <View style={styles.metaRow}>
             <View style={styles.metaChip}>
               <Ionicons name="book-outline" size={16} color="#847D76" />
               <Text style={styles.metaChipText}>{resolvedComicId ?? "-"}</Text>
             </View>
           </View>
-
-          {showPreview ? (
-            <View style={styles.previewCard}>
-              <View style={styles.previewHeader}>
-                <Text style={styles.previewTitle}>Prévia do cavalete</Text>
-                <Text style={styles.previewSubtitle}>
-                  Você vai escolher 1, 2, 3 ou 4 e pintar com as cores disponíveis.
-                </Text>
-              </View>
-
-              <View style={styles.previewPanels}>
-                <View style={styles.previewPanelLabel}>
-                  <Text style={styles.previewPanelNumber}>1</Text>
-                  <Text style={styles.previewPanelText}>Quadrinho selecionável</Text>
-                </View>
-              </View>
-            </View>
-          ) : null}
 
           <Pressable
             style={({ pressed }) => [
@@ -221,69 +191,6 @@ const styles = StyleSheet.create({
   metaChipText: {
     color: "#7F7872",
     fontSize: 12,
-    fontWeight: "700",
-  },
-  previewButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 18,
-    backgroundColor: "rgba(103, 90, 137, 0.10)",
-    borderWidth: 1,
-    borderColor: "rgba(103, 90, 137, 0.18)",
-  },
-  previewButtonText: {
-    color: "#675A89",
-    fontSize: 14,
-    fontWeight: "800",
-  },
-  previewCard: {
-    gap: 10,
-    padding: 14,
-    borderRadius: 22,
-    backgroundColor: "rgba(255, 255, 255, 0.82)",
-    borderWidth: 1,
-    borderColor: "rgba(144, 129, 119, 0.12)",
-  },
-  previewHeader: {
-    gap: 4,
-  },
-  previewTitle: {
-    fontSize: 15,
-    fontWeight: "800",
-    color: "#6D6762",
-  },
-  previewSubtitle: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: "#8C857E",
-  },
-  previewPanels: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  previewPanelLabel: {
-    flex: 1,
-    minHeight: 86,
-    borderRadius: 18,
-    backgroundColor: "rgba(103, 90, 137, 0.08)",
-    borderWidth: 1,
-    borderColor: "rgba(103, 90, 137, 0.14)",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 4,
-  },
-  previewPanelNumber: {
-    fontFamily: "Iceberg_400Regular",
-    fontSize: 28,
-    color: "#675A89",
-  },
-  previewPanelText: {
-    fontSize: 12,
-    color: "#6E639D",
     fontWeight: "700",
   },
   primaryAction: {

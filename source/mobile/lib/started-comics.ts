@@ -12,15 +12,22 @@
  * 
  * PARA O FRONTEND:
  * - id: ID da tirinha (Comic.id)
- * - ownerId: ID do usuário (User.id - number)
  * - title: Nome da tirinha (Comic.name)
- * - progress: % de conclusão calculado de Historic (0-25-50-100)%
+ * - category: Categoria (usada como gênero no front)
+ * - imageUrl: URL da imagem principal (vem de image_url TEXT no banco)
+ * - panelsPainted: estado de pintura dos 4 quadrinhos
  */
 export type StartedComic = {
   id: number;
-  ownerId: number;
   title: string;
-  progress: number;
+  category: string;
+  imageUrl: string | null;
+  panelsPainted: {
+    panel1: boolean;
+    panel2: boolean;
+    panel3: boolean;
+    panel4: boolean;
+  };
 };
 
 /**
@@ -31,42 +38,81 @@ export type StartedComic = {
  * 
  *   PARA O BACKEND:
  * - Implemente um endpoint GET /comics/started?user_id={userId}
- * - Retorne apenas tirinhas do usuário solicitado (validar ownerId)
+ * - Retorne os dados do comic com category e estado dos paineis
+ * - Retorne image_url como TEXT (URL), mapeado para imageUrl no frontend
  * - Certifique-se que todas as cores estejam em formato hex válido
- * - O 'progress' deve estar sempre entre 0 e 100
+ * - O progresso e calculado no frontend a partir dos 4 booleanos
  */
 const STARTED_COMICS: StartedComic[] = [
   {
     id: 15,
-    ownerId: 1,
     title: "A Quarta Página do Porcelanato",
-    progress: 68,
+    category: "Slice of life",
+    imageUrl: "https://picsum.photos/seed/comic-15/1200/800",
+    panelsPainted: {
+      panel1: true,
+      panel2: true,
+      panel3: false,
+      panel4: false,
+    },
   },
   {
     id: 21,
-    ownerId: 1,
     title: "Café, Gatos e Planos Sem Sentido",
-    progress: 31,
+    category: "Cotidiano",
+    imageUrl: "https://picsum.photos/seed/comic-21/1200/800",
+    panelsPainted: {
+      panel1: true,
+      panel2: false,
+      panel3: false,
+      panel4: false,
+    },
   },
   {
     id: 42,
-    ownerId: 2,
     title: "O Dia em que o Lápis Sumiu",
-    progress: 90,
+    category: "Misterio",
+    imageUrl: null,
+    panelsPainted: {
+      panel1: true,
+      panel2: true,
+      panel3: true,
+      panel4: false,
+    },
   },
   {
     id: 64,
-    ownerId: 1,
     title: "Noite de Neon no Bairro Azul",
-    progress: 12,
+    category: "Urbano",
+    imageUrl: "https://picsum.photos/seed/comic-64/1200/800",
+    panelsPainted: {
+      panel1: false,
+      panel2: false,
+      panel3: false,
+      panel4: false,
+    },
   },
   {
     id: 89,
-    ownerId: 1,
     title: "Diários de um Gato Filósofo",
-    progress: 45,
+    category: "Reflexao",
+    imageUrl: "https://picsum.photos/seed/comic-89/1200/800",
+    panelsPainted: {
+      panel1: true,
+      panel2: true,
+      panel3: false,
+      panel4: false,
+    },
   },
 ];
+
+function getPaintedPanelsCount(panels: StartedComic["panelsPainted"]) {
+  return Number(panels.panel1) + Number(panels.panel2) + Number(panels.panel3) + Number(panels.panel4);
+}
+
+function getProgressPercentByPanels(panels: StartedComic["panelsPainted"]) {
+  return getPaintedPanelsCount(panels) * 25;
+}
 
 /**
  *  FUNÇÃO: getStartedComicsByUser
@@ -74,9 +120,10 @@ const STARTED_COMICS: StartedComic[] = [
  * Recupera todas as tirinhas iniciadas do usuário específico.
  * 
  *   PARA O BACKEND:
- * - Implemente filtro por ownerId no endpoint
+ * - Retorne category e flags dos paineis pintados
+ * - Retorne image_url (TEXT com URL da imagem)
  * - Retorne array vazio se o usuário não tiver tirinhas
- * - Sempre validar que o userId pertence ao usuário autenticado (segurança)
+ * - Sempre validar autenticação do usuário no endpoint
  * 
  *  PARA O FRONTEND:
  * - userId pode ser string ou array (expo-router passa arrays às vezes)
@@ -88,17 +135,8 @@ const STARTED_COMICS: StartedComic[] = [
  * @returns Array de comics do usuário ou array vazio
  */
 export function getStartedComicsByUser(userId: string | string[] | undefined) {
-  // Normaliza userId (pode ser string ou array)
-  const resolvedUserIdStr = Array.isArray(userId) ? userId[0] : userId;
-
-  if (!resolvedUserIdStr) {
-    return [];
-  }
-
-  // Converte para number para comparar com ownerId (type: number)
-  const resolvedUserId = parseInt(resolvedUserIdStr, 10);
-
-  return STARTED_COMICS.filter((comic) => comic.ownerId === resolvedUserId);
+  void userId;
+  return STARTED_COMICS;
 }
 
 /**
@@ -109,7 +147,7 @@ export function getStartedComicsByUser(userId: string | string[] | undefined) {
  *   PARA O BACKEND:
  * - Implemente endpoint GET /comics/{comicId}
  * - Retorne 404 se comic não existir
- * - Valide permissão: retorne 403 se o usuário não for o ownerId
+ * - Valide permissão conforme regras de autenticação da API
  * 
  * PARA O FRONTEND:
  * - Usada ao clicar em um card para abrir a página de leitura
@@ -126,7 +164,9 @@ export function getComicById(comicId: string | string[] | undefined) {
     return undefined;
   }
 
-  return STARTED_COMICS.find((comic) => String(comic.id) === resolvedComicId);
+  const comic = STARTED_COMICS.find((item) => String(item.id) === resolvedComicId);
+
+  return comic ? decorateComicCard(ComicCardFactory.create(comic)) : undefined;
 }
 
 /**
@@ -139,7 +179,7 @@ export function getComicById(comicId: string | string[] | undefined) {
  *
  * PARA O BACKEND:
  * - Não há impacto direto no backend
- * - Regra de negócio: progress >= 60 = "Em avanço", caso contrário = "Para continuar"
+ * - O frontend calcula progresso por quantidade de paineis pintados
  * 
  * PARA O FRONTEND:
  * - Sempre use ComicCardFactory.create() antes de decorateComicCard()
@@ -185,21 +225,32 @@ export class ComicCardFactory {
   /**
    * Cria um card comic com labels e cores calculados
    * 
-   * @param comic - Comic bruto do banco (apenas id, ownerId, title, progress)
+    * @param comic - Comic bruto do banco (id, title, category, imageUrl e paineis)
    * @returns Comic com cores e labels gerados localmente
    */
   static create(comic: StartedComic) {
     const colors = this.getColorByComicId(comic.id);
     const coverLabel = this.getCoverLabel(comic.title);
+    const paintedPanels = getPaintedPanelsCount(comic.panelsPainted);
+    const progress = getProgressPercentByPanels(comic.panelsPainted);
+
+    let statusLabel = "Para continuar";
+    if (progress === 100) {
+      statusLabel = "Concluida";
+    } else if (progress > 0) {
+      statusLabel = "Em andamento";
+    }
 
     return {
       ...comic,
       coverLabel,
       coverTone: colors.tone,
       accent: colors.accent,
-      subtitle: `Tirinha #${comic.id}`, // Gerado localmente
-      progressLabel: `${comic.progress}% concluído`,
-      statusLabel: comic.progress >= 60 ? "Em avanço" : "Para continuar",
+      subtitle: comic.category,
+      paintedPanels,
+      progress,
+      progressLabel: `${paintedPanels}/4 quadrinhos pintados`,
+      statusLabel,
     };
   }
 }
@@ -261,7 +312,7 @@ export function decorateComicCard(
  * - Use subscribe() para adicionar listeners
  * - A função retornada por subscribe() remove o listener (cleanup)
  * - Use notify() para disparar notificação para todos os listeners
- * - Usado para mostrar "Comic X selecionada" na barra de seleção
+ * - Pode ser usado para analytics/telemetria de seleção sem acoplar no card
  * 
  *  BENEFÍCIOS:
  * - Desacoplamento: o card não precisa saber sobre a barra de seleção
@@ -305,7 +356,7 @@ export class ComicSelectionObserver {
  * 
  *   PARA O BACKEND:
  * - Não há impacto direto no backend
- * - Quando o user abre um comic, registre a ação (analytics/logs)
+ 
  * 
  *  PARA O FRONTEND:
  * - Crie uma instância única com useMemo()
