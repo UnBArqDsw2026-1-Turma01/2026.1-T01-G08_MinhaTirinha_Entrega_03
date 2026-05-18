@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.flyan.mobile"
+      "bundleIdentifier": "com.minhatirinha.mobile"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.flyan.mobile"
+      "package": "com.minhatirinha.mobile"
     },
     "web": {
       "output": "static",
