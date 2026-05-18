@@ -1,0 +1,43 @@
+site_name: MinhaTirinha - Entrega 03
+site_description: Documentação do projeto MinhaTirinha - Padrões de Projeto
+docs_dir: docs
+
+nav:
+  - Home: index.md
+  - Projetos: Projeto/Projeto.md
+  - Padrões de Projeto:
+    - Visão Geral: PadroesDeProjeto/3.PadroesDeProjeto.md
+    - 3.1. GoFs Criacionais: PadroesDeProjeto/3.1.GoFsCriacionais.md
+    - 3.2. GoFs Estruturais: PadroesDeProjeto/3.2.GoFsEstruturais.md
+    - 3.3. GoFs Comportamentais: PadroesDeProjeto/3.3.GoFsComportamentais.md
+    - 3.4. Participações: PadroesDeProjeto/3.4.ParticipacoesPadroes.md
+    - 3.5. Iniciativas Extras: PadroesDeProjeto/3.5.IniciativasExtras.md
+
+theme:
+  name: material
+  language: pt-BR
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Modo escuro
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Modo claro
+  features:
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+
+markdown_extensions:
+  - tables
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
