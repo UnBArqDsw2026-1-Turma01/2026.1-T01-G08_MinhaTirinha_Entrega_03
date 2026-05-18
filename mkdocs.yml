@@ -1,5 +1,8 @@
 site_name: MinhaTirinha - Entrega 03
 site_description: Documentação do projeto MinhaTirinha - Padrões de Projeto
+site_url: https://unbarqdsw2026-1-turma01.github.io/2026.1-T01-G08_MinhaTirinha_Entrega_03/
+repo_url: https://github.com/UnBArqDsw2026-1-Turma01/2026.1-T01-G08_MinhaTirinha_Entrega_03
+repo_name: MinhaTirinha Entrega 03
 docs_dir: docs
 
 nav:
