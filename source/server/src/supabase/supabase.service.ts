@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 import ws from 'ws';
@@ -27,5 +28,13 @@ export class SupabaseService {
 
   getInstance(): SupabaseClient {
     return this.supabase;
+  }
+
+  // Método estático que o flyan pediu
+  async get(method: string, params?: any) {
+    // Como é estático, usamos a instância do Singleton para acessar o cliente
+    const { data, error } = await this.supabase.rpc(method, params);
+    if (error) throw error;
+    return data;
   }
 }
