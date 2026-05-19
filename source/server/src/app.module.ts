@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { ComicModule } from './comic/comic.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ConfigModule } from '@nestjs/config';
+import { CategoryModule } from './category/category.module';
 
 @Module({
-  imports: [ComicModule, SupabaseModule, ConfigModule.forRoot({isGlobal: true})],
+  imports: [ComicModule, SupabaseModule, ConfigModule.forRoot({isGlobal: true}), CategoryModule],
   controllers: [AppController],
   providers: [AppService],
 })

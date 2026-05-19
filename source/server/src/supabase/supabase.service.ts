@@ -12,8 +12,12 @@ export class SupabaseService {
   // Singleton
   public getInstance(): SupabaseClient {
     if(!this.flag) {
-      this.supabaseClient = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-      this.flag = true;
+      try {
+        this.supabaseClient = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+        this.flag = true;}
+      catch(error: any) {
+        throw new Error(error.message);
+      } 
     } 
     return this.supabaseClient!;
   }
