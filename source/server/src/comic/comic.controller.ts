@@ -18,16 +18,16 @@ export class ComicController {
     return this.comicService.findByStrategy('category',{userId, category: categoryId,});
   }
 
-  //get das cores
-  @Get(':comicId/images')
-  getComicImages(
-    @Param('comicId') comicId: string
-  ) {
+  //get das imagens, retornando as áreas que podem ser pintadas
+  // @Get(':comicId/images')
+  // getComicImages(
+  //   @Param('comicId') comicId: string
+  // ) {
 
-    return this.comicService.getComicImages(
-      +comicId
-    );
-  }
+  //   return this.comicService.getComicImages(
+  //     +comicId
+  //   );
+  // }
 
   //controller de liberar o quadrinho
   @Patch(':comicId/progress/:field/:userId') //atualizar parcialmente
