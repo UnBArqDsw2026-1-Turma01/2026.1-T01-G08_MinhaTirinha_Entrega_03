@@ -1,28 +1,39 @@
 import { Injectable } from '@nestjs/common';
 
+
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+import ws from 'ws';
+
 @Injectable()
 export class SupabaseService {
-  // Implementação manual do Singleton (GoF) que o flyan pediu
-  private static instance: SupabaseService;
-  private static isInstantiated: boolean = false;
-  
-  private supabaseClient; 
+
+  private supabase: SupabaseClient;
 
   constructor() {
-    // Se a flag for falsa, seta a instância e muda para true
-    if (!SupabaseService.isInstantiated) {
-      
-      
-      SupabaseService.instance = this;
-      SupabaseService.isInstantiated = true;
-    }
-    return SupabaseService.instance;
+
+    this.supabase = createClient(
+
+      process.env.SUPABASE_URL!,
+
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+
+      {
+        realtime: {
+          transport: ws,
+        },
+      },
+    );
+  }
+
+  getInstance(): SupabaseClient {
+    return this.supabase;
   }
 
   // Método estático que o flyan pediu
-  static async get(method: string, params?: any) {
+  async get(method: string, params?: any) {
     // Como é estático, usamos a instância do Singleton para acessar o cliente
-    const { data, error } = await SupabaseService.instance.supabaseClient.rpc(method, params);
+    const { data, error } = await this.supabase.rpc(method, params);
     if (error) throw error;
     return data;
   }
