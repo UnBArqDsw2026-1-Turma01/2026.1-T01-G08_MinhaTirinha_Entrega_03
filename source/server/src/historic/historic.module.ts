@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
-
 import { HistoricController } from './historic.controller';
 import { HistoricService } from './historic.service';
-
 import { SupabaseModule } from '../supabase/supabase.module';
 
 /**
@@ -10,6 +8,7 @@ import { SupabaseModule } from '../supabase/supabase.module';
  * Importa o SupabaseModule para ter acesso ao banco de dados e declara
  * o Controller e o Service que trabalham juntos para fornecer os dados.
  */
+
 @Module({
   imports: [SupabaseModule],
 

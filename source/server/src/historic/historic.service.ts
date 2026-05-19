@@ -8,9 +8,7 @@ import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable()
 export class HistoricService {
-  constructor(
-    private readonly supabaseService: SupabaseService,
-  ) {}
+  constructor(private readonly supabase: SupabaseService) {}
 
   /**
    * Busca todas as tirinhas que o usuário já começou a ler (pelo menos 1 quadro concluído),
@@ -19,13 +17,10 @@ export class HistoricService {
    * @param userId - ID do usuário no Supabase.
    * @returns Lista de objetos contendo informações da tirinha e o status 'IN_PROGRESS'.
    */
-  async getInProgress(userId: string) {
-
-    const supabase =
-      this.supabaseService.getInstance();
-
+  async getInProgress(userId: string) 
+  {
     // Executa a busca na tabela Historic
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase.getInstance()
       .from('Historic')
       .select(`
         first,
@@ -106,18 +101,9 @@ export class HistoricService {
    * @param userId - ID do usuário no Supabase.
    * @returns Objeto com o status, total de quadros e o progresso em % (0 a 100).
    */
-  async getProgress(
-    comicId: number,
-    userId: string,
-  ) {
-
-    const supabase =
-      this.supabaseService.getInstance();
-
-    const parsedComicId =
-      Number(comicId);
-
-    const { data, error } = await supabase
+  async getProgress(comicId: number, userId: string) 
+  {
+    const { data, error } = await this.supabase.getInstance()
       .from('Historic')
       .select(`
         first,
@@ -125,15 +111,11 @@ export class HistoricService {
         third,
         fourth
       `)
-      .eq('id_comic', parsedComicId)
+      .eq('id_comic', comicId)
       .eq('id_user', userId)
       .single();
 
-    console.log('DATA:', data);
-    console.log('ERROR:', error);
-
     if (error) {
-
       if (error.code === 'PGRST116') {
 
         throw new NotFoundException(
@@ -184,7 +166,7 @@ export class HistoricService {
     }
 
     return {
-      comic_id: parsedComicId,
+      comic_id: comicId,
       progress,
       completed_frames: completedFrames,
       total_frames: totalFrames,
