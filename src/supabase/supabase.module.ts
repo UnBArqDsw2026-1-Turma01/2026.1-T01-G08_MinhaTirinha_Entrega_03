@@ -1,17 +1,9 @@
-import { Global, Module } from '@nestjs/common';
-import { createClient } from '@supabase/supabase-js';
+import { Module, Global } from '@nestjs/common';
+import { SupabaseService } from './supabase.service';
 
-@Global() // Isso torna o Supabase disponível em todo o projeto sem precisar importar de novo
+@Global() // Se for global para o projeto todo
 @Module({
-  providers: [
-    {
-      provide: 'SUPABASE_CLIENT',
-      useFactory: () => {
-        // chaves com o flyan
-        return createClient('URL_DO_SUPABASE', 'CHAVE_ANON_DO_SUPABASE');
-      },
-    },
-  ],
-  exports: ['SUPABASE_CLIENT'],
+  providers: [SupabaseService], // Só o provider aqui, limpo! 
+  exports: [SupabaseService],   // Exporta para os outros usarem [cite: 118]
 })
 export class SupabaseModule {}

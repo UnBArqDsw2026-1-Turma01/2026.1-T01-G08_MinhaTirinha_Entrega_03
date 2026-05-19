@@ -1,46 +1,22 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { Injectable } from '@nestjs/common';
+import { SupabaseService } from '../supabase/supabase.service';
+import { UnreadStrategy } from './dtos/unread-strategy.dto';
+import { ComicSearchStrategy } from './dtos/category-strategy.dto';
 
-// PADRÃO COMPORTAMENTAL: Strategy
-interface ComicSearchStrategy {
-  execute(userId: string, param?: string): Promise<any>;
-}
-
-class UnreadStrategy implements ComicSearchStrategy {
-  constructor(private supabase: SupabaseClient) {}
-  async execute(userId: string) {
-    const { data, error } = await this.supabase.rpc('get_not_started_comics', { user_id: userId });
-    if (error) throw error;
-    return data;
-  }
-}
-
-class CategoryStrategy implements ComicSearchStrategy {
-  constructor(private supabase: SupabaseClient) {}
-  async execute(userId: string, categoryId: string) {
-    const { data, error } = await this.supabase.rpc('get_comics_by_category', { 
-      user_id: userId, 
-      category_id: categoryId 
-    });
-    if (error) throw error;
-    return data;
-  }
-}
-
-@Injectable() // PADRÃO: Singleton
+@Injectable() // O Nest garante que isso aqui é um Singleton automático por padrão! [cite: 112, 115]
 export class ComicService {
-  constructor(private readonly supabase: SupabaseClient) {}
+  constructor(
+    private readonly supabaseService: SupabaseService,
+    private readonly unreadStrategy: UnreadStrategy,
+    private readonly categoryStrategy: ComicSearchStrategy,
+  ) {}
 
-  async findByStrategy(userId: string, type: 'unread' | 'category', categoryId?: string) {
-    let strategy: ComicSearchStrategy;
-
-    if (type === 'category') {
-      if (!categoryId) throw new BadRequestException('ID da categoria é necessário.');
-      strategy = new CategoryStrategy(this.supabase);
-    } else {
-      strategy = new UnreadStrategy(this.supabase);
+  async findByStrategy(strategyType: string, payload: any) {
+    // Em vez de chamar o banco direto aqui, delegamos para as classes do Strategy [cite: 58, 426]
+    if (strategyType === 'category') {
+      return await this.categoryStrategy.execute(this.supabaseService, payload.category);
     }
-
-    return strategy.execute(userId, categoryId);
+    
+    return await this.unreadStrategy.execute(this.supabaseService, payload.userId);
   }
 }
