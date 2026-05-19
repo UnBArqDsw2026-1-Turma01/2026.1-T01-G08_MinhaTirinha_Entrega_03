@@ -5,7 +5,7 @@ import { SupabaseModule } from 'src/supabase/supabase.module';
 
 @Module({
   imports: [SupabaseModule],
-  controllers: [ComicController],
   providers: [ComicService],
+  controllers: [ComicController]
 })
 export class ComicModule {}

@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { SupabaseService } from 'src/supabase/supabase.service';
+import { Category } from './entities/category.entity';
 
-@Injectable()
+@Injectable() // PADRÃO: Singleton
 export class CategoryService {
+  constructor(private readonly supabase: SupabaseService) {}
 
-  constructor(private readonly supabaseService: SupabaseService) {}
-
-  async getAll(): Promise<{id: number, name: string}[]> {
-    const {data, error} = await this.supabaseService.getInstance().from('Category').select();
-    if(error) {
-      throw new Error(error.message);
-    }
-    return data; 
+  async getCategories(): Promise<Category[]> {
+    // PADRÃO: Facade para a lógica do banco (RPC)
+    const { data, error } = await this.supabase.getInstance().rpc('get_all_categories');
+    if (error) throw error;
+    return data;
   }
 }

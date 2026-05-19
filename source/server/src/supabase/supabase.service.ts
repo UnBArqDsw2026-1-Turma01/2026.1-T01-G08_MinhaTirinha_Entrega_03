@@ -1,24 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSupabaseDto } from './dto/create-supabase.dto';
-import { UpdateSupabaseDto } from './dto/update-supabase.dto';
-import { SupabaseClient, createClient } from '@supabase/supabase-js'
-
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 @Injectable()
 export class SupabaseService {
-  private supabaseClient: SupabaseClient|null = null;
-  private flag: boolean = false;
-  // Create a single supabase client for interacting with your database
-  // Singleton
-  public getInstance(): SupabaseClient {
-    if(!this.flag) {
-      try {
-        this.supabaseClient = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-        this.flag = true;}
-      catch(error: any) {
-        throw new Error(error.message);
-      } 
-    } 
-    return this.supabaseClient!;
+
+  private supabase: SupabaseClient;
+
+  constructor() {
+    this.supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+  }
+
+  getInstance(): SupabaseClient 
+  /**
+   * Retorna o cliente supabase.
+   */
+  {
+    return this.supabase;
+  }
+
+  // Método estático que o flyan pediu
+  async get(method: string, params?: any) {
+    // Como é estático, usamos a instância do Singleton para acessar o cliente
+    const { data, error } = await this.supabase.rpc(method, params);
+    if (error) throw error;
+    return data;
   }
 }

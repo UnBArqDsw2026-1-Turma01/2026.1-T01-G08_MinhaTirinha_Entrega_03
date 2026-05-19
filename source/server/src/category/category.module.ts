@@ -5,7 +5,7 @@ import { SupabaseModule } from 'src/supabase/supabase.module';
 
 @Module({
   imports: [SupabaseModule],
-  controllers: [CategoryController],
   providers: [CategoryService],
+  controllers: [CategoryController]
 })
 export class CategoryModule {}

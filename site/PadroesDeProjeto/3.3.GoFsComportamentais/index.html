@@ -1,0 +1,1184 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentação do projeto MinhaTirinha - Padrões de Projeto">
+      
+      
+      
+        <link rel="canonical" href="https://unbarqdsw2026-1-turma01.github.io/2026.1-T01-G08_MinhaTirinha_Entrega_03/PadroesDeProjeto/3.3.GoFsComportamentais/">
+      
+      
+        <link rel="prev" href="../3.2.GoFsEstruturais/">
+      
+      
+        <link rel="next" href="../3.4.ParticipacoesPadroes/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>3.3. GoFs Comportamentais - MinhaTirinha - Entrega 03</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#33-modulo-padroes-de-projeto-gofs-comportamentais" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="MinhaTirinha - Entrega 03" class="md-header__button md-logo" aria-label="MinhaTirinha - Entrega 03" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MinhaTirinha - Entrega 03
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3.3. GoFs Comportamentais
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/UnBArqDsw2026-1-Turma01/2026.1-T01-G08_MinhaTirinha_Entrega_03" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MinhaTirinha Entrega 03
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MinhaTirinha - Entrega 03" class="md-nav__button md-logo" aria-label="MinhaTirinha - Entrega 03" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MinhaTirinha - Entrega 03
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/UnBArqDsw2026-1-Turma01/2026.1-T01-G08_MinhaTirinha_Entrega_03" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MinhaTirinha Entrega 03
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Projeto/Projeto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projetos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Padrões de Projeto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Padrões de Projeto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.PadroesDeProjeto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visão Geral
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1.GoFsCriacionais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1. GoFs Criacionais
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2.GoFsEstruturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2. GoFs Estruturais
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3. GoFs Comportamentais
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3. GoFs Comportamentais
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#331-introducao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.1 Introdução
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#participantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Participantes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#332-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2 Metodologia
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3.2 Metodologia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3321-revisao-e-selecao-de-padroes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2.1. Revisão e Seleção de Padrões
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3322-modelagem-e-documentacao-uml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2.2. Modelagem e Documentação UML
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3323-demonstracao-e-colaboracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2.3. Demonstração e Colaboração
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#333-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3. Command
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3.3. Command">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3331-diagrama-uml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3.1 Diagrama UML
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3.3.1 Diagrama UML">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estrutura-e-responsabilidades" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estrutura e Responsabilidades
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beneficios-da-aplicacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benefícios da Aplicação
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3332-opinioes-dos-participantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3.2. Opiniões dos Participantes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3333-video-demonstrativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3.3. Vídeo Demonstrativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#334-observer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.4 Observer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3.4 Observer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estrutura-e-participantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estrutura e participantes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diagrama-uml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama UML
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aplicacao-no-minhatirinha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aplicação no MinhaTirinha
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vantagens-observadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vantagens observadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemplo-simplificado-pseudocodigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemplo simplificado (pseudocódigo)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3341-opinioes-dos-participantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.4.1. Opiniões dos Participantes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#335-referencias-bibliograficas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.5. Referências Bibliográficas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#historico-de-versoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Histórico de Versões 📅
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4.ParticipacoesPadroes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4. Participações
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.5.IniciativasExtras/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5. Iniciativas Extras
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="33-modulo-padroes-de-projeto-gofs-comportamentais">3.3. Módulo Padrões de Projeto GoFs Comportamentais</h1>
+<h2 id="331-introducao">3.3.1 Introdução</h2>
+<p>Os Padrões de Projeto Comportamentais integram o catálogo de soluções apresentado pela “Gang of Four” (GoF) <a href="#REF1">[1]</a> para resolver problemas frequentes no desenvolvimento de sistemas orientados a objetos. Diferentemente dos padrões Criacionais, voltados para a criação de objetos, e dos Estruturais, responsáveis pela organização entre classes e interfaces, os padrões Comportamentais têm como foco a interação e a comunicação entre os objetos do sistema, buscando tornar essa colaboração mais flexível e desacoplada.</p>
+<p>Esses padrões desempenham um papel importante na definição de fluxos de controle mais dinâmicos, permitindo encapsular algoritmos e modificar comportamentos sem causar impactos no restante da aplicação. Além disso, contribuem para uma melhor distribuição de responsabilidades, favorecendo a manutenção, reutilização e expansão do código <a href="#REF2">[2]</a>. No desenvolvimento de jogos eletrônicos, por exemplo, sua utilização possibilita a modularização de comportamentos complexos e variáveis, como destacado por Figueiredo em sua dissertação <a href="#REF3">[3]</a>, tornando os sistemas mais adaptáveis às constantes mudanças e necessidades de interação.</p>
+<h2 id="participantes">Participantes</h2>
+<p><font size="3"><p style="text-align: center">Tabela 1: Participantes</p></font></p>
+<table>
+<thead>
+<tr>
+<th>Participantes</th>
+<th>Função</th>
+<th>Data</th>
+<th>Hora</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ana Carolina Madeira Fialho</td>
+<td>###</td>
+<td>###</td>
+<td>###</td>
+</tr>
+<tr>
+<td>Davi Monteiro de Negreiros</td>
+<td>###</td>
+<td>###</td>
+<td>###</td>
+</tr>
+<tr>
+<td>Gabriel Santos Pinto</td>
+<td>####</td>
+<td>###</td>
+<td>####</td>
+</tr>
+<tr>
+<td>Guilherme Flyan</td>
+<td>###</td>
+<td>###</td>
+<td>###</td>
+</tr>
+<tr>
+<td>João Marcelo Guimarães Costa Naves</td>
+<td>GoF Comportamental - Command / Observer</td>
+<td>07/05</td>
+<td>14:00</td>
+</tr>
+<tr>
+<td>Maria Samara</td>
+<td>###</td>
+<td>###</td>
+<td>###</td>
+</tr>
+<tr>
+<td>Marjorie Mitzi</td>
+<td>###</td>
+<td>###</td>
+<td>###</td>
+</tr>
+<tr>
+<td>Pedro Henrique Pereira Santos</td>
+<td>GoF Comportamental - Command / Observer</td>
+<td>07/05</td>
+<td>14:00</td>
+</tr>
+<tr>
+<td>Raissa Silva de Oliveira</td>
+<td>GoF Comportamental - Command / Observer</td>
+<td>07/05</td>
+<td>14:00</td>
+</tr>
+<tr>
+<td>Yasmin Dayrell</td>
+<td>###</td>
+<td>###</td>
+<td>###</td>
+</tr>
+</tbody>
+</table>
+<h2 id="332-metodologia">3.3.2 Metodologia</h2>
+<p>O estudo e a análise dos Padrões de Projeto Comportamentais foram realizados por meio de uma abordagem colaborativa e prática, com foco na utilização dos conceitos em um sistema de software já existente.</p>
+<h3 id="3321-revisao-e-selecao-de-padroes">3.3.2.1. Revisão e Seleção de Padrões</h3>
+<p>O desenvolvimento do estudo teve início com a análise do catálogo de Padrões de Projeto Comportamentais da “Gang of Four” (GoF), apresentado anteriormente. A partir dessa revisão, foram identificados e selecionados os padrões mais adequados às necessidades do projeto MinhaTirinha, especialmente aqueles relacionados à interação do usuário, ao gerenciamento de estados da aplicação e à comunicação entre os componentes da interface. A escolha dos padrões considerou situações presentes no sistema, como o fluxo de desbloqueio dos balões de fala, o gerenciamento das ferramentas de pintura do Cavalete e o salvamento do progresso das tirinhas no ambiente da aplicação mobile.</p>
+<h3 id="3322-modelagem-e-documentacao-uml">3.3.2.2. Modelagem e Documentação UML</h3>
+<p>Para documentar visualmente a estrutura e a aplicação dos padrões, os diagramas UML (Linguagem de Modelagem Unificada) foram elaborados com o Draw.io. Os diagramas produzidos, principalmente de Classe e de Sequência, mapeiam as interações e relações entre os objetos do MinhaTirinha resultantes da aplicação dos padrões Comportamentais.</p>
+<h3 id="3323-demonstracao-e-colaboracao">3.3.2.3. Demonstração e Colaboração</h3>
+<p>Para assegurar a organização do desenvolvimento e registrar a participação dos integrantes da equipe, as reuniões de planejamento, discussões sobre decisões arquiteturais e apresentações das funcionalidades implementadas foram documentadas ao longo do projeto. Esses registros serviram como evidências do processo colaborativo adotado no desenvolvimento do MinhaTirinha, demonstrando a aplicação prática dos padrões comportamentais, a integração entre os membros do grupo e a contribuição individual na construção das soluções relacionadas à interação e ao fluxo da aplicação.</p>
+<h2 id="333-command">3.3.3. Command</h2>
+<p>O padrão Command é um dos padrões comportamentais definidos pela Gang of Four (GoF) e tem como principal objetivo encapsular uma solicitação ou ação em um objeto separado. Dessa forma, comandos podem ser executados, armazenados, organizados e até desfeitos posteriormente, sem que a interface principal precise conhecer os detalhes de implementação de cada ação. Esse padrão promove um maior desacoplamento entre quem solicita uma operação e quem realmente a executa.</p>
+<p>No contexto do projeto MinhaTirinha, o padrão Command se mostra adequado para o desenvolvimento do frontend da aplicação, especialmente nas interações realizadas pelo usuário dentro da interface do Cavalete. Ações como pintar uma área, apagar uma região, selecionar cores ou redefinir a pintura podem ser tratadas como comandos independentes, facilitando a organização do fluxo de interação da aplicação. Além disso, essa abordagem possibilita futuras funcionalidades como desfazer e refazer ações de pintura, tornando o sistema mais flexível, modular e de fácil manutenção.</p>
+<h3 id="3331-diagrama-uml">3.3.3.1 Diagrama UML</h3>
+<p>Dessa forma, o padrão Command foi representado na modelagem UML do frontend da aplicação MinhaTirinha.</p>
+<p><img alt="diagrama uml-command" src="../../assets/DesignPatternCommand.drawio.png" />
+<font size="2"><p style="text-align: center">Fonte: <a href="https://github.com/daisha19">Raissa Silva de Oliveira</a>, <a href="" title="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a>, <a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a> , 2025.</p></font></p>
+<h4 id="estrutura-e-responsabilidades">Estrutura e Responsabilidades</h4>
+<ul>
+<li>
+<p><strong><code>Command</code></strong><br />
+Classe abstrata responsável por definir o contrato dos comandos da aplicação, especificando os métodos <code>execute()</code> e <code>undo()</code>. Ela estabelece uma interface comum para todas as ações executadas no Cavalete.</p>
+</li>
+<li>
+<p><strong><code>PintarCommand</code>, ApagarCommand e PreencherCommand</strong>
+Implementações concretas do padrão Command.
+Cada classe representa uma ação específica realizada pelo usuário no sistema de pintura, encapsulando a lógica necessária para executar e desfazer operações no Canvas.</p>
+</li>
+<li>
+<p><strong><code>Canvas</code></strong><br />
+Responsável pelas operações gráficas da área de pintura.
+Essa classe executa ações como pintar, apagar e preencher regiões do quadrinho, sendo utilizada pelos comandos concretos para aplicar as alterações visuais na interface.</p>
+</li>
+<li>
+<p><strong><code>TelaCavalete</code></strong><br />
+Atua como o invocador do padrão.
+Ela é responsável por receber as interações do usuário, selecionar ferramentas e acionar os comandos correspondentes durante o uso do sistema de pintura.</p>
+</li>
+<li>
+<p><strong><code>Historico</code></strong><br />
+Classe encarregada de armazenar os comandos executados.
+Ela gerencia funcionalidades como desfazer e refazer ações, permitindo controlar o histórico de alterações realizadas pelo usuário no Canvas.</p>
+</li>
+</ul>
+<h4 id="beneficios-da-aplicacao">Benefícios da Aplicação</h4>
+<p><strong>Flexibilidade:</strong> novas ações e ferramentas do Cavalete podem ser adicionadas facilmente por meio da criação de novos comandos que implementem a estrutura da classe <code>Command</code>.</p>
+<p><strong>Baixo acoplamento:</strong> a interface do frontend não depende diretamente da implementação de cada ação de pintura, já que os comportamentos são encapsulados em comandos independentes.</p>
+<p><strong>Extensibilidade:</strong> o sistema permite adicionar funcionalidades futuras, como novas ferramentas, atalhos de interação ou diferentes tipos de edição, sem modificar a estrutura principal da interface.</p>
+<p><strong>Coesão:</strong> cada classe possui uma responsabilidade específica e bem definida, separando o gerenciamento da interface, o histórico de ações, os comandos e as operações gráficas do Canvas.</p>
+<p>Esse modelo demonstra a aplicação estruturada do padrão comportamental Command da GoF, ao encapsular ações do usuário em objetos independentes, permitindo que o sistema organize operações de forma modular, reutilizável e de fácil manutenção no frontend do MinhaTirinha.</p>
+<h4 id="3332-opinioes-dos-participantes">3.3.3.2. Opiniões dos Participantes</h4>
+<p>A elaboração desta etapa foi realizada de forma colaborativa por meio de reuniões realizadas no Teams, contando com a participação ativa dos integrantes responsáveis pelo desenvolvimento do padrão comportamental Command no frontend do projeto MinhaTirinha. Durante os encontros, foram discutidas as decisões relacionadas à modelagem das ações do Cavalete e à organização das responsabilidades entre os componentes da interface.</p>
+<p>A modelagem UML foi produzida utilizando o Draw.io, ferramenta que permitiu a edição simultânea do diagrama e facilitou a integração das ideias propostas pelos membros da equipe.</p>
+<p>Ao longo da atividade, os integrantes contribuíram com sugestões e revisões que auxiliaram na construção de uma solução mais organizada e coerente com a arquitetura do projeto. Esse processo colaborativo favoreceu tanto a consistência da modelagem quanto o alinhamento técnico entre os participantes.</p>
+<details>
+  <summary><strong><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></strong></summary>
+  <p>Na minha percepção, o desenvolvimento desta etapa do projeto contribuiu para uma melhor compreensão sobre a aplicação prática dos padrões comportamentais no frontend de um sistema interativo. A modelagem do padrão Command no contexto do MinhaTirinha ajudou a organizar as ações do usuário dentro do Cavalete de forma mais modular e desacoplada, facilitando a separação das responsabilidades entre interface, comandos e operações do Canvas.
+
+  Além disso, a construção do diagrama UML permitiu visualizar com maior clareza a comunicação entre os componentes do frontend, tornando a arquitetura mais compreensível e preparada para futuras expansões, como a implementação de novas ferramentas e funcionalidades de desfazer e refazer ações.
+</p>
+</details>
+<details>
+  <summary><strong><a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a></strong></summary>
+  <p>Durante o desenvolvimento dessa etapa, foi possível perceber a importância de uma boa organização arquitetural no frontend da aplicação. A utilização do padrão Command trouxe uma estrutura mais clara para o gerenciamento das interações do usuário, principalmente nas funcionalidades relacionadas ao sistema de pintura do Cavalete.
+
+  A elaboração do diagrama UML também ajudou a entender melhor como os componentes do frontend se relacionam entre si, facilitando a visualização das responsabilidades de cada classe. Além de contribuir para a documentação do projeto, essa modelagem tornou o desenvolvimento mais organizado e auxiliou na identificação de possíveis melhorias e expansões futuras para a aplicação.
+</p>
+</details>
+<details>
+  <summary><strong><a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a></strong></summary>
+  <p>Na minha opinião, a aplicação do padrão Command no frontend do MinhaTirinha foi uma experiência importante para compreender como padrões comportamentais podem melhorar a estrutura de aplicações interativas. A separação das ações em comandos independentes tornou a lógica das ferramentas do Cavalete mais organizada e fácil de manter.
+
+  Além disso, o desenvolvimento do diagrama UML contribuiu para uma visão mais clara da arquitetura do frontend, auxiliando no entendimento do fluxo das interações do usuário dentro da aplicação. O trabalho em equipe também foi essencial para discutir soluções e alinhar as ideias durante a modelagem do sistema.
+</p>
+</details>
+
+<h3 id="3333-video-demonstrativo">3.3.3.3. Vídeo Demonstrativo</h3>
+<p>Foi gravado, na plataforma do Microsoft Teams, uma reunião para a discussão e a modelagem UML do padrão Command.</p>
+<div style="text-align: center;">
+  <iframe 
+    width="560" 
+    height="315"
+    src="https://www.youtube.com/embed/MOqutEYCvEs"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+  </iframe>
+</div>
+
+<h2 id="334-observer">3.3.4 Observer</h2>
+<p>O padrão Observer é um padrão comportamental que define uma dependência de um-para-muitos entre objetos, de forma que quando o estado de um objeto (o sujeito) muda, todos os seus dependentes (os observadores) são notificados e atualizados automaticamente. Esse padrão promove baixo acoplamento entre o objeto que gera eventos e os objetos que reagem a esses eventos, facilitando a extensibilidade e a reutilização do código.</p>
+<h3 id="estrutura-e-participantes">Estrutura e participantes</h3>
+<ul>
+<li><strong><code>Subject</code> (ou <code>PaintingProgress</code>)</strong>: mantém uma lista de observadores e provê métodos para <code>attach(observer)</code>, <code>detach(observer)</code> e <code>notifyObservers()</code> quando seu estado muda.</li>
+<li><strong><code>Observer</code></strong>: interface que declara o método <code>update()</code> a ser implementado por todos os observadores concretos.</li>
+<li><strong>Observadores concretos (ex.: <code>FrameUnlocker</code>, <code>SpeechBubble</code>, <code>ProgressSaver</code>, <code>FeedbackComponent</code>)</strong>: implementam <code>update()</code> para reagir às mudanças do <code>Subject</code>.</li>
+</ul>
+<h3 id="diagrama-uml">Diagrama UML</h3>
+<p><img alt="diagrama uml-observer" src="../../assets/DesignPatternObserver.drawio.png" />
+<font size="2"><p style="text-align: center">Fonte: <a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a>, <a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a> e <a href="https://github.com/daisha19">Raissa Silva de Oliveira</a>, Diagrama de arquitetura do time MinhaTirinha (2026).</p></font></p>
+<h3 id="aplicacao-no-minhatirinha">Aplicação no MinhaTirinha</h3>
+<p>No contexto do MinhaTirinha, o padrão Observer foi utilizado para representar o fluxo de progresso da pintura e notificar componentes da interface sobre mudanças de estado. Por exemplo:</p>
+<ul>
+<li>O <code>PaintingProgress</code> atua como <code>Subject</code>, atualizando o progresso de pintura conforme o usuário desenha.</li>
+<li>Componentes como <code>FrameUnlocker</code> (desbloqueio do quadro), <code>SpeechBubble</code> (balões de fala que aparecem quando algo é concluído), <code>ProgressSaver</code> (persistência do progresso) e <code>FeedbackComponent</code> (indicadores visuais) se registram como <code>Observers</code> e reagem às atualizações chamando seus próprios <code>update()</code>.</li>
+</ul>
+<p>Essa abordagem permite desacoplar a lógica de progresso do código que atualiza a interface, tornando simples adicionar novos ouvintes (observadores) sem modificar o <code>Subject</code>.</p>
+<h3 id="vantagens-observadas">Vantagens observadas</h3>
+<ul>
+<li><strong>Desacoplamento:</strong> o <code>Subject</code> não precisa conhecer detalhes dos observadores.</li>
+<li><strong>Extensibilidade:</strong> novos comportamentos reativos podem ser adicionados registrando novos observadores.</li>
+<li><strong>Clareza na propagação de eventos:</strong> o modelo facilita o raciocínio sobre quem precisa ser notificado quando o estado muda.</li>
+</ul>
+<h3 id="exemplo-simplificado-pseudocodigo">Exemplo simplificado (pseudocódigo)</h3>
+<div class="highlight"><pre><span></span><code>class PaintingProgress implements Subject {
+  observers = []
+  progresso = 0
+
+  attach(o) { observers.push(o) }
+  detach(o) { observers.remove(o) }
+  notify() { observers.forEach(o =&gt; o.update(this)) }
+
+  setProgresso(p) { this.progresso = p; this.notify() }
+}
+
+interface Observer { update(subject) }
+
+class ProgressSaver implements Observer {
+  update(subject) { salvarProgressoRemoto(subject.progresso) }
+}
+</code></pre></div>
+<p>Essa implementação pode ser adaptada à arquitetura React/Context usada no frontend do projeto, por exemplo expondo o <code>PaintingProgress</code> via Context ou hooks e conectando componentes para reagir às mudanças.</p>
+<h3 id="3341-opinioes-dos-participantes">3.3.4.1. Opiniões dos Participantes</h3>
+<details>
+  <summary><strong><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></strong></summary>
+  <p>Na minha visão, a aplicação do Observer tornou a comunicação entre o progresso da pintura e os componentes da interface muito mais limpa. Foi simples adicionar o salvamento automático e os indicadores de feedback sem alterar a lógica central do `PaintingProgress`. O diagrama ajudou a esclarecer onde cada observador deve se ligar.</p>
+</details>
+<details>
+  <summary><strong><a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a></strong></summary>
+  <p>Percebi que o desacoplamento proporcionado pelo padrão facilita testes unitários e reduz riscos ao estender funcionalidades. Podemos adicionar novos ouvintes (por exemplo, analytics) sem tocar no sujeito, o que é ótimo para manutenção.</p>
+</details>
+<details>
+  <summary><strong><a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a></strong></summary>
+  <p>Concordo que a integração com o fluxo React (Context / hooks) será direta. O diagrama serviu como guia prático para a implementação e deixou claro como mapear os componentes atuais para observadores.</p>
+</details>
+
+<h2 id="335-referencias-bibliograficas">3.3.5. Referências Bibliográficas</h2>
+<blockquote>
+<p><a id="REF1">1.</a> GAMMA, Erich et al. <strong>Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos</strong>. Tradução de C. F. Lucena e F. S. C. da Silva. Porto Alegre: Bookman, 2007.</p>
+<p><a id="REF2">2.</a> REFACTORING.GURU. Command. Refactoring.Guru. Disponível em: https://refactoring.guru/pt-br/design-patterns/command. Acesso em: 07 mai. 2026.</p>
+<p><a id="REF3">3.</a> BLOG GRAN CURSOS ONLINE. Padrões de Projetos GOF: Padrões Comportamentais. Disponível em: https://blog.grancursosonline.com.br/padroes-de-projetos-gof-padroes-comportamentais/. Acesso em: 07 mai. 2026.</p>
+<p><a id="REF4">4.</a> MILENE. Arquitetura e Desenho de Software - Aula GoFs Comportamentais. Profa. Milene. Acesso em: 07 mai. 2026.</p>
+</blockquote>
+<h2 id="historico-de-versoes">Histórico de Versões 📅</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Versão</th>
+<th style="text-align: center;">Data</th>
+<th style="text-align: center;">Descrição</th>
+<th style="text-align: center;">Autor(es)</th>
+<th style="text-align: center;">Revisor(es)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><code>1.0</code></td>
+<td style="text-align: center;">07/05/2026</td>
+<td style="text-align: center;">Adicionando Documentação GoF Comportamental Command</td>
+<td style="text-align: center;"><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></td>
+<td style="text-align: center;"><a href="https://github.com/Marjoriemitzi">Marjorie Mitzi</a></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>1.1</code></td>
+<td style="text-align: center;">08/05/2026</td>
+<td style="text-align: center;">Adicionando video da reunião GoF Comportamental Command</td>
+<td style="text-align: center;"><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></td>
+<td style="text-align: center;"><a href="https://github.com/YasminDayrell">Yasmin Dayrell</a></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>1.2</code></td>
+<td style="text-align: center;">08/05/2026 16:30</td>
+<td style="text-align: center;">Adicionando documentação do padrão Observer e diagrama</td>
+<td style="text-align: center;"><a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a>, <a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a>, <a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></td>
+<td style="text-align: center;"><a href="https://github.com/DaviNegreiros">Davi Monteiro de Negreiros</a></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

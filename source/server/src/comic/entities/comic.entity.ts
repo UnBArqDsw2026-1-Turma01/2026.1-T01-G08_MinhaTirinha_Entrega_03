@@ -1,1 +1,4 @@
-export class Comic {}
+export interface Comic {
+  id: number,
+  name: string
+}

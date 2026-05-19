@@ -1,17 +1,38 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ComicService } from './comic.service';
+import { Comic } from './entities/comic.entity';
+import { UncoloredImage } from './entities/uncoloredImage.entity';
+import { Status } from './entities/status.entity';
 
-@Controller('comic')
+@Controller()
 export class ComicController {
   constructor(private readonly comicService: ComicService) {}
 
-  @Get('unread-comics/:id_user') 
-  async getUnreadComics(@Param('id_user') id_user: string): Promise<{id: number, name: string, image_url: string}[]> {
-    return this.comicService.getUnreadComics(id_user);
+  @Get('comics/not-started/:userId')
+  async getNotStartedComics(@Param('userId') userId: string)
+  /**
+  * GET Tirinhas não inicializadas pelo usuário. 
+  */ 
+  {
+    return this.comicService.findByStrategy('unread', userId);
   }
 
-  @Get('unread-comics/:id_user/:id_category')
-  async getUnreadComicsByCategory(@Param('id_user') id_user: string,  @Param('id_category')id_category: number): Promise<{id: number, name: string, image_url: string}[]> {
-    return this.comicService.getUnreadComicsByCategory(id_user, id_category);
+  @Get('comics/not-started/:userId/category/:categoryId')
+  async getNotStartedComicsByCategory(@Param('userId') userId: string, @Param('categoryId') categoryId: number)
+  /**
+  * GET Tirinhas não inicializadas pelo usuário ordenadas por categoria. 
+  */ 
+  {
+    return this.comicService.findByStrategy('category', userId, categoryId);
   }
+
+  @Get('comic/not-started/:comic_id')
+  getNotStartedComic(@Param('comic_id') comic_id: number): Promise<{comic_info: Comic, uncolored_comic_images: UncoloredImage[], status: Status}> 
+  /**
+  * GET Tirinha não inicializada pelo usuário. 
+  */ 
+  {
+    return this.comicService.getNotStartedComic(comic_id);
+  }
+
 }
