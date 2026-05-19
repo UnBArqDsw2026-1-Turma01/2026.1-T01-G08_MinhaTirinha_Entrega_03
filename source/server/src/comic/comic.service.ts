@@ -1,22 +1,76 @@
 import { Injectable } from '@nestjs/common';
-import { SupabaseService } from '../supabase/supabase.service';
-import { UnreadStrategy } from './dtos/unread-strategy.dto';
-import { ComicSearchStrategy } from './dtos/category-strategy.dto';
+import { SearchUnreadStrategy } from './strategy/search_unread_comic.strategy';
+import { SearchUnreadByCategoryStrategy } from './strategy/search_unread_comic_by_category.strategy';
+import { SupabaseService } from 'src/supabase/supabase.service';
+import { Comic } from './entities/comic.entity';
+import { UncoloredImage } from './entities/uncoloredImage.entity';
+import { Status } from './entities/status.entity';
+import { ComicInfo } from './entities/category.entity';
+
 
 @Injectable() // O Nest garante que isso aqui é um Singleton automático por padrão
 export class ComicService {
-  constructor(
-    private readonly supabaseService: SupabaseService,
-    private readonly unreadStrategy: UnreadStrategy,
-    private readonly categoryStrategy: ComicSearchStrategy,
-  ) {}
+  private searchUnreadStrategy: SearchUnreadStrategy;
+  private searchUnreadByCategoryStrategy: SearchUnreadByCategoryStrategy;
 
-  async findByStrategy(strategyType: string, payload: any) {
+  constructor(private readonly supabase: SupabaseService) {
+    this.searchUnreadStrategy = new SearchUnreadStrategy(supabase.getInstance());
+    this.searchUnreadByCategoryStrategy = new SearchUnreadByCategoryStrategy(supabase.getInstance());
+  }
+
+  async findByStrategy(strategyType: string, user_id: string, category_id: number = 0): Promise<ComicInfo[]> {
     // Em vez de chamar o banco direto aqui, delegamos para as classes do Strategy 
-    if (strategyType === 'category') {
-      return await this.categoryStrategy.execute(this.supabaseService, payload.category);
-    }
-    
-    return await this.unreadStrategy.execute(this.supabaseService, payload.userId);
+    if (strategyType === 'unread') return await this.searchUnreadStrategy.execute(user_id);
+    return await this.searchUnreadByCategoryStrategy.execute(user_id, category_id);
+  }
+
+  private async getComic(comic_id: number): Promise<Comic> {
+  /**
+   * Retorna as informações de uma comic.
+   */
+  /*
+    create function public.get_comic(comic_id integer)
+    returns table(
+      id integer,
+      name text
+    ) as $$
+      select comic.id, comic.name
+      from "Comic" as comic
+      where comic.id = comic_id;
+    $$ language sql;
+  */  
+    const { data, error } = await this.supabase.getInstance().rpc("get_comic",{comic_id: comic_id});
+    if(error) throw new Error(error.message);
+    return data;
+  }
+
+  private async getComicUncoloredImages(comic_id: number): Promise<UncoloredImage[]>
+  /**
+   * Retorna um array de imagens não coloridas de uma comic.
+   */
+  /*
+    create function public.get_comic_uncolored_images(comic_id integer)
+    returns table(
+      enum integer,
+      uncolored_image_url text
+    )
+    as $$ 
+      select *
+      from "Image"         
+      where comic.id = comic_id;
+    $$ language sql;
+  */
+  {
+    const { data, error } = await this.supabase.getInstance().rpc("get_comic_uncolored_images", {comic_id: comic_id});
+    if(error) throw new Error(error.message);
+    return data;
+  }
+
+  async getNotStartedComic(comic_id: number): Promise<{comic_info: Comic, uncolored_comic_images: UncoloredImage[], status: Status}>
+  {
+    const comic_info = await this.getComic(comic_id);
+    const  uncolored_comic_images = await this.getComicUncoloredImages(comic_id);
+    const status: Status = {first: false, second: false, third: false, fourth: false};
+    return {comic_info, uncolored_comic_images, status};
   }
 }

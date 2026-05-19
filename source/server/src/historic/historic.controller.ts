@@ -7,18 +7,13 @@ import { HistoricService } from './historic.service';
  */
 @Controller('historic')
 export class HistoricController {
-  constructor(
-    private readonly historicService: HistoricService,
-  ) {}
-
+  constructor(private readonly historicService: HistoricService) {}
   /**
    * Rota: GET /historic/in-progress/:userId
    * Objetivo: Retornar a lista de tirinhas iniciadas e não finalizadas pelo usuário.
    */
   @Get('in-progress/:userId')
-  async getInProgress(
-    @Param('userId') userId: string,
-  ) {
+  async getInProgress(@Param('userId') userId: string) {
     return this.historicService.getInProgress(userId);
   }
 
@@ -27,16 +22,7 @@ export class HistoricController {
    * Objetivo: Retornar o progresso (em porcentagem e quadros) de uma tirinha específica.
    */
   @Get('progress/:comicId/:userId')
-  async getProgress(
-    @Param('comicId', ParseIntPipe)
-    comicId: number,
-
-    @Param('userId')
-    userId: string,
-  ) {
-    return this.historicService.getProgress(
-      comicId,
-      userId,
-    );
+  async getProgress(@Param('comicId') comicId: number, @Param('userId') userId: string) {
+    return this.historicService.getProgress(comicId,userId,);
   }
 }
