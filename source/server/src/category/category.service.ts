@@ -1,14 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseService } from '../supabase/supabase.service';
 
-@Injectable() // PADRÃO: Singleton
+@Injectable()
 export class CategoryService {
-  constructor(private readonly supabase: SupabaseClient) {}
+
+  constructor(
+    private readonly supabaseService: SupabaseService
+  ) {}
 
   async getCategories() {
-    // PADRÃO: Facade para a lógica do banco (RPC)
-    const { data, error } = await this.supabase.rpc('get_all_categories');
-    if (error) throw error;
+
+    const supabase =
+      this.supabaseService.getInstance();
+
+    const { data, error } =
+      await supabase
+        .from('Category')
+        .select('*');
+
+    if (error) {
+      throw error;
+    }
+
     return data;
   }
 }

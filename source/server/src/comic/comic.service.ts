@@ -19,4 +19,22 @@ export class ComicService {
     
     return await this.unreadStrategy.execute(this.supabaseService, payload.userId);
   }
+
+  //service das cores
+  async getComicImages(comicId: number) {
+
+  const supabase = this.supabaseService.getInstance();
+
+  const { data, error } = await supabase
+    .from('Image') //seleciona a tabela
+    .select(`*`) //busca todas as colunas
+    .eq('id_comic', comicId); //filtro
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 }
