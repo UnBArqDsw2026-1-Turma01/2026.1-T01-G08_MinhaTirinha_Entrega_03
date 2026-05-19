@@ -3,7 +3,7 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { UnreadStrategy } from './dtos/unread-strategy.dto';
 import { ComicSearchStrategy } from './dtos/category-strategy.dto';
 
-@Injectable() // O Nest garante que isso aqui é um Singleton automático por padrão! [cite: 112, 115]
+@Injectable() // O Nest garante que isso aqui é um Singleton automático por padrão
 export class ComicService {
   constructor(
     private readonly supabaseService: SupabaseService,
@@ -12,7 +12,7 @@ export class ComicService {
   ) {}
 
   async findByStrategy(strategyType: string, payload: any) {
-    // Em vez de chamar o banco direto aqui, delegamos para as classes do Strategy [cite: 58, 426]
+    // Em vez de chamar o banco direto aqui, delegamos para as classes do Strategy 
     if (strategyType === 'category') {
       return await this.categoryStrategy.execute(this.supabaseService, payload.category);
     }
