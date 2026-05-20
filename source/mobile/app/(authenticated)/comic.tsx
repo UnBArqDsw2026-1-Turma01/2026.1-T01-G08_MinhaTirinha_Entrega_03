@@ -1,15 +1,53 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
+import { useEffect, useState } from "react";
+import { Services } from "@/utils/services";
+import { IStatus } from "@/utils/entities/status.entity";
+import { IComic } from "@/utils/entities/comic.entity";
+import { IImage } from "@/utils/entities/image.entity";
+import { BlurView } from "expo-blur";
 
 export default function Comic() {
-    const { user_id, comic_id } = useLocalSearchParams();
+    const router = useRouter();
+    const { path, user_id, comic_id } = useLocalSearchParams();
     const uid = Array.isArray(user_id) ? user_id[0] : user_id;
     const cid = Number(Array.isArray(comic_id) ? comic_id[0] : comic_id);
+    const [comicInfo, setComicInfo] = useState<IComic>();
+    const [comicStatus, setComicStatus] = useState<IStatus>();
+    const [comicImages, setComicImages] = useState<IImage[]>();
+    const [progress, setProgress] = useState('0%');
+    
+    function calculateProgress() {
+        let value = 0;
+        if(comicStatus?.first) value += 25;
+        if(comicStatus?.second) value += 25;
+        if(comicStatus?.third) value += 25;
+        if(comicStatus?.fourth) value += 25;
+        setProgress(`${value}%`);
+    }
 
-    const m = [0, 1, 2, 3]
+    useEffect(()=>{
+        async function fetchData() {
+            let response_comic;
+            if(path === 'library') {
+                response_comic = await Services.getNotStartedComic(cid);
+            } else {
+                response_comic = await Services.getUserComicOnHistoric(uid, cid);
+            }
+            setComicInfo(response_comic!.comic_info[0]);
+            setComicStatus(response_comic!.comic_status);
+            setComicImages(response_comic!.comic_images);
+        }
+        fetchData();
+    }, []);
 
-    return(
+    useEffect(()=>{
+        calculateProgress();
+    }, [comicStatus]);
+
+
+    return( 
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
@@ -19,33 +57,55 @@ export default function Comic() {
                     <View style={styles.line}/>
                     <View style={styles.line}/>
                 </Pressable>
-                <Image source={require("../../assets/images/arrow.svg")} style={styles.arrow}/>
-                
+                <Pressable onPress={()=>router.back()}>
+                    <Image source={require("../../assets/images/arrow.svg")} style={styles.arrow}/>
+                </Pressable>            
             </View>
 
             {/* Box */}
             <View style={styles.subcontainer}>
-                <View style={styles.progress}>
-                    
-                    <Text style={styles.title}>BLABLALBA</Text>
-                    
-                    {/* Select Field */}
-                    <View style={styles.select_field}>
-                        {m.map((item)=>(
-                            <Pressable key={item} style={styles.comic}></Pressable>
-                        ))}    
-                    </View>
-
-                    {/* Progress */}
-                    <View style={styles.progress_bar_container}>
-                        <Text style={styles.subtitle}>Progresso de Pintura</Text>
-                        <View style={styles.progress_bar}>
-
+                {(comicInfo === undefined || comicImages === undefined || comicStatus === undefined) ? <></>:
+                    <View style={styles.progress}>
+                        <Text style={styles.title}>{comicInfo.name}</Text>
+                        {/* Select Field */}
+                        <View style={styles.select_field}>
+                                <Pressable style={styles.comic} onPress={()=>{
+                                                                            if(comicStatus?.first) router.push(`/painted?image_url=${comicImages?.[0].image_url}`)
+                                                                            else router.push('/color-picker');
+                                                                            }}>
+                                    <Image style={styles.image} source={{ uri: comicImages[0].image_url }}/>
+                                </Pressable>
+                                <Pressable style={styles.comic} onPress={()=>{  if(comicStatus?.second) router.push(`/painted?image_url=${comicImages?.[1].image_url}`)
+                                                                                else if(comicStatus?.first) router.push('/color-picker');
+                                                                            }}>
+                                    <Image style={styles.image} source={{ uri: comicImages[1].image_url }}/>
+                                    <BlurView intensity={comicStatus?.first? 0: 125} style={StyleSheet.absoluteFill}/>
+                                </Pressable>
+                                <Pressable style={styles.comic} onPress={()=>{  if(comicStatus?.third) router.push(`/painted?image_url=${comicImages?.[2].image_url}`)
+                                                                                else if(comicStatus?.second) router.push('/color-picker');
+                                                                            }}>                                
+                                    <Image style={styles.image} source={{ uri: comicImages[2].image_url }}/>                                                                       
+                                    <BlurView intensity={comicStatus?.second? 0: 125} style={StyleSheet.absoluteFill}/>
+                                </Pressable>
+                                <Pressable style={styles.comic} onPress={()=>{  if(comicStatus?.third) router.push(`/painted?image_url=${comicImages?.[3].image_url}`)
+                                                                                else if(comicStatus?.fourth) router.push('/color-picker');
+                                                                            }}>
+                                    <Image style={styles.image} source={{ uri: comicImages[3].image_url }}/>
+                                    <BlurView intensity={comicStatus?.third? 0: 125} style={StyleSheet.absoluteFill}/>
+                                </Pressable>
                         </View>
-                        <Text style={styles.subtitle}>0%</Text>
-                    </View>
 
-                </View>
+                        {/* Progress */}
+                        <View style={styles.progress_bar_container}>
+                            <Text style={styles.subtitle}>Progresso de Pintura</Text>
+                            <View style={styles.progress_bar}>
+                                <View style={{height: 25, backgroundColor: "#d18f97", width: `${progress}`, borderRadius: 75}}/>
+                            </View>
+                            <Text style={styles.subtitle}>{progress}</Text>
+                        </View>
+
+                    </View>
+                }
             </View>
 
         </View>
@@ -127,7 +187,8 @@ const styles = StyleSheet.create({
         width: 125,
         borderRadius: 25,
         borderWidth: 1,
-        borderColor: "#8C8989"
+        borderColor: "#8C8989",
+        overflow: "hidden"
     },
     progress_bar_container: {
         display: "flex",
@@ -140,6 +201,16 @@ const styles = StyleSheet.create({
         borderColor: "#8C8989",
         borderRadius: 75,
         height: 30,
-        width: 200
+        width: 200,
+        display:"flex",
+        justifyContent: "center"
+    },
+    blur: {
+        width: "100%",
+        height: "100%",
+    },
+    image: {
+        width: "100%",
+        height: "100%"
     }
 });
