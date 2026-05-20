@@ -3,44 +3,41 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-
-type Category = {
-  id: number;
-  name: string;
-};
-
-type Comic = {
-  id: string;
-  title: string;
-  theme: string;
-  image: string;
-};
+import { Category, ComicLegacy, Comic as GalleryComic } from "../../lib/started-comics";
+import { Services } from "../../utils/services";
+import { useEffect } from "react";
 
 export default function Library() {
-  const { user_id } = useLocalSearchParams<{ user_id?: string | string[] }>();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const categories: Category[] = [
-    { id: 1, name: "Category 1" },
-    { id: 2, name: "Category 2" },
-    { id: 3, name: "Category 3" },
-    { id: 4, name: "Category 4" },
-    { id: 5, name: "Category 5" },
-  ];
+  const [categories, setCategories] = useState<Category[]>();
+  const [comics, setComics] = useState<GalleryComic[]>();
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const tirinhas: Comic[] = [
-    { id: "1", title: "O Pequeno Explorador", theme: "Infantil", image: "https://www.lpm.com.br/livros/imagens/garfield_6___de_bom_humor_9788525415998_hd.jpg" },
-    { id: "2", title: "Piada de Programador", theme: "Humor", image: "https://lh6.googleusercontent.com/proxy/LvhsGVp3DaLPAJFflBe2Peucq2X7PBvNhwFEoiH-ekMt_mFXUTA_wL_dynhFZ9gEUI8F_1mWjjpdPiZ9IL6nh6xuwM_xL1f48otF6QS6ebQLfZJHwQ_c50VoIet44AYX1FKwQpTeOT3jJ9fS" },
-    { id: "3", title: "IA no Dia a Dia", theme: "Tecnologia", image: "https://lh6.googleusercontent.com/proxy/R00FBT443RrzPHrtRqYpnFKH7YXGgIzwDCEAIL8Owl43w64gnoEds6zImvNi-FmeIg-BLFPNx0cTqYULmm2pOPkRIg4MNPqTeVBU_5JKG-H3wboCgGUxxDRE61U1zGmCx0WLMupVkBKUs7sWm0M" },
-    { id: "4", title: "História do Brasil", theme: "Educação", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtOcjKEIwrb3fZ-VmoCnVDhpy9Q2c0vA6pvw&s" },
-    { id: "1", title: "O Pequeno Explorador", theme: "Infantil", image: "https://www.lpm.com.br/livros/imagens/garfield_1___em_grande_forma_9788525414465_hd.jpg" },
-    { id: "2", title: "Piada de Programador", theme: "Humor", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgyPJsUAJkghB1YqvizMKBWWW6BmaQ2HgWNDxEzxuEmAYDsmBN-fzuNFHsjQe3m6tyWxLHZPH9TvuEeDBcKXOZ1Tf_g4dqNHn_WivnefbDcZRXOHDyWKLXWuHtyxXZpVf-r2oS2YvPkd6U/s1600/CEBOLINHA+60.png" },
-    { id: "3", title: "IA no Dia a Dia", theme: "Tecnologia", image: "https://static.wikia.nocookie.net/monica/images/3/3c/01a.jpg/revision/latest?cb=20110921001738&path-prefix=pt-br" },
-    { id: "4", title: "História do Brasil", theme: "Educação", image: "https://lh4.googleusercontent.com/proxy/wNKyCErC4gSdS8AZJH_T5YBqXKK2rg8AKGYREccTtMQOcwILlBgaWv5Q5XkDt9q7wpVtMaQHk0oz_7q1NffZ7c9VNpyIaCZqy5t8kSmdYSamMM_9DOPQp3e_vkwWeAN10WgneSt77M1KlILdlqbW6w" },
-    { id: "1", title: "O Pequeno Explorador", theme: "Infantil", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjQagnj6G5s5cWs8jFp0wPZCEC4mB0Vni-7VxKSlrtIAyfmLBflqbf5m1PcmwqxyMVK3N2YyLT6r8xBAKXeQNB3fTAuGTWtkLBj1u6JhnMydHm_IWWEujLa9R9-s52ghjGW1gWyFDH4Ocw3v6d2rWylt9XjJESE6tDT9i5u4tHDDPUt_O_zysmAKo8UuqUl/s960/_CC_117_(1991).jpg" },
-    { id: "2", title: "Piada de Programador", theme: "Humor", image: "https://aventurasnahistoria.com.br/wp-content/uploads/amazon/capa-snoopy-livro1.jpg" },
-  ];
+  const { user_id, category_id } = useLocalSearchParams();
+  const uid = Array.isArray(user_id) ? user_id[0] : user_id;
+  const cid = Number(Array.isArray(category_id) ? category_id[0] : category_id);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        let response_comics;
+        if (cid) response_comics = await Services.getUnreadComicsByCategory(uid, cid);
+        else response_comics = await Services.getUnreadComics(uid);
+        const response_categories = await Services.getCategories();
+        setComics(response_comics);
+        setCategories(response_categories as Category[]);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [uid, cid]);
 
   return (
     <View style={styles.container}>
@@ -74,32 +71,40 @@ export default function Library() {
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesContainer}>
-        {categories.map((category) => (
-          <Pressable style={styles.categoryButton} key={category.id}>
+        {categories?.map((category) => (
+          <Pressable style={styles.categoryButton} key={category.id} onPress={() => router.push(`/library?user_id=${uid}&category_id=${category.id}`)}>
             <Text style={styles.categoryText}>{category.name}</Text>
           </Pressable>
         ))}
       </ScrollView>
 
       <ScrollView contentContainerStyle={styles.gallery} showsVerticalScrollIndicator={false}>
-        {tirinhas.map((item, index) => (
+        {loading ? null : comics?.map((item, index) => (
           <Pressable
             key={`${item.id}-${index}`}
             style={styles.card}
             onPress={() => {
-              const resolvedUserId = Array.isArray(user_id) ? user_id[0] : user_id;
+              const resolvedUserId = uid ?? "demo-user";
+              // support both legacy `image` and gallery `image_url`
+              const imageParam = (item as any).image ?? (item as any).image_url ?? "";
               router.push({
                 pathname: "/color-picker",
                 params: {
                   id_comic: item.id,
-                  id_user: resolvedUserId ?? "demo-user",
-                  uncolored_image_url: item.image,
+                  id_user: resolvedUserId,
+                  uncolored_image_url: imageParam,
                   comic_title: item.title,
                 },
               });
             }}
           >
-            <Image source={{ uri: item.image }} style={styles.cardImage} />
+            {
+              (() => {
+                const uri = (item as any).image ?? (item as any).image_url ?? "";
+                const source = uri ? { uri } : require("../../assets/images/exemplo-quadrinho.png");
+                return <Image source={source} style={styles.cardImage} />;
+              })()
+            }
           </Pressable>
         ))}
       </ScrollView>
