@@ -1,23 +1,32 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
+import { useState } from "react";
+import { AppSidebar } from "@/components/AppSidebar";
 
 export default function Comic() {
     const router = useRouter();
     const { user_id, id_user, comic_id, id } = useLocalSearchParams();
     const userIdParam = user_id ?? id_user;
     const comicIdParam = comic_id ?? id;
-    void userIdParam;
+    const uid = Array.isArray(userIdParam) ? userIdParam[0] : userIdParam;
     const cid = Number(Array.isArray(comicIdParam) ? comicIdParam[0] : comicIdParam);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const m = [0, 1, 2, 3]
 
     return(
         <View style={styles.container}>
+            <AppSidebar
+                visible={sidebarOpen}
+                userId={uid}
+                activeRoute="library"
+                onClose={() => setSidebarOpen(false)}
+            />
             {/* Header */}
             <View style={styles.header}>
                 {/* Menu Hamburger */}
-                <Pressable style={styles.menu_hamburguer}>
+                <Pressable style={styles.menu_hamburguer} onPress={() => setSidebarOpen(true)}>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
