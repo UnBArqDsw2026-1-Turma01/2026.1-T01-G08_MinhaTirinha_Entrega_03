@@ -55,10 +55,10 @@ export default function Index() {
                 })
                 const user = data.user
                 if (user == null) router.replace('/error')
-                else router.replace({
-                  pathname: "/library",
-                  params: { user_id: user.id },
-                })
+                else {
+                  router.replace(`/library?user_id=${user.id}`);
+                  // router.push(`/comic?path=index&user_id=${user.id}&comic_id=1`);
+                }
               }
             } catch (error: any) {
               const message = error?.message || String(error) || 'Erro desconhecido no login'

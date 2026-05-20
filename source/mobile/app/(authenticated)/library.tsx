@@ -3,7 +3,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { Services } from "@/utils/services";
-import { AppSidebar } from "@/components/AppSidebar";
+import { IComicInfo } from "@/utils/entities/comic_info.entity";
+import { ICategory } from "@/utils/entities/category.entity";
 
 /**
  * =====================================================
@@ -19,47 +20,6 @@ import { AppSidebar } from "@/components/AppSidebar";
  * 2. Navega para a tela de pintura (ColorPicker) passando os parâmetros necessários.
  */
 
-interface category {
-    id: number,
-    name: string
-}
-
-interface comic {
-    id: string,
-    title: string, 
-    image_url?: string | null
-}
-
-const FALLBACK_CATEGORIES: category[] = [
-    { id: 1, name: "Infantil" },
-    { id: 2, name: "Humor" },
-    { id: 3, name: "Tecnologia" },
-    { id: 4, name: "Educacao" },
-];
-
-const FALLBACK_COMICS: comic[] = [
-    {
-        id: "1",
-        title: "Tirinha infantil",
-        image_url: null,
-    },
-    {
-        id: "2",
-        title: "Tirinha de humor",
-        image_url: null,
-    },
-    {
-        id: "3",
-        title: "Tirinha tecnologia",
-        image_url: null,
-    },
-    {
-        id: "4",
-        title: "Tirinha educacao",
-        image_url: null,
-    },
-];
-
 export default function Library() {
 
     const { user_id, category_id } = useLocalSearchParams();
@@ -67,19 +27,17 @@ export default function Library() {
     const cid = Number(Array.isArray(category_id) ? category_id[0] : category_id);
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
-    const [comics, setComics] = useState<comic[]>(FALLBACK_COMICS);
-    const [categories, setCategories] = useState<category[]>(FALLBACK_CATEGORIES);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [comics, setComics] = useState<IComicInfo[]>();
+    const [categories, setCategories] = useState<ICategory[]>();
+    const path: string = 'library';
 
-    
-    
     useEffect(()=>{
         async function fetchData() {
             try {
                 setLoading(true);
                 let response_comics;
-                if(cid) response_comics = await Services.getUnreadComicsByCategory(uid, cid);
-                else response_comics = await Services.getUnreadComics(uid);
+                if(cid) response_comics = await Services.getNotStartedComicsByCategory(uid, cid);
+                else response_comics = await Services.getNotStartedComics(uid);
                 const response_categories = await Services.getCategories();
                 setComics(Array.isArray(response_comics) && response_comics.length > 0 ? response_comics : FALLBACK_COMICS);
                 setCategories(Array.isArray(response_categories) && response_categories.length > 0 ? response_categories : FALLBACK_CATEGORIES);
@@ -138,8 +96,9 @@ export default function Library() {
                                 router.push({
                                     pathname: "/comic",
                                     params: {
-                                        id: comic.id,
-                                        id_user: uid,
+                                        path: path,
+                                        user_id: uid,
+                                        comic_id: comic.id,
                                     }
                                 });
                             }}
