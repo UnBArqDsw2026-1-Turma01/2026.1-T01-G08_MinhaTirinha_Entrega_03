@@ -9,6 +9,45 @@ import {
   getStartedComicsByUser,
 } from "../../lib/started-comics";
 
+/*
+  NOTAS DE INTEGRAÇÃO — Galeria Pessoal
+
+  Front-end (o que o componente espera):
+  - Recebe uma lista de comics com a forma:
+    {
+      id: string,
+      ownerId: string,
+      title: string,
+      category: string,
+      imageUrl: string | null,
+      panelsPainted: { panel1: boolean, panel2: boolean, panel3: boolean, panel4: boolean }
+    }
+  - Uso no front:
+    - `imageUrl`: se presente, usado como `Image` (fit cover). Se `null`, há fallback para um asset local.
+    - `panelsPainted`: usado por `ComicCardFactory.create()` para derivar `progressPercent` e `progressLabel`.
+    - `decorateComicCard()`: adiciona propriedades visuais (`shellTone`, `borderTone`) sem alterar os dados originais.
+    - Navegação: tocar no card empurra rota para `/color-picker?id_comic=...&id_user=...&uncolored_image_url=...`.
+  - Layout atual (implementado aqui): mostramos apenas a capa, a barra de progresso e a contagem (`progressLabel`).
+
+  Back-end (o que o servidor/API precisa fornecer):
+  - Endpoint sugerido: `GET /users/:id/started-comics` (ou equivalente) retornando o array acima filtrado por `ownerId`.
+  - `imageUrl` deve ser um URL público ou um link assinável, para que o cliente possa carregar diretamente a imagem.
+  - `panelsPainted` deve ser booleana por painel (ou o back pode enviar já `progressPercent`/`progressLabel` se preferir delegar cálculo ao servidor).
+  - Garantir consistência dos campos (`id`, `ownerId`, `panelsPainted`) para que o front calcule corretamente progresso e rótulos.
+
+  Design Patterns usados nesta tela:
+  - Factory: `ComicCardFactory.create()` centraliza a criação/derivação de campos (progress, labels, cores).
+  - Decorator-like: `decorateComicCard()` aplica propriedades de apresentação (shellTone/borderTone) sem mutação profunda.
+  - Command (em outro lugar): a lógica de salvar/undo no `color-picker` segue um padrão similar ao Command (ver `app/color-picker.tsx`).
+
+  Arquivos relevantes:
+  - lib/started-comics.ts  (fábrica/decorator e dados de exemplo)
+  - app/(authenticated)/galeria-pessoal.tsx  (esta tela)
+  - app/color-picker.tsx  (fluxo de edição/Command-like)
+
+  Observação: manter a responsabilidade do front em calcular apenas a apresentação (percentuais/labels) facilita prototipação; para escala, considere mover cálculos para o back.
+*/
+
 export default function GaleriaPessoal() {
   const router = useRouter();
   const { user_id } = useLocalSearchParams<{ user_id?: string | string[] }>();
