@@ -35,5 +35,8 @@ export class Services {
     static async getNotStartedComic(comic_id: number): Promise<IGetComic> {
         return this.getData(`comic/not-started/${comic_id}`);
     }
-
+    
+    static async getUserComicOnHistoric(user_id: string, comic_id: number) {
+        return this.getData(`comic/started/${user_id}/${comic_id}`);
+    }
 }

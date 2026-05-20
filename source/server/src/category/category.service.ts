@@ -6,7 +6,18 @@ import { Category } from './entities/category.entity';
 export class CategoryService {
   constructor(private readonly supabase: SupabaseService) {}
 
-  async getCategories(): Promise<Category[]> {
+  async getCategories(): Promise<Category[]> 
+  //  CREATE FUNCTION public.get_all_categories()
+  //  RETURN TABLE(
+  //    id integer,
+  //    name text
+  //  ) 
+  //  AS $$
+  //    SELECT *
+  //    FROM "Category";
+  //  $$ LANGUAGE sql;
+   
+  {
     // PADRÃO: Facade para a lógica do banco (RPC)
     const { data, error } = await this.supabase.getInstance().rpc('get_all_categories');
     if (error) throw error;

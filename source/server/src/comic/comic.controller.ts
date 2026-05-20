@@ -34,4 +34,9 @@ export class ComicController {
     return this.comicService.getNotStartedComic(comic_id);
   }
 
+  @Get('comic/started/:user_id/:comic_id')
+  getUserComicOnHistoric(@Param('user_id') user_id: string, @Param('comic_id') comic_id: number) {
+    return this.comicService.getUserComic(user_id, comic_id);
+  }
+
 }
