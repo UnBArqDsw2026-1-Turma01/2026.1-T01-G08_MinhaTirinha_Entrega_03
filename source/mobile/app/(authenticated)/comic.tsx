@@ -1,11 +1,14 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
 
 export default function Comic() {
-    const { user_id, comic_id } = useLocalSearchParams();
-    const uid = Array.isArray(user_id) ? user_id[0] : user_id;
-    const cid = Number(Array.isArray(comic_id) ? comic_id[0] : comic_id);
+    const router = useRouter();
+    const { user_id, id_user, comic_id, id } = useLocalSearchParams();
+    const userIdParam = user_id ?? id_user;
+    const comicIdParam = comic_id ?? id;
+    void userIdParam;
+    const cid = Number(Array.isArray(comicIdParam) ? comicIdParam[0] : comicIdParam);
 
     const m = [0, 1, 2, 3]
 
@@ -19,7 +22,9 @@ export default function Comic() {
                     <View style={styles.line}/>
                     <View style={styles.line}/>
                 </Pressable>
-                <Image source={require("../../assets/images/arrow.svg")} style={styles.arrow}/>
+                <Pressable style={styles.back_button} onPress={() => router.back()}>
+                    <Image source={require("../../assets/images/arrow.svg")} style={styles.arrow}/>
+                </Pressable>
                 
             </View>
 
@@ -27,7 +32,7 @@ export default function Comic() {
             <View style={styles.subcontainer}>
                 <View style={styles.progress}>
                     
-                    <Text style={styles.title}>BLABLALBA</Text>
+                    <Text style={styles.title}>Tirinha {Number.isNaN(cid) ? "" : cid}</Text>
                     
                     {/* Select Field */}
                     <View style={styles.select_field}>
@@ -83,6 +88,10 @@ const styles = StyleSheet.create({
     arrow: {
         height: 30,
         width: 17
+    },
+    back_button: {
+        paddingHorizontal: 10,
+        paddingVertical: 6,
     },
     title: {
         fontSize: 20,

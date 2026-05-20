@@ -158,10 +158,10 @@ export default function GaleriaPessoal() {
                                 style={styles.card}
                                 onPress={() => {
                                     router.push({
-                                        pathname: "/comic/[comicId]",
+                                        pathname: "/comic",
                                         params: {
-                                            comicId: comic.id,
-                                            user_id: uid,
+                                            id: comic.id,
+                                            id_user: uid,
                                         }
                                     });
                                 }}
