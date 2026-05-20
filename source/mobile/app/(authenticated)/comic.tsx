@@ -87,8 +87,8 @@ export default function Comic() {
                                     <Image style={styles.image} source={{ uri: comicImages[2].image_url }}/>                                                                       
                                     <BlurView intensity={comicStatus?.second? 0: 125} style={StyleSheet.absoluteFill}/>
                                 </Pressable>
-                                <Pressable style={styles.comic} onPress={()=>{  if(comicStatus?.third) router.push(`/painted?image_url=${comicImages?.[3].image_url}`)
-                                                                                else if(comicStatus?.fourth) router.push('/color-picker');
+                                <Pressable style={styles.comic} onPress={()=>{  if(comicStatus?.fourth) router.push(`/painted?image_url=${comicImages?.[3].image_url}`)
+                                                                                else if(comicStatus?.third) router.push('/color-picker');
                                                                             }}>
                                     <Image style={styles.image} source={{ uri: comicImages[3].image_url }}/>
                                     <BlurView intensity={comicStatus?.third? 0: 125} style={StyleSheet.absoluteFill}/>
