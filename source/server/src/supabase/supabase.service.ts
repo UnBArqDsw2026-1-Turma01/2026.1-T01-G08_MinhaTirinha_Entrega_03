@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import * as ws from 'ws';
 
 @Injectable()
 export class SupabaseService {
@@ -7,7 +8,17 @@ export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+    // Node.js 20 não tem WebSocket nativo — passamos o pacote "ws" como transport
+    // O cast "as any" é necessário por incompatibilidade de tipos entre ws e Supabase
+    this.supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        realtime: {
+          transport: ws as any,
+        },
+      },
+    );
   }
 
   getInstance(): SupabaseClient 

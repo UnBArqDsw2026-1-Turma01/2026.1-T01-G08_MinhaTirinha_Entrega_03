@@ -35,4 +35,17 @@ export class ComicController {
     return this.comicService.getNotStartedComic(comic_id);
   }
 
+  /**
+   * GET /comic/release-next/:comicId/:userId
+   * Retorna qual é o próximo quadro liberado para pintura dentro de uma tirinha.
+   * Delega a regra de liberação para a ReleaseNextFrameStrategy.
+   */
+  @Get('comic/release-next/:comicId/:userId')
+  async getReleaseNextFrame(
+    @Param('comicId') comicId: number,
+    @Param('userId') userId: string,
+  ) {
+    return this.comicService.getNextFrameRelease(comicId, userId);
+  }
+
 }
