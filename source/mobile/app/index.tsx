@@ -21,7 +21,10 @@ export default function Index() {
   const [loginError, setLoginError] = useState<string>('')
 
   const continueWithoutGoogle = () => {
-    router.replace(`/library?user_id=${TEST_USER_ID}`)
+    router.replace({
+      pathname: "/(authenticated)/library",
+      params: { user_id: TEST_USER_ID },
+    })
   }
 
   return (
@@ -52,7 +55,10 @@ export default function Index() {
                 })
                 const user = data.user
                 if (user == null) router.replace('/error')
-                else router.replace(`/library?user_id=${user.id}`)
+                else router.replace({
+                  pathname: "/(authenticated)/library",
+                  params: { user_id: user.id },
+                })
               }
             } catch (error: any) {
               const message = error?.message || String(error) || 'Erro desconhecido no login'
@@ -72,13 +78,6 @@ export default function Index() {
           onPress={continueWithoutGoogle}
         >
           <Text style={styles.secondaryButtonText}>Continuar sem Google</Text>
-        </Pressable>
-
-        <Pressable style={styles.testButton} onPress={() => {
-          const demoUrl = 'https://i.imgur.com/ExdKOOz.png'
-          router.push(`/color-picker?uncolored_image_url=${encodeURIComponent(demoUrl)}&id_comic=demo&id_user=demo`)
-        }}>
-          <Text>Abrir sem login (teste)</Text>
         </Pressable>
         {!!loginError && <Text style={styles.errorText}>{loginError}</Text>}
       </View>
@@ -157,11 +156,5 @@ const styles = StyleSheet.create({
     color: '#B00020',
     textAlign: 'center',
     maxWidth: 280,
-  },
-  testButton: {
-    marginTop: 12,
-    padding: 10,
-    backgroundColor: '#FFF',
-    borderRadius: 8,
   },
 })
