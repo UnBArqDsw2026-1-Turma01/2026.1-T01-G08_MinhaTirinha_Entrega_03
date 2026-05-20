@@ -21,6 +21,66 @@ export type ComicCard = StartedComic & {
   accent: string;
 };
 
+// Standardized interfaces for gallery API consumers
+export interface Category {
+  id: number;
+  name: string;
+}
+
+export interface Comic {
+  id: string;
+  title: string;
+  image_url: string;
+}
+
+/**
+ * Convert a local StartedComic to the standardized `Comic` interface
+ * (useful to keep API/PR contracts stable while preserving internal model).
+ */
+export function toGalleryComic(c: StartedComic): Comic {
+  return {
+    id: c.id,
+    title: c.title,
+    image_url: c.imageUrl ?? "",
+  };
+}
+
+/**
+ * Return simplified gallery comics for a given user.
+ * Backwards-compatible: delegates to `getStartedComicsByUser` and maps.
+ */
+export function getGalleryComicsByUser(userId: string | string[] | undefined): Comic[] {
+  return getStartedComicsByUser(userId).map(toGalleryComic);
+}
+
+// ----- Backwards compatibility helpers -----
+// Some PRs or external modules may expect a different `Comic` shape
+// (for example: `type Comic = { id: string; title: string; theme: string; image: string }`).
+// To avoid naming/type conflicts in PRs, we expose an explicit legacy type
+// and mapping functions so consumers can opt-in to the old shape.
+
+export type ComicLegacy = {
+  id: string;
+  title: string;
+  // `theme` maps from the internal `category` field
+  theme: string;
+  // `image` maps from the internal `imageUrl` (string or empty)
+  image: string;
+};
+
+export function toLegacyComic(c: StartedComic): ComicLegacy {
+  return {
+    id: c.id,
+    title: c.title,
+    theme: c.category ?? "",
+    image: c.imageUrl ?? "",
+  };
+}
+
+export function getGalleryComicsByUserLegacy(userId: string | string[] | undefined): ComicLegacy[] {
+  return getStartedComicsByUser(userId).map(toLegacyComic);
+}
+
 const STARTED_COMICS: StartedComic[] = [
   {
     id: "15",

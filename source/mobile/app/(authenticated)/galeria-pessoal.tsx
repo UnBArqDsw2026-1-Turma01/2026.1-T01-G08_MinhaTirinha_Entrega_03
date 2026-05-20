@@ -7,6 +7,10 @@ import {
   ComicCardFactory,
   decorateComicCard,
   getStartedComicsByUser,
+  // `getGalleryComicsByUser` and `Comic` are provided so the gallery
+  // can expose a stable, API-friendly model:
+  // interface Comic { id: string; title: string; image_url: string }
+  getGalleryComicsByUser,
 } from "../../lib/started-comics";
 
 /*
@@ -54,6 +58,17 @@ export default function GaleriaPessoal() {
   const resolvedUserId = Array.isArray(user_id) ? user_id[0] : user_id;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // `startedComics` is the internal model used to derive progress.
+  // If another part of the app (or the API) needs the standardized
+  // gallery-friendly shape use `getGalleryComicsByUser(user_id)`.
+  //
+  // Compatibilidade / PRs: para reduzir conflitos com PRs que esperam
+  // um shape diferente (`type Comic = { id,title,theme,image }`), há
+  // helpers explícitos em `lib/started-comics.ts`:
+  // - `getGalleryComicsByUser()` -> retorna `{ id,title,image_url }` (padrão)
+  // - `getGalleryComicsByUserLegacy()` -> retorna `{ id,title,theme,image }`
+  // Preferir usar uma das funções de mapeamento em vez de alterar o
+  // tipo `Comic` globalmente para evitar conflitos em PRs.
   const startedComics = useMemo(() => getStartedComicsByUser(user_id), [user_id]);
 
   return (
