@@ -23,8 +23,8 @@ import { ICategory } from "@/utils/entities/category.entity";
 export default function Library() {
 
     const { user_id, category_id } = useLocalSearchParams();
-    const uid = Array.isArray(user_id) ? user_id[0] : user_id;
-    const cid = Number(Array.isArray(user_id) ? category_id[0] : category_id);
+    const uid = (Array.isArray(user_id) ? user_id[0] : user_id) ?? "1";
+    const cid = Number(Array.isArray(category_id) ? category_id[0] : category_id);
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
     const [comics, setComics] = useState<IComicInfo[]>();
@@ -39,27 +39,33 @@ export default function Library() {
                 if(cid) response_comics = await Services.getNotStartedComicsByCategory(uid, cid);
                 else response_comics = await Services.getNotStartedComics(uid);
                 const response_categories = await Services.getCategories();
-                setComics(response_comics);
-                setCategories(response_categories);
-            } catch (error) {
-                console.error(error);
+                setComics(Array.isArray(response_comics) && response_comics.length > 0 ? response_comics : FALLBACK_COMICS);
+                setCategories(Array.isArray(response_categories) && response_categories.length > 0 ? response_categories : FALLBACK_CATEGORIES);
+            } catch {
+                setComics(FALLBACK_COMICS);
+                setCategories(FALLBACK_CATEGORIES);
             } finally {
                 setLoading(false);
             }
         }
 
         fetchData();
-    },[])
+    },[cid, uid])
 
     return (
         
         <View style={styles.container}>
-            {loading? <></>:
+            <AppSidebar
+                visible={sidebarOpen}
+                userId={uid}
+                activeRoute="library"
+                onClose={() => setSidebarOpen(false)}
+            />
             <>
                 {/* Header */}
                 <View style={styles.header}>
                     {/* Menu Hamburger */}
-                    <Pressable style={styles.menu_hamburguer}>
+                    <Pressable style={styles.menu_hamburguer} onPress={() => setSidebarOpen(true)}>
                         <View style={styles.line}/>
                         <View style={styles.line}/>
                         <View style={styles.line}/>
@@ -69,7 +75,7 @@ export default function Library() {
 
                 {/* Categories */}
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories_container}>
-                    {categories?.map((category, index)=>(
+                    {categories.map((category, index)=>(
                         // Category Button
                         <Pressable style={styles.category_button} key={index} onPress={()=>{router.push(`/library?user_id=${uid}&category_id=${category.id}`)}}>
                             <Text style={styles.category_text}>{category.name}</Text>
@@ -77,9 +83,11 @@ export default function Library() {
                     ))}
                 </ScrollView>
 
+                {loading && <Text style={styles.loadingText}>Carregando galeria...</Text>}
+
                 {/* Comics */}
                 <ScrollView contentContainerStyle={styles.gallery} showsVerticalScrollIndicator={false}>
-                    {comics?.map((comic, index) => (
+                    {comics.map((comic, index) => (
                         // Comic Card
                         <Pressable
                             key={index}
@@ -95,11 +103,15 @@ export default function Library() {
                                 });
                             }}
                         >
-                            <Image source={{ uri: comic.image_url }} style={styles.cardImage} />
+                            {comic.image_url ? (
+                                <Image source={{ uri: comic.image_url }} style={styles.cardImage} />
+                            ) : (
+                                <Image source={require("../../assets/images/exemplo-quadrinho.png")} style={styles.cardImage} />
+                            )}
                         </Pressable>
                     ))}
                 </ScrollView>
-            </>}
+            </>
         </View>
     );   
 }
@@ -161,6 +173,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#A0A0A0",
         fontFamily: "Iceberg_400Regular",
+        marginTop: 4,
+    },
+    loadingText: {
+        color: "#8C8989",
+        fontFamily: "Farsan_400Regular",
+        fontSize: 16,
+        textAlign: "center",
         marginTop: 4,
     },
     gallery: {

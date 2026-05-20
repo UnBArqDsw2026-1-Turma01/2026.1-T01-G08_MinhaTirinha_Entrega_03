@@ -49,10 +49,16 @@ export default function Comic() {
 
     return( 
         <View style={styles.container}>
+            <AppSidebar
+                visible={sidebarOpen}
+                userId={uid}
+                activeRoute="library"
+                onClose={() => setSidebarOpen(false)}
+            />
             {/* Header */}
             <View style={styles.header}>
                 {/* Menu Hamburger */}
-                <Pressable style={styles.menu_hamburguer}>
+                <Pressable style={styles.menu_hamburguer} onPress={() => setSidebarOpen(true)}>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
@@ -143,6 +149,10 @@ const styles = StyleSheet.create({
     arrow: {
         height: 30,
         width: 17
+    },
+    back_button: {
+        paddingHorizontal: 10,
+        paddingVertical: 6,
     },
     title: {
         fontSize: 20,

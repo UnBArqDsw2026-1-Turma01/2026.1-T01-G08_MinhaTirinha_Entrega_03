@@ -5,10 +5,16 @@ import { IGetComic } from "./entities/get_comic.entity";
 export class Services {
 
     private static url: string = "http://192.168.1.9:3000/";
+    private static timeoutMs: number = 3500;
 
     private static async getData(route: string): Promise<any> {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+
         try {
-            const response = await fetch(`${this.url}${route}`);
+            const response = await fetch(`${this.url}${route}`, {
+                signal: controller.signal,
+            });
             
             if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
@@ -16,8 +22,10 @@ export class Services {
 
             const result = await response.json();
             return result;
-        } catch (error: any) {
-            console.error(error.message);
+        } catch {
+            return undefined;
+        } finally {
+            clearTimeout(timeout);
         }
     }
     static async getNotStartedComics(user_id: string): Promise<IComicInfo[]> {
@@ -38,5 +46,9 @@ export class Services {
     
     static async getUserComicOnHistoric(user_id: string, comic_id: number) {
         return this.getData(`comic/started/${user_id}/${comic_id}`);
+    }
+
+    static async getStartedComics(user_id: string) {
+        return this.getData(`historic/in-progress/${user_id}`);
     }
 }
