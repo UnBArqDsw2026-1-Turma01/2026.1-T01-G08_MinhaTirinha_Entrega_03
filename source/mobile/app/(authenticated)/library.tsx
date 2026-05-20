@@ -30,6 +30,36 @@ interface comic {
     image_url: string
 }
 
+const FALLBACK_CATEGORIES: category[] = [
+    { id: 1, name: "Infantil" },
+    { id: 2, name: "Humor" },
+    { id: 3, name: "Tecnologia" },
+    { id: 4, name: "Educacao" },
+];
+
+const FALLBACK_COMICS: comic[] = [
+    {
+        id: "1",
+        title: "Tirinha infantil",
+        image_url: "https://picsum.photos/seed/minha-tirinha-infantil/600/900",
+    },
+    {
+        id: "2",
+        title: "Tirinha de humor",
+        image_url: "https://picsum.photos/seed/minha-tirinha-humor/600/900",
+    },
+    {
+        id: "3",
+        title: "Tirinha tecnologia",
+        image_url: "https://picsum.photos/seed/minha-tirinha-tech/600/900",
+    },
+    {
+        id: "4",
+        title: "Tirinha educacao",
+        image_url: "https://picsum.photos/seed/minha-tirinha-educacao/600/900",
+    },
+];
+
 export default function Library() {
 
     const { user_id, category_id } = useLocalSearchParams();
@@ -37,8 +67,8 @@ export default function Library() {
     const cid = Number(Array.isArray(category_id) ? category_id[0] : category_id);
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
-    const [comics, setComics] = useState<comic[]>();
-    const [categories, setCategories] = useState<category[]>();
+    const [comics, setComics] = useState<comic[]>(FALLBACK_COMICS);
+    const [categories, setCategories] = useState<category[]>(FALLBACK_CATEGORIES);
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     
@@ -51,10 +81,12 @@ export default function Library() {
                 if(cid) response_comics = await Services.getUnreadComicsByCategory(uid, cid);
                 else response_comics = await Services.getUnreadComics(uid);
                 const response_categories = await Services.getCategories();
-                setComics(response_comics);
-                setCategories(response_categories);
+                setComics(Array.isArray(response_comics) && response_comics.length > 0 ? response_comics : FALLBACK_COMICS);
+                setCategories(Array.isArray(response_categories) && response_categories.length > 0 ? response_categories : FALLBACK_CATEGORIES);
             } catch (error) {
                 console.error(error);
+                setComics(FALLBACK_COMICS);
+                setCategories(FALLBACK_CATEGORIES);
             } finally {
                 setLoading(false);
             }
@@ -72,7 +104,6 @@ export default function Library() {
                 activeRoute="library"
                 onClose={() => setSidebarOpen(false)}
             />
-            {loading? <></>:
             <>
                 {/* Header */}
                 <View style={styles.header}>
@@ -87,7 +118,7 @@ export default function Library() {
 
                 {/* Categories */}
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories_container}>
-                    {categories?.map((category, index)=>(
+                    {categories.map((category, index)=>(
                         // Category Button
                         <Pressable style={styles.category_button} key={index} onPress={()=>{router.push(`/library?user_id=${uid}&category_id=${category.id}`)}}>
                             <Text style={styles.category_text}>{category.name}</Text>
@@ -95,9 +126,11 @@ export default function Library() {
                     ))}
                 </ScrollView>
 
+                {loading && <Text style={styles.loadingText}>Carregando galeria...</Text>}
+
                 {/* Comics */}
                 <ScrollView contentContainerStyle={styles.gallery} showsVerticalScrollIndicator={false}>
-                    {comics?.map((comic, index) => (
+                    {comics.map((comic, index) => (
                         // Comic Card
                         <Pressable
                             key={index}
@@ -116,7 +149,7 @@ export default function Library() {
                         </Pressable>
                     ))}
                 </ScrollView>
-            </>}
+            </>
         </View>
     );   
 }
@@ -178,6 +211,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#A0A0A0",
         fontFamily: "Iceberg_400Regular",
+        marginTop: 4,
+    },
+    loadingText: {
+        color: "#8C8989",
+        fontFamily: "Farsan_400Regular",
+        fontSize: 16,
+        textAlign: "center",
         marginTop: 4,
     },
     gallery: {

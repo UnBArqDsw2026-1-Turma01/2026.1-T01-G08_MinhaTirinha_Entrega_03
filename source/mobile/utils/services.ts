@@ -1,10 +1,16 @@
 export class Services {
 
     private static url: string = "http://192.168.1.9:3000/";
+    private static timeoutMs: number = 3500;
 
     private static async getData(route: string): Promise<any> {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+
         try {
-            const response = await fetch(`${this.url}${route}`);
+            const response = await fetch(`${this.url}${route}`, {
+                signal: controller.signal,
+            });
             
             if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
@@ -14,6 +20,8 @@ export class Services {
             return result;
         } catch (error: any) {
             console.error(error.message);
+        } finally {
+            clearTimeout(timeout);
         }
     }
     static async getUnreadComics(user_id: string) {
