@@ -7,50 +7,64 @@ import { StyleSheet, View, Text, Pressable } from 'react-native'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Image } from 'expo-image'
+import { supabase } from '@/utils/supabase'
 
 export default function Index() {
-  // ID de teste alinhado com o mock atual do front
   const TEST_USER_ID = '1'
 
   GoogleSignin.configure({
     webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID!,
   })
 
-  const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter()
+  const [loading, setLoading] = useState<boolean>(false)
+  const [loginError, setLoginError] = useState<string>('')
 
   const continueWithoutGoogle = () => {
-    router.replace(`/galeria-pessoal?user_id=${TEST_USER_ID}`)
+    router.replace(`/library?user_id=${TEST_USER_ID}`)
   }
 
   return (
     <View style={styles.main_container}>
-      <Image source={require("../assets/images/logo-minha-tirinha.png")} style={styles.logo_app}/>
+      <Image source={require("../assets/images/logo-minha-tirinha.png")} style={styles.logo_app} />
       <View style={styles.sub_container}>
         <Text style={styles.title}>Acessar a galeria</Text>
         <Text style={styles.description}>
-          Escolha entre entrar com Google ou seguir sem login apenas para teste.
+          Escolha entre entrar com Google ou seguir sem login para acessar a galeria de tirinhas.
         </Text>
 
         <Pressable
           style={styles.primaryButton}
+          disabled={loading}
           onPress={async () => {
+            setLoginError('')
+            setLoading(true)
             try {
-              setLoading(true);
               await GoogleSignin.hasPlayServices()
               const response = await GoogleSignin.signIn()
               if (isSuccessResponse(response)) {
-                router.replace(`/galeria-pessoal?user_id=${TEST_USER_ID}`)
+                const idToken = response.data.idToken
+                if (!idToken) throw new Error('idToken ausente no retorno do Google Sign-In')
+
+                const { data } = await supabase.auth.signInWithIdToken({
+                  provider: 'google',
+                  token: idToken,
+                })
+                const user = data.user
+                if (user == null) router.replace('/error')
+                else router.replace(`/library?user_id=${user.id}`)
               }
             } catch (error: any) {
-              router.replace('/error')
+              const message = error?.message || String(error) || 'Erro desconhecido no login'
+              setLoginError(message)
+              console.log('Erro no login Google/Supabase:', error)
             } finally {
               setLoading(false)
             }
           }}
         >
-          <Image source={require("../assets/images/logo-google.png")} style={styles.logo_google}/>
-          <Text style={styles.primaryButtonText}>Entrar com Google</Text>
+          <Image source={require("../assets/images/logo-google.png")} style={styles.logo_google} />
+          <Text style={styles.primaryButtonText}>{loading ? 'Entrando...' : 'Entrar com Google'}</Text>
         </Pressable>
 
         <Pressable
@@ -59,16 +73,24 @@ export default function Index() {
         >
           <Text style={styles.secondaryButtonText}>Continuar sem Google</Text>
         </Pressable>
-      </View>}
+
+        <Pressable style={styles.testButton} onPress={() => {
+          const demoUrl = 'https://i.imgur.com/ExdKOOz.png'
+          router.push(`/color-picker?uncolored_image_url=${encodeURIComponent(demoUrl)}&id_comic=demo&id_user=demo`)
+        }}>
+          <Text>Abrir sem login (teste)</Text>
+        </Pressable>
+        {!!loginError && <Text style={styles.errorText}>{loginError}</Text>}
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   main_container: {
-    display: "flex", 
-    justifyContent: "center", 
-    alignItems: "center", 
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     height: "100%",
     backgroundColor: "#FCFAEE",
     gap: 62.5
@@ -78,9 +100,9 @@ const styles = StyleSheet.create({
     height: 150
   },
   sub_container: {
-    display: "flex", 
-    justifyContent: "center", 
-    alignItems: "center", 
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     gap: 12,
     paddingHorizontal: 24
   },
@@ -129,5 +151,17 @@ const styles = StyleSheet.create({
     color: "#675A89",
     fontSize: 15,
     fontWeight: "800",
+  },
+  errorText: {
+    marginTop: 10,
+    color: '#B00020',
+    textAlign: 'center',
+    maxWidth: 280,
+  },
+  testButton: {
+    marginTop: 12,
+    padding: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
   },
 })

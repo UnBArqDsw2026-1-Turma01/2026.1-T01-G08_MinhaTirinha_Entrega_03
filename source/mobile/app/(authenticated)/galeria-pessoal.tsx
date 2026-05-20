@@ -1,364 +1,295 @@
-/**
- * ==========================================
- * TELA: Galeria Pessoal
- * ==========================================
- * 
- * Exibe todas as tirinhas que o usuário iniciou ler.
- * 
- *  ARQUITETURA:
- * - ComicCardFactory: Prepara dados dos comics
- * - decorateComicCard: Adiciona estilos calculados
- * - ComicSelectionObserver: Gerencia seleção de comics
- * - OpenComicCommand: Executa abertura de comics
- * 
- *   PARA O BACKEND:
- * - Certifique que GET /comics/started?user_id={userId} retorna StartedComic[]
- * - Envie category e paineis pintados para o frontend calcular progresso
- * - Todas as cores devem estar em formato hex válido
- * 
- *  PARA O FRONTEND:
- * - User_id é extraído dos query params da URL
- * - A FlatList renderiza em 2 colunas (numColumns={2})
- * - Animação suave ao clicar um card (press effect)
- * - Mostra estado vazio se não houver tirinhas iniciadas
- */
-import { useEffect, useMemo, useRef } from "react";
-import {
-  FlatList,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import {
-  ComicCardFactory,
-  ComicSelectionObserver,
-  OpenComicCommand,
-  decorateComicCard,
-  getStartedComicsByUser,
-} from "../../lib/started-comics";
+import { Image } from "expo-image";
+import { useEffect, useMemo, useState } from "react";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Services } from "@/utils/services";
 
-export default function Library() {
-  /**
-   *  SETUP: Hooks e Estado
-   */
-  
-  // Router para navegação entre telas
-  const router = useRouter();
-  
-  // Extrai user_id dos query params da URL
-  // Exemplos: galeria-pessoal?user_id=user-001
-  const { user_id } = useLocalSearchParams<{ user_id?: string | string[] }>();
+type StartedComicResponse = {
+  id?: number | string;
+  comic_id?: number | string;
+  title?: string;
+  name?: string;
+  image_url?: string | null;
+  imageUrl?: string | null;
+  first?: boolean;
+  second?: boolean;
+  third?: boolean;
+  fourth?: boolean;
+  panel1?: boolean;
+  panel2?: boolean;
+  panel3?: boolean;
+  panel4?: boolean;
+  panelsPainted?: {
+    panel1?: boolean;
+    panel2?: boolean;
+    panel3?: boolean;
+    panel4?: boolean;
+  };
+};
 
-  // Observer ativo para manter o padrão de notificação desacoplado do card.
-  const selectionObserver = useRef(new ComicSelectionObserver()).current;
-  
-  /*
-   *  Fetch dos dados: Todos os comics do usuário
-   * - useMemo garante que fetch só acontece quando user_id muda
-   * - Retorna array vazio se user_id for undefined
-   */
-  const startedComics = useMemo(() => getStartedComicsByUser(user_id), [user_id]);
+type StartedComic = {
+  id: string;
+  title: string;
+  image_url: string | null;
+  progress: number;
+};
 
-  const openComicCommand = useMemo(
-    () =>
-      new OpenComicCommand((comic) => {
-        const resolvedUserId = Array.isArray(user_id) ? user_id[0] : user_id;
-        const query = resolvedUserId ? `?user_id=${encodeURIComponent(resolvedUserId)}` : "";
-        router.push(`/comic/${comic.id}${query}`);
-      }, selectionObserver),
-    [router, selectionObserver, user_id],
-  );
+const MOCK_STARTED_COMICS: StartedComicResponse[] = [
+  {
+    comic_id: 15,
+    title: "A Quarta Pagina do Porcelanato",
+    image_url: "https://picsum.photos/seed/comic-15/1200/800",
+    first: true,
+    second: true,
+    third: false,
+    fourth: false,
+  },
+  {
+    comic_id: 21,
+    title: "Cafe, Cores e Planos",
+    image_url: "https://picsum.photos/seed/comic-21/1200/800",
+    first: true,
+    second: false,
+    third: false,
+    fourth: false,
+  },
+  {
+    comic_id: 42,
+    title: "O Dia em que o Lapis Sumiu",
+    image_url: "https://picsum.photos/seed/comic-42/1200/800",
+    first: true,
+    second: true,
+    third: true,
+    fourth: false,
+  },
+];
 
-  useEffect(() => selectionObserver.subscribe(() => undefined), [selectionObserver]);
+function countPaintedPanels(comic: StartedComicResponse) {
+  const panels = comic.panelsPainted;
+  const values = [
+    comic.first ?? comic.panel1 ?? panels?.panel1,
+    comic.second ?? comic.panel2 ?? panels?.panel2,
+    comic.third ?? comic.panel3 ?? panels?.panel3,
+    comic.fourth ?? comic.panel4 ?? panels?.panel4,
+  ];
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* Decorações de fundo (orbs visuais) */}
-      <View style={styles.backgroundOrbLarge} />
-      <View style={styles.backgroundOrbSmall} />
+  return values.filter(Boolean).length;
+}
 
-      <View style={styles.page}>
-        {/* Cabeçalho minimalista */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.kicker}>Galeria pessoal</Text>
-          <Text style={styles.title}>Tirinhas iniciadas</Text>
+function normalizeStartedComic(comic: StartedComicResponse): StartedComic {
+  const id = comic.comic_id ?? comic.id ?? "";
+
+  return {
+    id: String(id),
+    title: comic.title ?? comic.name ?? "Tirinha sem titulo",
+    image_url: comic.image_url ?? comic.imageUrl ?? null,
+    progress: countPaintedPanels(comic),
+  };
+}
+
+export default function GaleriaPessoal() {
+    const { user_id } = useLocalSearchParams();
+    const uid = (Array.isArray(user_id) ? user_id[0] : user_id) ?? "1";
+    const router = useRouter();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [startedComics, setStartedComics] = useState<StartedComic[]>([]);
+
+    useEffect(()=>{
+        async function fetchData() {
+            try {
+                setLoading(true);
+                const response = uid ? await Services.getStartedComics(uid) : undefined;
+                const rawComics = Array.isArray(response) && response.length > 0 ? response : MOCK_STARTED_COMICS;
+                setStartedComics(rawComics.map(normalizeStartedComic));
+            } catch (error) {
+                console.error(error);
+                setStartedComics(MOCK_STARTED_COMICS.map(normalizeStartedComic));
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchData();
+    },[uid])
+
+    const hasComics = useMemo(() => startedComics.length > 0, [startedComics]);
+
+    return (
+        <View style={styles.container}>
+            <AppSidebar
+                visible={sidebarOpen}
+                userId={uid}
+                activeRoute="galeria-pessoal"
+                onClose={() => setSidebarOpen(false)}
+            />
+            {loading? <></>:
+            <>
+                <View style={styles.header}>
+                    <Pressable style={styles.menu_hamburguer} onPress={() => setSidebarOpen(true)}>
+                        <View style={styles.line}/>
+                        <View style={styles.line}/>
+                        <View style={styles.line}/>
+                    </Pressable>
+                    <Text style={styles.title}>Galeria Pessoal</Text>
+                </View>
+
+                {!hasComics ? (
+                    <View style={styles.emptyState}>
+                        <Text style={styles.emptyTitle}>Nenhuma tirinha iniciada</Text>
+                        <Text style={styles.emptyText}>As tirinhas que voce comecar vao aparecer aqui.</Text>
+                    </View>
+                ) : (
+                    <ScrollView contentContainerStyle={styles.gallery} showsVerticalScrollIndicator={false}>
+                        {startedComics.map((comic, index) => (
+                            <Pressable
+                                key={`${comic.id}-${index}`}
+                                style={styles.card}
+                                onPress={() => {
+                                    router.push({
+                                        pathname: "/comic/[comicId]",
+                                        params: {
+                                            comicId: comic.id,
+                                            user_id: uid,
+                                        }
+                                    });
+                                }}
+                            >
+                                {comic.image_url ? (
+                                    <Image source={{ uri: comic.image_url }} style={styles.cardImage} />
+                                ) : (
+                                    <View style={styles.placeholderImage}>
+                                        <Text style={styles.placeholderText}>{comic.title.slice(0, 2).toUpperCase()}</Text>
+                                    </View>
+                                )}
+                                <View style={styles.progressContainer}>
+                                    <Text style={styles.progressText}>{comic.progress}/4</Text>
+                                    <View style={styles.progressTrack}>
+                                        <View style={[styles.progressFill, { width: `${comic.progress * 25}%` }]} />
+                                    </View>
+                                </View>
+                            </Pressable>
+                        ))}
+                    </ScrollView>
+                )}
+            </>}
         </View>
-
-        {/**
-         *  Renderização da Galeria
-         * 
-         * Dois cenários:
-         * 1. Vazio: Mostra mensagem se user não tiver tirinhas iniciadas
-         * 2. Com dados: FlatList em 2 colunas com cards
-         */}
-        {startedComics.length === 0 ? (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIconWrap}>
-              <Ionicons name="book-outline" size={30} color="#B9B3AA" />
-            </View>
-            <Text style={styles.emptyText}>Você ainda não possui tirinhas iniciadas.</Text>
-          </View>
-        ) : (
-          /**
-           *  FlatList: Exibe comics em grid 2x2
-           * 
-           * Propriedades importantes:
-           * - numColumns={2}: Layout em 2 colunas
-           * - keyExtractor: ID único para React (performance)
-           * - showsVerticalScrollIndicator={false}: Remove scrollbar
-           */
-          <FlatList
-            data={startedComics}
-            keyExtractor={(item) => String(item.id)}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => {
-              /**
-               *  Pipeline de Transformação:
-               * 
-               * 1. ComicCardFactory.create(item)
-               *    - Calcula progresso por paineis pintados e adiciona labels
-               *    - Exibe a category no card
-               * 
-               * 2. decorateComicCard(...)
-               *    - Adiciona cores calculadas (shellTone, borderTone)
-               *    - Cria variações de opacidade da cor accent
-               * 
-               * Resultado: comic pronto para renderização visual
-               */
-              const comic = decorateComicCard(ComicCardFactory.create(item));
-
-              return (
-                <Pressable
-                  style={({ pressed }) => [styles.cardShell, pressed && styles.cardShellPressed]}
-                  onPress={() => openComicCommand.execute(item)}
-                >
-                  {/* 
-                    *  Glow Effect: Brilho atrás do card
-                    * - Usa shellTone (cor com 18% opacidade)
-                    * - Cria efeito de profundidade
-                  */}
-                  <View style={[styles.cardGlow, { backgroundColor: comic.shellTone }]} />
-                  
-                  {/*
-                    *  Card Principal
-                    * - borderColor usa borderTone (40% opacidade)
-                    * - Cada card é independente e reutilizável
-                  */}
-                  <View style={[styles.card, { borderColor: comic.borderTone }]}>
-                    {/*
-                      *  Seção de Capa
-                      * - backgroundColor: coverTone (cor única por tirinha)
-                      * - Ribbon: elemento decorativo
-                      * - Label: sigla da tirinha (ex: "AQP")
-                      * - Accent: barra de cor que diferencia
-                    */}
-                    <View style={[styles.cover, { backgroundColor: comic.coverTone }]}>
-                      <View style={styles.coverRibbon} />
-                      <Text style={[styles.coverLabel, { color: comic.accent }]}>{comic.coverLabel}</Text>
-                      <View style={[styles.coverAccent, { backgroundColor: comic.accent }]} />
-                    </View>
-
-                    {/* Título da tirinha (máximo 2 linhas) */}
-                    <Text style={styles.cardTitle} numberOfLines={2}>
-                      {comic.title}
-                    </Text>
-
-                    <Text style={styles.cardCategory}>{comic.category}</Text>
-
-                    {/*
-                      *  Linha de Metadados
-                      * - Progress Pill: mostra "X% concluído" com cor accent
-                      * - Chevron: indica navegação
-                    */}
-                    <View style={styles.cardMetaRow}>
-                      <View style={[styles.progressPill, { backgroundColor: `${comic.accent}22` }]}>
-                        <Text style={[styles.progressText, { color: comic.accent }]}>
-                          {comic.progressLabel}
-                        </Text>
-                      </View>
-                      <Ionicons name="chevron-forward" size={18} color="#B4ADA6" />
-                    </View>
-
-                    {/* Status da tirinha: "Em avanço" ou "Para continuar" */}
-                    <Text style={styles.cardStatus}>{comic.statusLabel}</Text>
-                  </View>
-                </Pressable>
-              );
-            }}
-          />
-        )}
-      </View>
-    </SafeAreaView>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FCFAEE",
-  },
-  page: {
-    flex: 1,
-    paddingHorizontal: 18,
-    paddingTop: 12,
-    gap: 14,
-  },
-  backgroundOrbLarge: {
-    position: "absolute",
-    top: -60,
-    right: -50,
-    width: 180,
-    height: 180,
-    borderRadius: 180,
-    backgroundColor: "rgba(217, 236, 255, 0.55)",
-  },
-  backgroundOrbSmall: {
-    position: "absolute",
-    left: -35,
-    top: 160,
-    width: 90,
-    height: 90,
-    borderRadius: 90,
-    backgroundColor: "rgba(249, 216, 230, 0.5)",
-  },
-  titleContainer: {
-    marginBottom: 12,
-  },
-  kicker: {
-    fontFamily: "Farsan_400Regular",
-    fontSize: 18,
-    color: "#A09A92",
-    letterSpacing: 0.6,
-  },
-  title: {
-    fontFamily: "Iceberg_400Regular",
-    fontSize: 30,
-    color: "#6F6A66",
-  },
-  listContent: {
-    paddingBottom: 22,
-    gap: 14,
-  },
-  columnWrapper: {
-    gap: 12,
-  },
-  cardShell: {
-    flex: 1,
-    minHeight: 292,
-    borderRadius: 28,
-    position: "relative",
-  },
-  cardShellPressed: {
-    transform: [{ scale: 0.985 }],
-    opacity: 0.94,
-  },
-  cardGlow: {
-    position: "absolute",
-    inset: 10,
-    borderRadius: 28,
-    opacity: 0.14,
-    transform: [{ translateY: 8 }],
-  },
-  card: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 28,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    borderWidth: 1.5,
-    shadowColor: "#BFB4AA",
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 3,
-    gap: 10,
-  },
-  cover: {
-    height: 170,
-    borderRadius: 22,
-    padding: 12,
-    overflow: "hidden",
-    justifyContent: "space-between",
-  },
-  coverRibbon: {
-    width: 52,
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: "rgba(255, 255, 255, 0.72)",
-  },
-  coverLabel: {
-    fontSize: 32,
-    fontFamily: "Iceberg_400Regular",
-    letterSpacing: 1.2,
-  },
-  coverAccent: {
-    position: "absolute",
-    right: -10,
-    bottom: -14,
-    width: 76,
-    height: 76,
-    borderRadius: 76,
-    opacity: 0.22,
-  },
-  cardTitle: {
-    fontSize: 17,
-    color: "#645D57",
-    fontWeight: "700",
-    lineHeight: 20,
-  },
-  cardCategory: {
-    color: "#8D867F",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  cardMetaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-  },
-  progressPill: {
-    flexShrink: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 999,
-  },
-  progressText: {
-    fontSize: 11,
-    fontWeight: "700",
-  },
-  cardStatus: {
-    color: "#A59D95",
-    fontSize: 12,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 16,
-    paddingHorizontal: 26,
-  },
-  emptyIconWrap: {
-    width: 72,
-    height: 72,
-    borderRadius: 22,
-    backgroundColor: "rgba(255, 255, 255, 0.72)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(185, 179, 170, 0.3)",
-  },
-  emptyText: {
-    textAlign: "center",
-    color: "#8D877F",
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: "600",
-  },
+    container: {
+        flex: 1,
+        backgroundColor: "#FCFAEE",
+    },
+    header: {
+        marginTop: 15,
+        paddingVertical: 10,
+        paddingHorizontal: 25,
+        borderBottomWidth: 1,
+        borderBottomColor: "#8C8989",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    menu_hamburguer: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 5,
+    },
+    line: {
+        borderRadius: 999,
+        height: 2.5,
+        width: 30,
+        backgroundColor: "#8C8989"
+    },
+    title: {
+        fontSize: 27,
+        fontFamily: "Iceberg_400Regular",
+        color: "#8C8989",
+    },
+    gallery: {
+        paddingVertical: 25,
+        display: "flex",
+        flexWrap: "wrap",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 15
+    },
+    card: {
+        width: 150,
+        height: 225,
+        overflow: "hidden",
+        borderRadius: 30,
+        borderWidth: 1,
+        borderColor: "#8C8989",
+        backgroundColor: "#FFFFFF",
+    },
+    cardImage: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+    },
+    placeholderImage: {
+        width: "100%",
+        height: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#F4F1E3",
+    },
+    placeholderText: {
+        fontSize: 32,
+        fontFamily: "Iceberg_400Regular",
+        color: "#8C8989",
+    },
+    progressContainer: {
+        position: "absolute",
+        left: 10,
+        right: 10,
+        bottom: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderRadius: 16,
+        backgroundColor: "rgba(252, 250, 238, 0.92)",
+        gap: 5,
+    },
+    progressText: {
+        fontSize: 13,
+        fontWeight: "800",
+        color: "#8C8989",
+        textAlign: "center",
+    },
+    progressTrack: {
+        height: 8,
+        borderRadius: 999,
+        overflow: "hidden",
+        backgroundColor: "#E2DDD5",
+    },
+    progressFill: {
+        height: "100%",
+        borderRadius: 999,
+        backgroundColor: "#675A89",
+    },
+    emptyState: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 28,
+        gap: 8,
+    },
+    emptyTitle: {
+        fontSize: 24,
+        fontFamily: "Iceberg_400Regular",
+        color: "#8C8989",
+        textAlign: "center",
+    },
+    emptyText: {
+        fontSize: 16,
+        fontFamily: "Farsan_400Regular",
+        color: "#8C8989",
+        textAlign: "center",
+    },
 });

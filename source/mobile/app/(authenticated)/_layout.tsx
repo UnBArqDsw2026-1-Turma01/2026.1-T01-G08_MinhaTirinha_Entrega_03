@@ -1,12 +1,14 @@
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
-
   return (
-    <Stack>
-      <Stack.Screen name="galeria-pessoal" options={{ headerShown: false }} />
-      <Stack.Screen name="comic/[comicId]" options={{ headerShown: false }} />
-      <Stack.Screen name="cavalete" options={{ headerShown: false }} />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="library" />
+      <Stack.Screen name="galeria-pessoal" />
+      <Stack.Screen name="comic" />
+      <Stack.Screen name="comic/[comicId]" />
+      <Stack.Screen name="cavalete" />
+      <Stack.Screen name="color-picker" />
     </Stack>
   );
 }
