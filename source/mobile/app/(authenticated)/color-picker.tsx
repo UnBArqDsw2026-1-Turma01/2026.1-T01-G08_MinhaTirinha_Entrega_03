@@ -11,7 +11,7 @@
  * Segue o padrão "Cavalete" com tons pastéis, bordas arredondadas e design limpo.
  */
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -80,10 +80,35 @@ export default function ColorPicker() {
   const router = useRouter()
   const webviewRef = useRef<WebView | null>(null)
   const [loading, setLoading] = useState(false)
+  const [isPaintingComplete, setIsPaintingComplete] = useState(false)
+  const [isNextUnlocked, setIsNextUnlocked] = useState(false)
   
-  // Mock de painéis (quadrinhos) da tirinha para exibir o progresso
-  const panels = [1, 2, 3, 4]
-  const currentPanel = 1
+  // =========================
+// Factory Pattern
+// =========================
+
+type PanelType = {
+  id: number
+  unlocked: boolean
+  completed: boolean
+}
+
+function createPanel(id: number, unlocked = false): PanelType {
+  return {
+    id,
+    unlocked,
+    completed: false
+  }
+}
+
+const currentPanel = 1
+
+const [panels, setPanels] = useState<PanelType[]>([
+  createPanel(1, true),
+  createPanel(2),
+  createPanel(3),
+  createPanel(4)
+])
 
   const bucket = 'colored-comics'
   const [commands] = useState<Command[]>([])
@@ -91,6 +116,38 @@ export default function ColorPicker() {
   // Paleta padrão e Histórico de Cores Recentes
   const palette = ['#FF3B30','#FF9500','#FFCC00','#34C759','#30A7FF','#5856D6','#FF2D55','#8E8E93','#FFFFFF','#000000','#C69C6D','#FFC0CB']
   const [recentColors, setRecentColors] = useState<string[]>([])
+  function unlockNextPanel(currentId: number) {
+  setPanels((prev) =>
+    prev.map((panel) => {
+
+      // marca quadrinho atual como completo
+      if (panel.id === currentId) {
+        return {
+          ...panel,
+          completed: true
+        }
+      }
+
+      // desbloqueia próximo quadrinho
+      if (panel.id === currentId + 1) {
+        return {
+          ...panel,
+          unlocked: true
+        }
+      }
+
+      return panel
+    })
+  )
+
+  setIsNextUnlocked(true)
+}
+
+useEffect(() => {
+  if (isPaintingComplete) {
+    unlockNextPanel(currentPanel)
+  }
+}, [isPaintingComplete])
 
   const html = `
   <!doctype html>
@@ -189,8 +246,18 @@ export default function ColorPicker() {
         try {
           await cmd.execute()
           commands.push(cmd)
-          Alert.alert('Sucesso', 'Imagem colorida salva com sucesso')
-          router.back()
+
+          const backendConfirmedComplete = true
+          if (backendConfirmedComplete) {
+            setIsPaintingComplete(true)
+            Alert.alert('Quadrinho concluído', 'O próximo quadrinho foi desbloqueado!')
+          }
+          else {
+             Alert.alert(
+              'Pintura incompleta',
+              'Você precisa pintar todo o quadrinho.'
+            )
+          }
         } catch (err: any) {
           Alert.alert('Erro', String(err.message || err))
         } finally {
@@ -222,9 +289,33 @@ export default function ColorPicker() {
         <Text style={styles.cavaleteTitle}>{comic_title || 'Minha Tirinha'}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.panelsStrip}>
           {panels.map((p) => (
-            <View key={p} style={[styles.panelThumbnail, p === currentPanel && styles.activePanel]}>
-              <Text style={[styles.panelNumber, p === currentPanel && styles.activePanelText]}>{p}</Text>
-            </View>
+            <Pressable
+              key={p.id}
+              disabled={!p.unlocked}
+              style={[
+                styles.panelThumbnail,
+                p.id === currentPanel && styles.activePanel,
+                p.completed && styles.completedPanel,
+                !p.unlocked && styles.lockedPanel
+              ]}
+            >
+
+              <Text
+                style={[
+                  styles.panelNumber,
+                  p.id === currentPanel && styles.activePanelText
+                ]}
+              >
+                {
+                  p.completed
+                    ? '✓'
+                    : p.unlocked
+                      ? p.id
+                      : '🔒'
+                }
+              </Text>
+
+            </Pressable>
           ))}
         </ScrollView>
       </View>
@@ -240,6 +331,13 @@ export default function ColorPicker() {
           scrollEnabled={false}
         />
       </View>
+      {isNextUnlocked && (
+        <View style={styles.unlockMessage}>
+          <Text style={styles.unlockText}>
+            ✨ Próximo quadrinho desbloqueado!
+          </Text>
+        </View>
+      )}
 
       {/* Ferramentas: Paleta e Cores Recentes */}
       <View style={styles.toolsContainer}>
@@ -312,5 +410,12 @@ const styles = StyleSheet.create({
   buttonSave: { flex: 1, paddingVertical: 12, backgroundColor: '#34C759', borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
   buttonText: { fontSize: 14, color: '#333', fontWeight: '600' },
   buttonTextSave: { fontSize: 14, color: '#fff', fontWeight: '700' },
-  loading: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' }
+  loading: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' },
+
+// =========================
+
+completedPanel: {backgroundColor: '#E8F5E9',borderColor: '#34C759',borderWidth: 2},
+lockedPanel: {opacity: 0.4, backgroundColor: '#F5F5F5'},
+unlockMessage: {marginHorizontal: 15, marginBottom: 10, backgroundColor: '#E8F5E9', borderRadius: 12, paddingVertical: 10, justifyContent: 'center', alignItems: 'center'},
+unlockText: {color: '#34C759', fontWeight: '700', fontSize: 14},
 })
