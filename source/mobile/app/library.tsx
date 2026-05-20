@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
+import { Ionicons } from "@expo/vector-icons";
 
 /**
  * =====================================================
@@ -32,6 +34,7 @@ export default function Library() {
 
     const { user_id } = useLocalSearchParams();
     const router = useRouter();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     // Mock de tirinhas baseado na descrição do projeto
 
@@ -72,10 +75,30 @@ export default function Library() {
 
     return (
         <View style={styles.container}>
+            {isMenuOpen ? (
+                <View style={styles.overlay} pointerEvents="box-none">
+                    <Pressable style={styles.backdrop} onPress={() => setIsMenuOpen(false)} />
+                    <View style={styles.sideBar}>
+                        <Text style={styles.sideBarTitle}>Onde vamos?</Text>
+                        <Pressable
+                            style={({ pressed }) => [styles.sideBarItem, pressed && styles.sideBarItemPressed]}
+                            onPress={() => {
+                                const resolvedUserId = Array.isArray(user_id) ? user_id[0] : user_id;
+                                setIsMenuOpen(false);
+                                router.replace(`/galeria-pessoal?user_id=${encodeURIComponent(resolvedUserId ?? "demo-user")}`);
+                            }}
+                        >
+                            <Ionicons name="grid-outline" size={18} color="#1D1713" />
+                            <Text style={styles.sideBarItemText}>Galeria pessoal</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            ) : null}
+
             {/* Header */}
             <View style={styles.header}>
                 {/* Menu Hamburger */}
-                <Pressable style={styles.menu_hamburguer}>
+                <Pressable style={styles.menu_hamburguer} onPress={() => setIsMenuOpen((current) => !current)}>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
@@ -124,6 +147,60 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#FCFAEE",
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: 20,
+    },
+    backdrop: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: "rgba(29, 23, 19, 0.18)",
+    },
+    sideBar: {
+        position: "absolute",
+        top: 18,
+        left: 14,
+        zIndex: 21,
+        elevation: 12,
+        width: 230,
+        padding: 14,
+        borderRadius: 24,
+        backgroundColor: "#FFFDF6",
+        borderWidth: 1.5,
+        borderColor: "#1D1713",
+        shadowColor: "#1D1713",
+        shadowOpacity: 0.16,
+        shadowRadius: 14,
+        shadowOffset: { width: 0, height: 8 },
+    },
+    sideBarTitle: {
+        fontSize: 18,
+        color: "#1D1713",
+        fontFamily: "Iceberg_400Regular",
+        marginBottom: 12,
+    },
+    sideBarItem: {
+        width: "100%",
+        minHeight: 54,
+        paddingVertical: 14,
+        paddingHorizontal: 14,
+        borderRadius: 18,
+        backgroundColor: "rgba(247, 210, 27, 0.16)",
+        borderWidth: 1,
+        borderColor: "rgba(29, 23, 19, 0.12)",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 10,
+    },
+    sideBarItemPressed: {
+        transform: [{ scale: 0.98 }],
+        opacity: 0.88,
+    },
+    sideBarItemText: {
+        color: "#1D1713",
+        fontSize: 15,
+        fontWeight: "800",
     },
     header: {
         marginTop: 15,

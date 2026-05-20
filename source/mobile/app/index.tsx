@@ -10,6 +10,8 @@ import { useRouter } from 'expo-router'
 import { Image } from 'expo-image'
 
 export default function Index() {
+  // Entrada sem login: usa um usuário demo para simular o mesmo fluxo do Google.
+  const DEMO_USER_ID = 'demo-user'
 
   GoogleSignin.configure({
     webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID!,
@@ -57,8 +59,7 @@ export default function Index() {
           <Image source={require("../assets/images/logo-google.png")} style={styles.logo_google}/>
         </Pressable>
         <Pressable style={styles.testButton} onPress={() => {
-          const demoUrl = 'https://i.imgur.com/ExdKOOz.png'
-          router.push(`/color-picker?uncolored_image_url=${encodeURIComponent(demoUrl)}&id_comic=demo&id_user=demo`)
+          router.replace(`/library?user_id=${encodeURIComponent(DEMO_USER_ID)}`)
         }}>
           <Text>Abrir sem login (teste)</Text>
         </Pressable>
