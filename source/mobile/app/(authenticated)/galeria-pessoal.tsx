@@ -5,11 +5,34 @@ import { useEffect, useMemo, useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Services } from "@/utils/services";
 
+/**
+ * Tela da Galeria Pessoal.
+ *
+ * Responsabilidade desta tela:
+ * - Buscar as tirinhas que o usuario ja comecou.
+ * - Renderizar os cards no mesmo padrao visual da galeria principal.
+ * - Calcular o progresso de pintura a partir dos 4 booleanos do historico.
+ *
+ * Integracao esperada com o banco:
+ * - A tabela Historic guarda id_comic, id_user, first, second, third e fourth.
+ * - first/second/third/fourth indicam se cada um dos 4 quadrinhos ja foi pintado.
+ * - Se a API tambem devolver os dados relacionados de Comic, esta tela usa
+ *   Comic.name e Comic.image_url para montar o card.
+ *
+ * Padroes de projeto usados nesta parte:
+ * - Adapter: normalizeStartedComic adapta diferentes formatos de resposta da API
+ *   para o formato unico usado pela tela.
+ * - Strategy simples: countPaintedPanels concentra a regra de calculo do progresso,
+ *   deixando a renderizacao independente da estrutura exata recebida.
+ */
 type StartedComicResponse = {
+  // Campos vindos diretamente da tabela Historic.
   id?: number | string;
   comic_id?: number | string;
   id_comic?: number | string;
   id_user?: string;
+
+  // Campos que podem vir da query/DTO do backend ou do relacionamento com Comic.
   title?: string;
   name?: string;
   image_url?: string | null;
@@ -23,6 +46,8 @@ type StartedComicResponse = {
   second?: boolean;
   third?: boolean;
   fourth?: boolean;
+
+  // Formatos alternativos aceitos para nao quebrar quando o DTO mudar no backend.
   panel1?: boolean;
   panel2?: boolean;
   panel3?: boolean;
@@ -42,6 +67,8 @@ type StartedComic = {
   progress: number;
 };
 
+// Dados locais apenas para manter a tela visivel enquanto o backend nao responde.
+// Quando a API retorna dados, eles substituem estes mocks imediatamente.
 const MOCK_STARTED_COMICS: StartedComicResponse[] = [
   {
     comic_id: 15,
@@ -77,6 +104,9 @@ const MOCK_STARTED_COMICS: StartedComicResponse[] = [
 
 function countPaintedPanels(comic: StartedComicResponse) {
   const panels = comic.panelsPainted;
+
+  // A regra do banco usa first/second/third/fourth.
+  // Os outros nomes sao aceitos apenas como compatibilidade de fronteira.
   const values = [
     comic.first ?? comic.panel1 ?? panels?.panel1,
     comic.second ?? comic.panel2 ?? panels?.panel2,
@@ -88,6 +118,7 @@ function countPaintedPanels(comic: StartedComicResponse) {
 }
 
 function normalizeStartedComic(comic: StartedComicResponse): StartedComic {
+  // Adapter: converte a resposta do backend para o modelo unico do componente.
   const id = comic.id_comic ?? comic.comic_id ?? comic.Comic?.id ?? comic.id ?? "";
 
   return {
@@ -110,6 +141,10 @@ export default function GaleriaPessoal() {
         async function fetchData() {
             try {
                 setLoading(true);
+
+                // Chamada esperada: GET /historic/in-progress/:userId.
+                // A API deve retornar historicos do usuario com os booleanos
+                // first, second, third e fourth, idealmente junto dos dados de Comic.
                 const response = uid ? await Services.getStartedComics(uid) : undefined;
                 const rawComics = Array.isArray(response) && response.length > 0 ? response : MOCK_STARTED_COMICS;
                 setStartedComics(rawComics.map(normalizeStartedComic));
@@ -157,6 +192,8 @@ export default function GaleriaPessoal() {
                                 key={`${comic.id}-${index}`}
                                 style={styles.card}
                                 onPress={() => {
+                                    // Mantem o mesmo fluxo da galeria principal:
+                                    // abre a tela /comic passando id e id_user.
                                     router.push({
                                         pathname: "/comic",
                                         params: {
