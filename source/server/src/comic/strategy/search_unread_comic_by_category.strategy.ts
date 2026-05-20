@@ -1,6 +1,6 @@
 import { SearchComicStrategy } from './search_comic.strategy';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { ComicInfo } from '../entities/category.entity';
+import { ComicInfo } from '../entities/comic_info.entity';
 
 export class SearchUnreadByCategoryStrategy extends SearchComicStrategy { // Adicionou o implements e nome corrigido
 

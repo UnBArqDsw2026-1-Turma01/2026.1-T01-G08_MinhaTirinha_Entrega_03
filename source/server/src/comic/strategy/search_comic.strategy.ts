@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { ComicInfo } from '../entities/category.entity';
+import { ComicInfo } from '../entities/comic_info.entity';
 
 // Essa e a interface que o flyan mencionou
 export abstract class SearchComicStrategy {

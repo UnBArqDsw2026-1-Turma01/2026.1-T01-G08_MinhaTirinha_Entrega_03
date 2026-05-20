@@ -1,15 +1,42 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
+import { useEffect, useState } from "react";
+import { Services } from "@/utils/services";
+import { IStatus } from "@/utils/entities/status.entity";
+import { IComic } from "@/utils/entities/comic.entity";
+import { IImage } from "@/utils/entities/image.entity";
+import { BlurView } from "expo-blur";
 
 export default function Comic() {
-    const { user_id, comic_id } = useLocalSearchParams();
+    const { path, user_id, comic_id } = useLocalSearchParams();
     const uid = Array.isArray(user_id) ? user_id[0] : user_id;
     const cid = Number(Array.isArray(comic_id) ? comic_id[0] : comic_id);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [comicInfo, setComicInfo] = useState<IComic>();
+    const [comicStatus, setComicStatus] = useState<IStatus>();
+    const [comicImages, setComicImages] = useState<IImage[]>();
+    
+    useEffect(()=>{
+        setLoading(true);
+        async function fetchData() {
+            let response_comic;
+            if(path === 'library') {
+                response_comic = await Services.getNotStartedComic(cid);
+            } else {
+
+            }
+            setComicInfo(response_comic!.comic_info[0]);
+            setComicStatus(response_comic!.comic_status);
+            setComicImages(response_comic!.comic_images);
+        }
+        fetchData();
+        setLoading(false);
+    }, [])
 
     const m = [0, 1, 2, 3]
 
-    return(
+    return( 
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
@@ -25,27 +52,61 @@ export default function Comic() {
 
             {/* Box */}
             <View style={styles.subcontainer}>
-                <View style={styles.progress}>
-                    
-                    <Text style={styles.title}>BLABLALBA</Text>
-                    
-                    {/* Select Field */}
-                    <View style={styles.select_field}>
-                        {m.map((item)=>(
-                            <Pressable key={item} style={styles.comic}></Pressable>
-                        ))}    
-                    </View>
-
-                    {/* Progress */}
-                    <View style={styles.progress_bar_container}>
-                        <Text style={styles.subtitle}>Progresso de Pintura</Text>
-                        <View style={styles.progress_bar}>
+                {loading ? <></>:
+                    <View style={styles.progress}>
+                        
+                        <Text style={styles.title}>{comicInfo?.name}</Text>
+                        
+                        {/* Select Field */}
+                        <View style={styles.select_field}>
+                            
+                                <Pressable style={styles.comic}>
+                                    {comicStatus?.first ? 
+                                        <Image style={styles.image} source={``}/>:
+                                        <Image style={styles.image} source={`${comicImages?.[0].image_url}`}/>
+                                    }
+                                </Pressable>
+                                <Pressable style={styles.comic}>
+                                    {comicStatus?.second ?
+                                        <Image style={styles.image} source={``}/>:
+                                        <>
+                                            <Image style={styles.image} source={`${comicImages?.[1].image_url}`}/>
+                                            <BlurView intensity={comicStatus?.third? 0: 125} style={StyleSheet.absoluteFill}/>
+                                        </>   
+                                    }
+                                </Pressable>
+                                <Pressable style={styles.comic}>
+                                    {comicStatus?.third ?
+                                        <Image style={styles.image} source={``}/>:
+                                        <>
+                                            <Image style={styles.image} source={`${comicImages?.[2].image_url}`}/>
+                                            <BlurView intensity={comicStatus?.third? 0: 125} style={StyleSheet.absoluteFill}/>
+                                        </>   
+                                    }
+                                </Pressable>
+                                <Pressable style={styles.comic}>
+                                    {comicStatus?.fourth ?
+                                        <Image style={styles.image} source={``}/>:
+                                        <>
+                                            <Image style={styles.image} source={`${comicImages?.[3].image_url}`}/>
+                                            <BlurView intensity={comicStatus?.third? 0: 125} style={StyleSheet.absoluteFill}/>
+                                        </>   
+                                    }
+                                </Pressable>
 
                         </View>
-                        <Text style={styles.subtitle}>0%</Text>
-                    </View>
 
-                </View>
+                        {/* Progress */}
+                        <View style={styles.progress_bar_container}>
+                            <Text style={styles.subtitle}>Progresso de Pintura</Text>
+                            <View style={styles.progress_bar}>
+                                
+                            </View>
+                            <Text style={styles.subtitle}>0%</Text>
+                        </View>
+
+                    </View>
+                }
             </View>
 
         </View>
@@ -127,7 +188,8 @@ const styles = StyleSheet.create({
         width: 125,
         borderRadius: 25,
         borderWidth: 1,
-        borderColor: "#8C8989"
+        borderColor: "#8C8989",
+        overflow: "hidden"
     },
     progress_bar_container: {
         display: "flex",
@@ -141,5 +203,13 @@ const styles = StyleSheet.create({
         borderRadius: 75,
         height: 30,
         width: 200
+    },
+    blur: {
+        width: "100%",
+        height: "100%",
+    },
+    image: {
+        width: "100%",
+        height: "100%"
     }
 });

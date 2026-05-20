@@ -3,9 +3,10 @@ import { SearchUnreadStrategy } from './strategy/search_unread_comic.strategy';
 import { SearchUnreadByCategoryStrategy } from './strategy/search_unread_comic_by_category.strategy';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { Comic } from './entities/comic.entity';
-import { UncoloredImage } from './entities/uncoloredImage.entity';
+import { Image } from './entities/image.entity';
 import { Status } from './entities/status.entity';
-import { ComicInfo } from './entities/category.entity';
+import { ComicInfo } from './entities/comic_info.entity';
+import { GetComic } from './entities/get_comic.entity';
 
 
 @Injectable() // O Nest garante que isso aqui é um Singleton automático por padrão
@@ -44,7 +45,7 @@ export class ComicService {
     return data;
   }
 
-  private async getComicUncoloredImages(comic_id: number): Promise<UncoloredImage[]>
+  private async getComicUncoloredImages(comic_id: number): Promise<Image[]>
   /**
    * Retorna um array de imagens não coloridas de uma comic.
    */
@@ -66,11 +67,11 @@ export class ComicService {
     return data;
   }
 
-  async getNotStartedComic(comic_id: number): Promise<{comic_info: Comic, uncolored_comic_images: UncoloredImage[], status: Status}>
+  async getNotStartedComic(comic_id: number): Promise<GetComic>
   {
     const comic_info = await this.getComic(comic_id);
-    const  uncolored_comic_images = await this.getComicUncoloredImages(comic_id);
-    const status: Status = {first: false, second: false, third: false, fourth: false};
-    return {comic_info, uncolored_comic_images, status};
+    const  comic_images = await this.getComicUncoloredImages(comic_id);
+    const comic_status: Status = {first: false, second: false, third: false, fourth: false};
+    return {comic_info, comic_images, comic_status};
   }
 }

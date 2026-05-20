@@ -3,6 +3,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { Services } from "@/utils/services";
+import { IComicInfo } from "@/utils/entities/comic_info.entity";
+import { ICategory } from "@/utils/entities/category.entity";
 
 /**
  * =====================================================
@@ -18,17 +20,6 @@ import { Services } from "@/utils/services";
  * 2. Navega para a tela de pintura (ColorPicker) passando os parâmetros necessários.
  */
 
-interface category {
-    id: number,
-    name: string
-}
-
-interface comic {
-    id: string,
-    title: string, 
-    image_url: string
-}
-
 export default function Library() {
 
     const { user_id, category_id } = useLocalSearchParams();
@@ -36,18 +27,17 @@ export default function Library() {
     const cid = Number(Array.isArray(user_id) ? category_id[0] : category_id);
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
-    const [comics, setComics] = useState<comic[]>();
-    const [categories, setCategories] = useState<category[]>();
+    const [comics, setComics] = useState<IComicInfo[]>();
+    const [categories, setCategories] = useState<ICategory[]>();
+    const path: string = 'library';
 
-    
-    
     useEffect(()=>{
         async function fetchData() {
             try {
                 setLoading(true);
                 let response_comics;
-                if(cid) response_comics = await Services.getUnreadComicsByCategory(uid, cid);
-                else response_comics = await Services.getUnreadComics(uid);
+                if(cid) response_comics = await Services.getNotStartedComicsByCategory(uid, cid);
+                else response_comics = await Services.getNotStartedComics(uid);
                 const response_categories = await Services.getCategories();
                 setComics(response_comics);
                 setCategories(response_categories);
@@ -98,8 +88,9 @@ export default function Library() {
                                 router.push({
                                     pathname: "/comic",
                                     params: {
-                                        id: comic.id,
-                                        id_user: uid,
+                                        path: path,
+                                        user_id: uid,
+                                        comic_id: comic.id,
                                     }
                                 });
                             }}
