@@ -22,7 +22,7 @@ export default function Index() {
 
   const continueWithoutGoogle = () => {
     router.replace({
-      pathname: "/(authenticated)/library",
+      pathname: "/library",
       params: { user_id: TEST_USER_ID },
     })
   }
@@ -56,7 +56,7 @@ export default function Index() {
                 const user = data.user
                 if (user == null) router.replace('/error')
                 else router.replace({
-                  pathname: "/(authenticated)/library",
+                  pathname: "/library",
                   params: { user_id: user.id },
                 })
               }

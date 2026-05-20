@@ -8,10 +8,17 @@ import { Services } from "@/utils/services";
 type StartedComicResponse = {
   id?: number | string;
   comic_id?: number | string;
+  id_comic?: number | string;
+  id_user?: string;
   title?: string;
   name?: string;
   image_url?: string | null;
   imageUrl?: string | null;
+  Comic?: {
+    id?: number | string;
+    name?: string;
+    image_url?: string | null;
+  } | null;
   first?: boolean;
   second?: boolean;
   third?: boolean;
@@ -38,8 +45,9 @@ type StartedComic = {
 const MOCK_STARTED_COMICS: StartedComicResponse[] = [
   {
     comic_id: 15,
+    id_comic: 15,
     title: "A Quarta Pagina do Porcelanato",
-    image_url: "https://picsum.photos/seed/comic-15/1200/800",
+    image_url: null,
     first: true,
     second: true,
     third: false,
@@ -47,8 +55,9 @@ const MOCK_STARTED_COMICS: StartedComicResponse[] = [
   },
   {
     comic_id: 21,
+    id_comic: 21,
     title: "Cafe, Cores e Planos",
-    image_url: "https://picsum.photos/seed/comic-21/1200/800",
+    image_url: null,
     first: true,
     second: false,
     third: false,
@@ -56,8 +65,9 @@ const MOCK_STARTED_COMICS: StartedComicResponse[] = [
   },
   {
     comic_id: 42,
+    id_comic: 42,
     title: "O Dia em que o Lapis Sumiu",
-    image_url: "https://picsum.photos/seed/comic-42/1200/800",
+    image_url: null,
     first: true,
     second: true,
     third: true,
@@ -78,12 +88,12 @@ function countPaintedPanels(comic: StartedComicResponse) {
 }
 
 function normalizeStartedComic(comic: StartedComicResponse): StartedComic {
-  const id = comic.comic_id ?? comic.id ?? "";
+  const id = comic.id_comic ?? comic.comic_id ?? comic.Comic?.id ?? comic.id ?? "";
 
   return {
     id: String(id),
-    title: comic.title ?? comic.name ?? "Tirinha sem titulo",
-    image_url: comic.image_url ?? comic.imageUrl ?? null,
+    title: comic.title ?? comic.name ?? comic.Comic?.name ?? "Tirinha sem titulo",
+    image_url: comic.image_url ?? comic.imageUrl ?? comic.Comic?.image_url ?? null,
     progress: countPaintedPanels(comic),
   };
 }
@@ -103,8 +113,7 @@ export default function GaleriaPessoal() {
                 const response = uid ? await Services.getStartedComics(uid) : undefined;
                 const rawComics = Array.isArray(response) && response.length > 0 ? response : MOCK_STARTED_COMICS;
                 setStartedComics(rawComics.map(normalizeStartedComic));
-            } catch (error) {
-                console.error(error);
+            } catch {
                 setStartedComics(MOCK_STARTED_COMICS.map(normalizeStartedComic));
             } finally {
                 setLoading(false);
@@ -124,7 +133,6 @@ export default function GaleriaPessoal() {
                 activeRoute="galeria-pessoal"
                 onClose={() => setSidebarOpen(false)}
             />
-            {loading? <></>:
             <>
                 <View style={styles.header}>
                     <Pressable style={styles.menu_hamburguer} onPress={() => setSidebarOpen(true)}>
@@ -134,6 +142,8 @@ export default function GaleriaPessoal() {
                     </Pressable>
                     <Text style={styles.title}>Galeria Pessoal</Text>
                 </View>
+
+                {loading && <Text style={styles.loadingText}>Carregando galeria pessoal...</Text>}
 
                 {!hasComics ? (
                     <View style={styles.emptyState}>
@@ -173,7 +183,7 @@ export default function GaleriaPessoal() {
                         ))}
                     </ScrollView>
                 )}
-            </>}
+            </>
         </View>
     );
 }
@@ -209,6 +219,13 @@ const styles = StyleSheet.create({
         fontSize: 27,
         fontFamily: "Iceberg_400Regular",
         color: "#8C8989",
+    },
+    loadingText: {
+        color: "#8C8989",
+        fontFamily: "Farsan_400Regular",
+        fontSize: 16,
+        textAlign: "center",
+        marginTop: 12,
     },
     gallery: {
         paddingVertical: 25,

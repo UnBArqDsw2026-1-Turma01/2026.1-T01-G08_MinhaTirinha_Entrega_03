@@ -86,10 +86,6 @@ export class HistoricService {
           comic_id: comic.id,
           title: comic.name,
           image_url: comic.image_url,
-          first: Boolean(historic.first),
-          second: Boolean(historic.second),
-          third: Boolean(historic.third),
-          fourth: Boolean(historic.fourth),
           status: 'IN_PROGRESS',
         };
       });

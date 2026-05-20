@@ -27,7 +27,7 @@ interface category {
 interface comic {
     id: string,
     title: string, 
-    image_url: string
+    image_url?: string | null
 }
 
 const FALLBACK_CATEGORIES: category[] = [
@@ -41,22 +41,22 @@ const FALLBACK_COMICS: comic[] = [
     {
         id: "1",
         title: "Tirinha infantil",
-        image_url: "https://picsum.photos/seed/minha-tirinha-infantil/600/900",
+        image_url: null,
     },
     {
         id: "2",
         title: "Tirinha de humor",
-        image_url: "https://picsum.photos/seed/minha-tirinha-humor/600/900",
+        image_url: null,
     },
     {
         id: "3",
         title: "Tirinha tecnologia",
-        image_url: "https://picsum.photos/seed/minha-tirinha-tech/600/900",
+        image_url: null,
     },
     {
         id: "4",
         title: "Tirinha educacao",
-        image_url: "https://picsum.photos/seed/minha-tirinha-educacao/600/900",
+        image_url: null,
     },
 ];
 
@@ -83,8 +83,7 @@ export default function Library() {
                 const response_categories = await Services.getCategories();
                 setComics(Array.isArray(response_comics) && response_comics.length > 0 ? response_comics : FALLBACK_COMICS);
                 setCategories(Array.isArray(response_categories) && response_categories.length > 0 ? response_categories : FALLBACK_CATEGORIES);
-            } catch (error) {
-                console.error(error);
+            } catch {
                 setComics(FALLBACK_COMICS);
                 setCategories(FALLBACK_CATEGORIES);
             } finally {
@@ -145,7 +144,11 @@ export default function Library() {
                                 });
                             }}
                         >
-                            <Image source={{ uri: comic.image_url }} style={styles.cardImage} />
+                            {comic.image_url ? (
+                                <Image source={{ uri: comic.image_url }} style={styles.cardImage} />
+                            ) : (
+                                <Image source={require("../../assets/images/exemplo-quadrinho.png")} style={styles.cardImage} />
+                            )}
                         </Pressable>
                     ))}
                 </ScrollView>
