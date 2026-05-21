@@ -35,7 +35,7 @@ export function AppSidebar({ visible, userId, activeRoute, onClose }: AppSidebar
             onPress={() => navigateTo("library")}
           >
             <Ionicons name="library-outline" size={20} color="#8C8989" />
-            <Text style={styles.navText}>Galeria de Tirinhas</Text>
+            <Text style={styles.navText}>Biblioteca de Aventuras</Text>
           </Pressable>
 
           <Pressable
