@@ -5,7 +5,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 type AppSidebarProps = {
   visible: boolean;
   userId?: string;
-  activeRoute: "library" | "galeria-pessoal";
+  activeRoute: 'library' | 'gallery';
   onClose: () => void;
 };
 
@@ -35,15 +35,15 @@ export function AppSidebar({ visible, userId, activeRoute, onClose }: AppSidebar
             onPress={() => navigateTo("library")}
           >
             <Ionicons name="library-outline" size={20} color="#8C8989" />
-            <Text style={styles.navText}>Galeria de tirinhas</Text>
+            <Text style={styles.navText}>Galeria de Tirinhas</Text>
           </Pressable>
 
           <Pressable
-            style={[styles.navItem, activeRoute === "galeria-pessoal" && styles.navItemActive]}
-            onPress={() => navigateTo("galeria-pessoal")}
+            style={[styles.navItem, activeRoute === 'gallery' && styles.navItemActive]}
+            onPress={() => navigateTo('gallery')}
           >
             <Ionicons name="person-circle-outline" size={20} color="#8C8989" />
-            <Text style={styles.navText}>Galeria pessoal</Text>
+            <Text style={styles.navText}>Galeria Pessoal</Text>
           </Pressable>
         </View>
       </View>

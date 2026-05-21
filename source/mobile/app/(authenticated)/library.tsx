@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Services } from "@/utils/services";
 import { IComicInfo } from "@/utils/entities/comic_info.entity";
 import { ICategory } from "@/utils/entities/category.entity";
+import { AppSidebar } from "@/components/AppSidebar";
 
 /**
  * =====================================================
@@ -23,13 +24,14 @@ import { ICategory } from "@/utils/entities/category.entity";
 export default function Library() {
 
     const { user_id, category_id } = useLocalSearchParams();
-    const uid = (Array.isArray(user_id) ? user_id[0] : user_id) ?? "1";
-    const cid = Number(Array.isArray(category_id) ? category_id[0] : category_id);
+    const uid = Array.isArray(user_id) ? user_id[0] : user_id;
+    const cid = Number(Array.isArray(user_id) ? category_id[0] : category_id);
     const router = useRouter();
+    const path: string = 'library';
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [comics, setComics] = useState<IComicInfo[]>();
     const [categories, setCategories] = useState<ICategory[]>();
-    const path: string = 'library';
 
     useEffect(()=>{
         async function fetchData() {
@@ -39,43 +41,38 @@ export default function Library() {
                 if(cid) response_comics = await Services.getNotStartedComicsByCategory(uid, cid);
                 else response_comics = await Services.getNotStartedComics(uid);
                 const response_categories = await Services.getCategories();
-                setComics(Array.isArray(response_comics) && response_comics.length > 0 ? response_comics : FALLBACK_COMICS);
-                setCategories(Array.isArray(response_categories) && response_categories.length > 0 ? response_categories : FALLBACK_CATEGORIES);
-            } catch {
-                setComics(FALLBACK_COMICS);
-                setCategories(FALLBACK_CATEGORIES);
+                setComics(response_comics);
+                setCategories(response_categories);
+            } catch (error) {
+                router.push('/error');
             } finally {
                 setLoading(false);
             }
         }
-
         fetchData();
-    },[cid, uid])
+    },[])
 
     return (
         
         <View style={styles.container}>
-            <AppSidebar
-                visible={sidebarOpen}
-                userId={uid}
-                activeRoute="library"
-                onClose={() => setSidebarOpen(false)}
-            />
-            <>
-                {/* Header */}
-                <View style={styles.header}>
-                    {/* Menu Hamburger */}
-                    <Pressable style={styles.menu_hamburguer} onPress={() => setSidebarOpen(true)}>
-                        <View style={styles.line}/>
-                        <View style={styles.line}/>
-                        <View style={styles.line}/>
-                    </Pressable>
-                    <Text style={styles.title}>Biblioteca de Aventuras</Text>
-                </View>
+            
+            {/* Header */}
+            <AppSidebar visible={sidebarOpen} userId={uid} activeRoute="library" onClose={()=>{setSidebarOpen(false)}}/>
+            <View style={styles.header}>
+                {/* Menu Hamburger */}
+                <Pressable style={styles.menu_hamburguer} onPress={()=>{setSidebarOpen(true)}}>
+                    <View style={styles.line}/>
+                    <View style={styles.line}/>
+                    <View style={styles.line}/>
+                </Pressable>
+                <Text style={styles.title}>Biblioteca de Aventuras</Text>
+            </View>
 
+            {loading? <></>:
+            <>
                 {/* Categories */}
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories_container}>
-                    {categories.map((category, index)=>(
+                    {categories?.map((category, index)=>(
                         // Category Button
                         <Pressable style={styles.category_button} key={index} onPress={()=>{router.push(`/library?user_id=${uid}&category_id=${category.id}`)}}>
                             <Text style={styles.category_text}>{category.name}</Text>
@@ -83,11 +80,9 @@ export default function Library() {
                     ))}
                 </ScrollView>
 
-                {loading && <Text style={styles.loadingText}>Carregando galeria...</Text>}
-
                 {/* Comics */}
                 <ScrollView contentContainerStyle={styles.gallery} showsVerticalScrollIndicator={false}>
-                    {comics.map((comic, index) => (
+                    {comics?.map((comic, index) => (
                         // Comic Card
                         <Pressable
                             key={index}
@@ -103,15 +98,11 @@ export default function Library() {
                                 });
                             }}
                         >
-                            {comic.image_url ? (
-                                <Image source={{ uri: comic.image_url }} style={styles.cardImage} />
-                            ) : (
-                                <Image source={require("../../assets/images/exemplo-quadrinho.png")} style={styles.cardImage} />
-                            )}
+                            <Image source={{ uri: comic.image_url }} style={styles.cardImage} />
                         </Pressable>
                     ))}
                 </ScrollView>
-            </>
+            </>}
         </View>
     );   
 }
@@ -131,7 +122,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-
     },
     menu_hamburguer: {
         display: "flex",
@@ -175,19 +165,13 @@ const styles = StyleSheet.create({
         fontFamily: "Iceberg_400Regular",
         marginTop: 4,
     },
-    loadingText: {
-        color: "#8C8989",
-        fontFamily: "Farsan_400Regular",
-        fontSize: 16,
-        textAlign: "center",
-        marginTop: 4,
-    },
     gallery: {
         paddingVertical: 10,
+        paddingHorizontal: 20,
         display: "flex",
         flexWrap: "wrap",
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: 'center',
         gap: 15
     },

@@ -35,7 +35,7 @@ export default function Comic() {
             } else {
                 response_comic = await Services.getUserComicOnHistoric(uid, cid);
             }
-            setComicInfo(response_comic!.comic_info[0]);
+            setComicInfo(response_comic!.comic_info);
             setComicStatus(response_comic!.comic_status);
             setComicImages(response_comic!.comic_images);
         }
@@ -49,16 +49,10 @@ export default function Comic() {
 
     return( 
         <View style={styles.container}>
-            <AppSidebar
-                visible={sidebarOpen}
-                userId={uid}
-                activeRoute="library"
-                onClose={() => setSidebarOpen(false)}
-            />
             {/* Header */}
             <View style={styles.header}>
                 {/* Menu Hamburger */}
-                <Pressable style={styles.menu_hamburguer} onPress={() => setSidebarOpen(true)}>
+                <Pressable style={styles.menu_hamburguer}>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
@@ -149,10 +143,6 @@ const styles = StyleSheet.create({
     arrow: {
         height: 30,
         width: 17
-    },
-    back_button: {
-        paddingHorizontal: 10,
-        paddingVertical: 6,
     },
     title: {
         fontSize: 20,
