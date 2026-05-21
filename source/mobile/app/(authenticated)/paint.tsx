@@ -18,12 +18,275 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { NavigationHeaderWithBackButton } from "@/components/header/navigation-header-with-back-button";
 
-/*
-  Lista de tarefas:
-  - arrumar altura do pointer            (Davi) (falhei miseravelmente)
-  - verificar quantidade de px (pre-processamento)
-  - Endpoint quando completar pintura    (Flyan)
-*/
+class ImageFactory {
+  static createFromEncoded(
+    data: Parameters<typeof Skia.Image.MakeImageFromEncoded>[0],
+  ) {
+    return Skia.Image.MakeImageFromEncoded(data);
+  }
+
+  static createEditableImage(
+    width: number,
+    height: number,
+    pixels: Uint8Array,
+  ) {
+    const data = Skia.Data.fromBytes(pixels);
+
+    return Skia.Image.MakeImage(
+      {
+        width,
+        height,
+        alphaType: 3,
+        colorType: 4,
+      },
+      data,
+      width * 4,
+    );
+  }
+}
+
+class PaintingService {
+  static hexToRgb(hex: string) {
+    const cleaned = hex.replace("#", "");
+    return {
+      r: parseInt(cleaned.substring(0, 2), 16),
+      g: parseInt(cleaned.substring(2, 4), 16),
+      b: parseInt(cleaned.substring(4, 6), 16),
+    };
+  }
+
+  static rgbToHex(r: number, g: number, b: number) {
+    return `#${[r, g, b]
+      .map((v) => v.toString(16).padStart(2, "0"))
+      .join("")}`.toLowerCase();
+  }
+
+  static async countRemainingPixels(coloredImageUri: string) {
+    const imageData = await Skia.Data.fromURI(coloredImageUri);
+    const coloredImage = ImageFactory.createFromEncoded(imageData);
+    if (!coloredImage) {
+      return { remainingPixels: 0, uniqueColors: [] as string[] };
+    }
+
+    const pixels = coloredImage.readPixels();
+    if (!pixels) {
+      return { remainingPixels: 0, uniqueColors: [] as string[] };
+    }
+
+    let remainingPixels = 0;
+    const colorsSet = new Set<string>();
+    const PRETO = 20;
+    const BRANCO = 235;
+
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+
+      const isBlack = r <= PRETO && g <= PRETO && b <= PRETO;
+      const isWhite = r >= BRANCO && g >= BRANCO && b >= BRANCO;
+
+      if (!isBlack && !isWhite) {
+        remainingPixels += 1;
+        colorsSet.add(this.rgbToHex(r, g, b));
+      }
+    }
+
+    return {
+      remainingPixels,
+      uniqueColors: Array.from(colorsSet),
+    };
+  }
+
+  static isColorMatching(
+    pixels: Uint8Array | Float32Array,
+    width: number,
+    selectedX: number,
+    selectedY: number,
+    selectedColor: string | undefined,
+  ) {
+    function getIndex(x: number, y: number, w: number) {
+      return (y * w + x) * 4;
+    }
+
+    if (selectedX < 0 || selectedY < 0 || selectedX >= width || !pixels) {
+      return 0;
+    }
+
+    const idx = getIndex(selectedX, selectedY, width);
+
+    if (idx + 2 >= pixels.length) {
+      return 0;
+    }
+
+    const rReference = pixels[idx];
+    const gReference = pixels[idx + 1];
+    const bReference = pixels[idx + 2];
+
+    const referenceHex = this.rgbToHex(rReference, gReference, bReference);
+    const selectedHex = selectedColor?.toLowerCase();
+
+    return referenceHex === selectedHex ? 1 : 0;
+  }
+
+  static canPaint(
+    pixels: Uint8Array,
+    width: number,
+    selectedX: number,
+    selectedY: number,
+    referenceImage: any,
+    selectedColor: string | undefined,
+  ) {
+    const BRANCO = 235;
+
+    function getIndex(x: number, y: number) {
+      return (y * width + x) * 4;
+    }
+
+    const idx = getIndex(selectedX, selectedY);
+
+    const r = pixels[idx];
+    const g = pixels[idx + 1];
+    const b = pixels[idx + 2];
+
+    const isWhite = r >= BRANCO && g >= BRANCO && b >= BRANCO;
+
+    const referencePixels = referenceImage?.readPixels();
+
+    if (!referencePixels || !referenceImage) return false;
+
+    if (
+      !this.isColorMatching(
+        referencePixels,
+        referenceImage.width(),
+        selectedX,
+        selectedY,
+        selectedColor,
+      )
+    ) {
+      return false;
+    }
+
+    if (!isWhite) return false;
+
+    return true;
+  }
+
+  static floodFill(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    startX: number,
+    startY: number,
+    hexColor: string,
+  ) {
+    let count = 0;
+
+    const { r: nr, g: ng, b: nb } = this.hexToRgb(hexColor);
+    const LIMIAR_BORDA = 150;
+
+    const pilha: [number, number][] = [[startX, startY]];
+    const visitados = new Set<string>();
+
+    function getIndex(x: number, y: number) {
+      return (y * width + x) * 4;
+    }
+
+    while (pilha.length > 0) {
+      const [x, y] = pilha.pop()!;
+
+      if (x < 0 || y < 0 || x >= width || y >= height) {
+        continue;
+      }
+
+      const key = `${x},${y}`;
+
+      if (visitados.has(key)) {
+        continue;
+      }
+
+      const idx = getIndex(x, y);
+
+      const r = pixels[idx];
+      const g = pixels[idx + 1];
+      const b = pixels[idx + 2];
+
+      if (r < LIMIAR_BORDA && g < LIMIAR_BORDA && b < LIMIAR_BORDA) {
+        continue;
+      }
+
+      pixels[idx] = nr;
+      pixels[idx + 1] = ng;
+      pixels[idx + 2] = nb;
+      pixels[idx + 3] = 255;
+      count += 1;
+
+      visitados.add(key);
+
+      pilha.push([x + 1, y]);
+      pilha.push([x - 1, y]);
+      pilha.push([x, y + 1]);
+      pilha.push([x, y - 1]);
+    }
+
+    return count;
+  }
+
+  static fill(
+    image: any,
+    referenceImage: any,
+    selectedColor: string | undefined,
+    x: number,
+    y: number,
+  ) {
+    if (!selectedColor || !image) return null;
+
+    const bitmap = image.readPixels();
+    if (!bitmap) return null;
+
+    const imageWidth = image.width();
+    const imageHeight = image.height();
+
+    const canvasWidth = 300;
+    const canvasHeight = 300;
+
+    const realX = Math.floor((x / canvasWidth) * imageWidth);
+    const realY = Math.floor((y / canvasHeight) * imageHeight);
+
+    if (
+      realX < 0 ||
+      realY < 0 ||
+      realX >= imageWidth ||
+      realY >= imageHeight
+    ) {
+      return null;
+    }
+
+    if (!this.canPaint(bitmap, imageWidth, realX, realY, referenceImage, selectedColor)) {
+      return null;
+    }
+
+    const paintedPixelsCount = this.floodFill(
+      bitmap,
+      imageWidth,
+      imageHeight,
+      realX,
+      realY,
+      selectedColor,
+    );
+
+    const newImage = ImageFactory.createEditableImage(
+      imageWidth,
+      imageHeight,
+      bitmap,
+    );
+
+    return {
+      paintedPixelsCount,
+      newImage,
+    };
+  }
+}
 
 export default function Paint() {
 
@@ -57,8 +320,10 @@ export default function Paint() {
       const uncolored_image_url = response.uncolored_image_url;
       setColoredImageUri(colored_image_url);
       setUncoloredImageUri(uncolored_image_url);
-      const totalColoredPixels = await countColoredPixels(colored_image_url);
-      setLastingPixels(totalColoredPixels);
+      const { remainingPixels, uniqueColors: colors } =
+        await PaintingService.countRemainingPixels(colored_image_url);
+      setLastingPixels(remainingPixels);
+      setUniqueColors((prev) => Array.from(new Set([...prev, ...colors])));
       setFetched(true);
     }
     fetchData();
@@ -71,10 +336,10 @@ export default function Paint() {
       async function final() {
         if(status === 'first') {
             const response = await Services.insertComic(uid, cid);
-        } 
+        }
         else {
             const response = await Services.updateComic(uid, cid, status);
-        }  
+        }
         setPainted(true);
       }
       final();
@@ -89,280 +354,21 @@ export default function Paint() {
     setSelectedColor(uniqueColors[0])
   },[uniqueColors]);
 
-  function hexToRgb(hex: string) {
-    const cleaned = hex.replace("#", "");
-    return {
-      r: parseInt(cleaned.substring(0, 2), 16),
-      g: parseInt(cleaned.substring(2, 4), 16),
-      b: parseInt(cleaned.substring(4, 6), 16),
-    };
-  }
-
-  function rgbToHex(r: number, g: number, b: number) {
-    return `#${[r, g, b]
-      .map((v) => v.toString(16).padStart(2, "0"))
-      .join("")}`.toLowerCase();
-  }
-
-  async function countColoredPixels(coloredImageUri: string) {
-    const imageData = await Skia.Data.fromURI(coloredImageUri);
-    const coloredImage = Skia.Image.MakeImageFromEncoded(imageData);
-    if (!coloredImage) return 0;
-    
-    const pixels = coloredImage.readPixels();
-    if (!pixels) return 0;
-    
-
-    let count = 0;
-    const colorsSet = new Set<string>();
-    const PRETO = 20;
-    const BRANCO = 235;
-    for (let i = 0; i < pixels.length; i += 4) {
-      const r = pixels[i];
-      const g = pixels[i + 1];
-      const b = pixels[i + 2];
-
-      const isBlack =
-        r <= PRETO &&
-        g <= PRETO &&
-        b <= PRETO;
-
-      const isWhite =
-        r >= BRANCO &&
-        g >= BRANCO &&
-        b >= BRANCO;
-
-      if (!isBlack && !isWhite) {
-        count += 1;
-        // pixel colorido: salvar a cor em formato hex na lista de cores únicas
-        const hex = rgbToHex(r, g, b);
-        colorsSet.add(hex);
-      }
-    }
-
-    const colorsArray = Array.from(colorsSet);
-    // atualiza estado de cores únicas: mescla as cores já adicionadas pra não ter duplicatas
-    setUniqueColors((prev) => Array.from(new Set([...prev, ...colorsArray])));
-    return count;
-  }
-
-  // retorna 1 se a cor do pixel da imagem colorida de referência bater com
-  // a cor hex atualmente selecionada. Retorna 0 caso contrário.
-  function isColorMatching(
-    pixels: Uint8Array | Float32Array,
-    width: number,
-    selectedX: number,
-    selectedY: number,
-  ) {
-    function getIndex(x: number, y: number, w: number) {
-      return (y * w + x) * 4;
-    }
-
-    // checa bounds básicos do buffer atual
-    if (
-      selectedX < 0 ||
-      selectedY < 0 ||
-      selectedX >= width ||
-      !pixels
-    ) {
-      return 0;
-    }
-
-    const idx = getIndex(selectedX, selectedY, width);
-
-    if (idx + 2 >= pixels.length) {
-      return 0;
-    }
-
-    const rReference = pixels[idx];
-    const gReference = pixels[idx + 1];
-    const bReference = pixels[idx + 2];
-
-    const referenceHex = rgbToHex(rReference, gReference, bReference);
-    const selectedHex = selectedColor?.toLowerCase();
-    const matches = referenceHex === selectedHex;
-
-    if (matches) {
-      return 1;
-    }
-    return 0;
-  }
-
-  function isPaintingAvailable(
-    pixels: Uint8Array,
-    width: number,
-    selectedX: number,
-    selectedY: number,
-  ) {
-    const BRANCO = 235;
-
-    function getIndex(x: number, y: number) {
-      return (y * width + x) * 4;
-    }
-
-    const idx = getIndex(selectedX, selectedY);
-
-    const r = pixels[idx];
-    const g = pixels[idx + 1];
-    const b = pixels[idx + 2];
-
-    const isWhite = r >= BRANCO && g >= BRANCO && b >= BRANCO;
-
-    const referencePixels = loadedColoredImage?.readPixels();
-
-    if (!referencePixels || !loadedColoredImage) return false;
-
-    if (!isColorMatching(referencePixels, loadedColoredImage.width(), selectedX, selectedY)) return false; 
-    
-    if (!isWhite) return false; //pixel diferente de branco
-    
-      //ver se o pixel é branco na imagem original se for cancela pintura
-    return true; //pixel branco pode pintar
-  }
-
-  function floodFill(
-    pixels: Uint8Array,
-    width: number,
-    height: number,
-    startX: number,
-    startY: number,
-    hexColor: string
-  ) {
-    let count = 0;
-
-    const { r: nr, g: ng, b: nb } =
-      hexToRgb(hexColor);
-
-    const LIMIAR_BORDA = 150;
-
-    const pilha: [number, number][] =
-      [[startX, startY]];
-
-    const visitados = new Set<string>();
-
-    function getIndex(x: number, y: number) {
-      return (y * width + x) * 4;
-    }
-
-    while (pilha.length > 0) {
-
-      const [x, y] = pilha.pop()!;
-
-      if (
-        x < 0 ||
-        y < 0 ||
-        x >= width ||
-        y >= height
-      ) {
-        continue;
-      }
-
-      const key = `${x},${y}`;
-
-      if (visitados.has(key)) {
-        continue;
-      }
-
-      const idx = getIndex(x, y);
-
-      const r = pixels[idx];
-      const g = pixels[idx + 1];
-      const b = pixels[idx + 2];
-
-      if (
-        r < LIMIAR_BORDA &&
-        g < LIMIAR_BORDA &&
-        b < LIMIAR_BORDA
-      ) {
-        continue;
-      }
-
-      pixels[idx] = nr;
-      pixels[idx + 1] = ng;
-      pixels[idx + 2] = nb;
-      pixels[idx + 3] = 255;
-      count += 1;
-
-      visitados.add(key);
-
-      pilha.push([x + 1, y]);
-      pilha.push([x - 1, y]);
-      pilha.push([x, y + 1]);
-      pilha.push([x, y - 1]);
-    }
-
-    return count;
-  }
-
 function handleTouch(x: number, y: number) {
-
-  if(!selectedColor) return;
-
-  if (!image) return;
-
-  const bitmap = image.readPixels();
-
-  if (!bitmap) return;
-
-  // tamanho REAL da imagem
-  const imageWidth = image.width();
-  const imageHeight = image.height();
-
-  // tamanho VISUAL do canvas
-  const canvasWidth = 300;
-  const canvasHeight = 300;
-
-  // coordenada proporcional EXATA
-  const realX = Math.floor((x / canvasWidth) * imageWidth);
-  const realY = Math.floor((y / canvasHeight) * imageHeight);
-
-  // evita coordenadas inválidas
-  if (
-    realX < 0 ||
-    realY < 0 ||
-    realX >= imageWidth ||
-    realY >= imageHeight
-  ) {
-    return;
-  }
-
-  if (
-    !isPaintingAvailable(
-      bitmap,
-      imageWidth,
-      realX,
-      realY
-    )
-  ) {
-    return;
-  }
-
-  const paintedPixelsCount = floodFill(
-    bitmap,
-    imageWidth,
-    imageHeight,
-    realX,
-    realY,
-    selectedColor
+  const result = PaintingService.fill(
+    image,
+    loadedColoredImage,
+    selectedColor,
+    x,
+    y,
   );
 
-  setLastingPixels((current) => current - paintedPixelsCount);
+  if (!result) return;
 
-  const data = Skia.Data.fromBytes(bitmap);
+  setLastingPixels((current) => current - result.paintedPixelsCount);
 
-  const newImage = Skia.Image.MakeImage(
-    {
-      width: imageWidth,
-      height: imageHeight,
-      alphaType: 3,
-      colorType: 4,
-    },
-    data,
-    imageWidth * 4
-  );
-
-  if (newImage) {
-    setEditedImage(newImage);
+  if (result.newImage) {
+    setEditedImage(result.newImage);
   }
 }
   return (
