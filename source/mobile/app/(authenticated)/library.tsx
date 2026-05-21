@@ -94,6 +94,7 @@ export default function Library() {
                                         path: path,
                                         user_id: uid,
                                         comic_id: comic.id,
+                                        origin: path
                                     }
                                 });
                             }}
@@ -166,13 +167,14 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     gallery: {
+        minHeight: '100%',
         paddingVertical: 10,
         paddingHorizontal: 20,
         display: "flex",
         flexWrap: "wrap",
         flexDirection: "row",
         justifyContent: "flex-start",
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: 15
     },
     card: {

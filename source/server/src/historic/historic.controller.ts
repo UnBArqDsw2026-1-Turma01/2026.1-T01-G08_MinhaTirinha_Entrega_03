@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { HistoricService } from './historic.service';
 
 /**
@@ -25,4 +25,5 @@ export class HistoricController {
   async getProgress(@Param('comicId') comicId: number, @Param('userId') userId: string) {
     return this.historicService.getProgress(comicId,userId,);
   }
+
 }
