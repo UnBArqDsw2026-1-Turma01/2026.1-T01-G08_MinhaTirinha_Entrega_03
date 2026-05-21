@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Category } from './entities/category.entity';
 
@@ -6,12 +6,12 @@ import { Category } from './entities/category.entity';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Get() 
-  findAll(): Promise<Category[]> 
+  @Get('/not-read/:user_id') 
+  getNotRead(@Param('user_id') user_id: string): Promise<Category[]> 
   /**
    * GET todas as categorias.
    */
   {
-    return this.categoryService.getCategories();
+    return this.categoryService.getNotRead(user_id);
   }
 }

@@ -7,8 +7,8 @@ export default function RootLayout() {
       <Stack.Screen name="library"/>
       <Stack.Screen name="gallery"/>
       <Stack.Screen name="comic"/>
-      <Stack.Screen name="color-picker"/>
-      <Stack.Screen name="painted"/>
+      <Stack.Screen name="paint"/>
+      <Stack.Screen name="final"/>
     </Stack>
   );
 }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -18,6 +17,8 @@ import { Services } from "@/utils/services";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Image } from "expo-image";
+
+import { NavigationHeaderWithBackButton } from "@/components/header/navigation-header-with-back-button";
 
 /*
   Lista de tarefas:
@@ -47,7 +48,7 @@ export default function Paint() {
   // lista das cores disponíveis para pintar
   const [uniqueColors, setUniqueColors] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-  const [path, setPath] = useState<string>(status);
+  const [path, setPath] = useState<string>(String(status));
   const [painted, setPainted] = useState<boolean>(false);
   const [fetched, setFetched] = useState<boolean>(false);
 
@@ -371,18 +372,8 @@ function handleTouch(x: number, y: number) {
     <View style={styles.container}>
 
     <AppSidebar visible={sidebarOpen} userId={uid} activeRoute="paint" onClose={()=>{setSidebarOpen(false)}}/>
-    {/* Header */}
-    <View style={styles.header}>
-        {/* Menu Hamburger */}
-        <Pressable style={styles.menu_hamburguer} onPress={()=>setSidebarOpen(true)}>
-            <View style={styles.line}/>
-            <View style={styles.line}/>
-            <View style={styles.line}/>
-        </Pressable>
-        <Pressable onPress={()=>router.push(`/comic?path=${path}&user_id=${uid}&comic_id=${cid}&origin=${origin}`)}>
-            <Image source={require("../../assets/images/arrow.svg")} style={styles.arrow}/>
-        </Pressable>            
-    </View>
+
+    <NavigationHeaderWithBackButton setSidebarOpenTrue={()=>setSidebarOpen(true)} setSidebarOpenFalse={()=>setSidebarOpen(false)}visible={sidebarOpen} route="paint" userId={uid} push={`/comic?path=${path}&user_id=${uid}&comic_id=${cid}&origin=${origin}`}/>
       
       {image &&
         <View style={styles.subcontainer}>
@@ -392,8 +383,8 @@ function handleTouch(x: number, y: number) {
                 </Canvas>
 
                 <Pressable style={styles.pressable} onPress={(e) => { const x = e.nativeEvent.locationX;
-                                                                        const y = e.nativeEvent.locationY;
-                                                                        handleTouch(x, y); }}/>
+                                                                      const y = e.nativeEvent.locationY;
+                                                                      handleTouch(x, y); }}/>
             </View>
         </View>
       }
