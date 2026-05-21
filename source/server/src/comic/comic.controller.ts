@@ -35,8 +35,13 @@ export class ComicController {
   }
 
   @Get('comic/started/:user_id/:comic_id')
-  getUserComicOnHistoric(@Param('user_id') user_id: string, @Param('comic_id') comic_id: number) {
+  getUserComicOnHistoric(@Param('user_id') user_id: string, @Param('comic_id') comic_id: number): Promise<GetComic>  {
     return this.comicService.getUserComic(user_id, comic_id);
+  }
+
+  @Get('comics/started/:user_id')
+  async getUserComicsOnHistoric(@Param('user_id') user_id: string): Promise<any> {
+    return this.comicService.getUserComicsOnHistoric(user_id);
   }
 
 }

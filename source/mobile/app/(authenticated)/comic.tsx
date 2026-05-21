@@ -35,7 +35,7 @@ export default function Comic() {
             } else {
                 response_comic = await Services.getUserComicOnHistoric(uid, cid);
             }
-            setComicInfo(response_comic!.comic_info[0]);
+            setComicInfo(response_comic!.comic_info);
             setComicStatus(response_comic!.comic_status);
             setComicImages(response_comic!.comic_images);
         }

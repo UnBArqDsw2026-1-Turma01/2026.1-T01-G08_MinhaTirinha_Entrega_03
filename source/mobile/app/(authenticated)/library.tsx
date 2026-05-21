@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Services } from "@/utils/services";
 import { IComicInfo } from "@/utils/entities/comic_info.entity";
 import { ICategory } from "@/utils/entities/category.entity";
+import { AppSidebar } from "@/components/AppSidebar";
 
 /**
  * =====================================================
@@ -26,10 +27,11 @@ export default function Library() {
     const uid = Array.isArray(user_id) ? user_id[0] : user_id;
     const cid = Number(Array.isArray(user_id) ? category_id[0] : category_id);
     const router = useRouter();
+    const path: string = 'library';
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [comics, setComics] = useState<IComicInfo[]>();
     const [categories, setCategories] = useState<ICategory[]>();
-    const path: string = 'library';
 
     useEffect(()=>{
         async function fetchData() {
@@ -42,31 +44,32 @@ export default function Library() {
                 setComics(response_comics);
                 setCategories(response_categories);
             } catch (error) {
-                console.error(error);
+                router.push('/error');
             } finally {
                 setLoading(false);
             }
         }
-
         fetchData();
     },[])
 
     return (
         
         <View style={styles.container}>
+            
+            {/* Header */}
+            <AppSidebar visible={sidebarOpen} userId={uid} activeRoute="library" onClose={()=>{setSidebarOpen(false)}}/>
+            <View style={styles.header}>
+                {/* Menu Hamburger */}
+                <Pressable style={styles.menu_hamburguer} onPress={()=>{setSidebarOpen(true)}}>
+                    <View style={styles.line}/>
+                    <View style={styles.line}/>
+                    <View style={styles.line}/>
+                </Pressable>
+                <Text style={styles.title}>Biblioteca de Aventuras</Text>
+            </View>
+
             {loading? <></>:
             <>
-                {/* Header */}
-                <View style={styles.header}>
-                    {/* Menu Hamburger */}
-                    <Pressable style={styles.menu_hamburguer}>
-                        <View style={styles.line}/>
-                        <View style={styles.line}/>
-                        <View style={styles.line}/>
-                    </Pressable>
-                    <Text style={styles.title}>Biblioteca de Aventuras</Text>
-                </View>
-
                 {/* Categories */}
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories_container}>
                     {categories?.map((category, index)=>(
@@ -119,7 +122,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-
     },
     menu_hamburguer: {
         display: "flex",
@@ -165,10 +167,11 @@ const styles = StyleSheet.create({
     },
     gallery: {
         paddingVertical: 10,
+        paddingHorizontal: 20,
         display: "flex",
         flexWrap: "wrap",
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: 'center',
         gap: 15
     },

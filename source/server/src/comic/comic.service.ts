@@ -7,6 +7,7 @@ import { Image } from './entities/image.entity';
 import { Status } from './entities/status.entity';
 import { ComicInfo } from './entities/comic_info.entity';
 import { GetComic } from './entities/get_comic.entity';
+import { StartedComicInfo } from './entities/started_comic_info';
 
 
 @Injectable() // O Nest garante que isso aqui é um Singleton automático por padrão
@@ -129,7 +130,7 @@ export class ComicService {
     return data;
   }
 
-  async getUserComic(user_id: string, comic_id: number) {
+  async getUserComic(user_id: string, comic_id: number): Promise<GetComic> {
     const comic_info = await this.getComic(comic_id);
     let comic_status = await this.getUserComicStatusOnHistoric(user_id, comic_id);
     comic_status = comic_status[0];
@@ -152,5 +153,12 @@ export class ComicService {
     const comic_images: Image[] = [firstImage[0], secondImage[0], thirdImage[0], fourthImage[0]];
 
     return {comic_info, comic_images, comic_status};
+  }
+
+  async getUserComicsOnHistoric(user_id: string): Promise<StartedComicInfo[]>
+  {
+    const { data, error } = await this.supabase.getInstance().rpc("get_user_comics_on_historic",{user_id: user_id});
+    if(error) throw new Error(error.message);
+    return data;
   }
 }

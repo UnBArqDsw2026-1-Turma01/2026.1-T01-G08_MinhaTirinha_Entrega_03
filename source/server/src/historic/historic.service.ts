@@ -36,9 +36,6 @@ export class HistoricService {
       `)
       .eq('id_user', userId);
 
-    console.log('DATA:', data);
-    console.log('ERROR:', error);
-
     // Lança exceção 500 se o Supabase retornar erro
     if (error) {
       throw new InternalServerErrorException(
