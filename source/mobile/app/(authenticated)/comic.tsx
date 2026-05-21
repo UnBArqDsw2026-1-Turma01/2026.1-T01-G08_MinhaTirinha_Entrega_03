@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, Href } from "expo-router";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { Services } from "@/utils/services";
@@ -7,16 +7,20 @@ import { IStatus } from "@/utils/entities/status.entity";
 import { IComic } from "@/utils/entities/comic.entity";
 import { IImage } from "@/utils/entities/image.entity";
 import { BlurView } from "expo-blur";
+import { AppSidebar } from "@/components/AppSidebar";
 
 export default function Comic() {
     const router = useRouter();
-    const { path, user_id, comic_id } = useLocalSearchParams();
+    const { path, user_id, comic_id, origin } = useLocalSearchParams();
     const uid = Array.isArray(user_id) ? user_id[0] : user_id;
     const cid = Number(Array.isArray(comic_id) ? comic_id[0] : comic_id);
+    const route_origin = `/${origin}?user_id=${uid}`;
+
     const [comicInfo, setComicInfo] = useState<IComic>();
     const [comicStatus, setComicStatus] = useState<IStatus>();
     const [comicImages, setComicImages] = useState<IImage[]>();
     const [progress, setProgress] = useState('0%');
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
     
     function calculateProgress() {
         let value = 0;
@@ -30,7 +34,7 @@ export default function Comic() {
     useEffect(()=>{
         async function fetchData() {
             let response_comic;
-            if(path === 'library') {
+            if(path === 'library' || path === 'first') {
                 response_comic = await Services.getNotStartedComic(cid);
             } else {
                 response_comic = await Services.getUserComicOnHistoric(uid, cid);
@@ -50,14 +54,15 @@ export default function Comic() {
     return( 
         <View style={styles.container}>
             {/* Header */}
+            <AppSidebar visible={sidebarOpen} userId={uid} activeRoute="comic" onClose={()=>{setSidebarOpen(false)}}/>
             <View style={styles.header}>
                 {/* Menu Hamburger */}
-                <Pressable style={styles.menu_hamburguer}>
+                <Pressable style={styles.menu_hamburguer} onPress={()=>setSidebarOpen(true)}>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
                     <View style={styles.line}/>
                 </Pressable>
-                <Pressable onPress={()=>router.back()}>
+                <Pressable onPress={()=>router.push(route_origin as Href)}>
                     <Image source={require("../../assets/images/arrow.svg")} style={styles.arrow}/>
                 </Pressable>            
             </View>
@@ -71,24 +76,24 @@ export default function Comic() {
                         <View style={styles.select_field}>
                                 <Pressable style={styles.comic} onPress={()=>{
                                                                             if(comicStatus?.first) router.push(`/painted?image_url=${comicImages?.[0].image_url}`)
-                                                                            else router.push('/color-picker');
+                                                                            else router.push(`/paint?user_id=${uid}&comic_id=${cid}&comic_index=${1}&comic_status=first&origin=${origin}`);
                                                                             }}>
                                     <Image style={styles.image} source={{ uri: comicImages[0].image_url }}/>
                                 </Pressable>
                                 <Pressable style={styles.comic} onPress={()=>{  if(comicStatus?.second) router.push(`/painted?image_url=${comicImages?.[1].image_url}`)
-                                                                                else if(comicStatus?.first) router.push('/color-picker');
+                                                                                else if(comicStatus?.first) router.push(`/paint?user_id=${uid}&comic_id=${cid}&comic_index=${2}&comic_status=second&origin=${origin}`);
                                                                             }}>
                                     <Image style={styles.image} source={{ uri: comicImages[1].image_url }}/>
                                     <BlurView intensity={comicStatus?.first? 0: 125} style={StyleSheet.absoluteFill}/>
                                 </Pressable>
                                 <Pressable style={styles.comic} onPress={()=>{  if(comicStatus?.third) router.push(`/painted?image_url=${comicImages?.[2].image_url}`)
-                                                                                else if(comicStatus?.second) router.push('/color-picker');
+                                                                                else if(comicStatus?.second) router.push(`/paint?user_id=${uid}&comic_id=${cid}&comic_index=${3}&comic_status=third&origin=${origin}`);
                                                                             }}>                                
                                     <Image style={styles.image} source={{ uri: comicImages[2].image_url }}/>                                                                       
                                     <BlurView intensity={comicStatus?.second? 0: 125} style={StyleSheet.absoluteFill}/>
                                 </Pressable>
                                 <Pressable style={styles.comic} onPress={()=>{  if(comicStatus?.fourth) router.push(`/painted?image_url=${comicImages?.[3].image_url}`)
-                                                                                else if(comicStatus?.third) router.push('/color-picker');
+                                                                                else if(comicStatus?.third) router.push(`/paint?user_id=${uid}&comic_id=${cid}&comic_index=${4}&comic_status=fourth&origin=${origin}`);
                                                                             }}>
                                     <Image style={styles.image} source={{ uri: comicImages[3].image_url }}/>
                                     <BlurView intensity={comicStatus?.third? 0: 125} style={StyleSheet.absoluteFill}/>
@@ -126,7 +131,6 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        // gap: 20,
         alignItems: "center",
     },
     menu_hamburguer: {

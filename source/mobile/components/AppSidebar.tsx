@@ -5,7 +5,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 type AppSidebarProps = {
   visible: boolean;
   userId?: string;
-  activeRoute: 'library' | 'gallery';
+  activeRoute: string;
   onClose: () => void;
 };
 

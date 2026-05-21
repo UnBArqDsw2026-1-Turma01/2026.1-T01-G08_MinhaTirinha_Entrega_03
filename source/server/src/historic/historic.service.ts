@@ -170,4 +170,5 @@ export class HistoricService {
       status,
     };
   }
+
 }

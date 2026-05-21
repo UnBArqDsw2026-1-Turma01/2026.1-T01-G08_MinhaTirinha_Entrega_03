@@ -96,6 +96,7 @@ export default function GaleriaPessoal() {
                                             path: path,
                                             user_id: uid,
                                             comic_id: comic.id,
+                                            origin: path
                                         }
                                     });
                                 }}

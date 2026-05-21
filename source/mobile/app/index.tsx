@@ -59,12 +59,12 @@ export default function Index() {
         >
           <Image source={require("../assets/images/logo-google.png")} style={styles.logo_google}/>
         </Pressable>
-        <Pressable style={styles.testButton} onPress={() => {
+        {/* <Pressable style={styles.testButton} onPress={() => {
           const demoUrl = 'https://i.imgur.com/ExdKOOz.png'
           router.push(`/color-picker?uncolored_image_url=${encodeURIComponent(demoUrl)}&id_comic=demo&id_user=demo`)
         }}>
           <Text>Abrir sem login (teste)</Text>
-        </Pressable>
+        </Pressable> */}
         {!!loginError && <Text style={styles.errorText}>{loginError}</Text>}
       </View>}
     </View>

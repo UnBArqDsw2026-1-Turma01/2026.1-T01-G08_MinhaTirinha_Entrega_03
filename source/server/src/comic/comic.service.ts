@@ -8,14 +8,26 @@ import { Status } from './entities/status.entity';
 import { ComicInfo } from './entities/comic_info.entity';
 import { GetComic } from './entities/get_comic.entity';
 import { StartedComicInfo } from './entities/started_comic_info';
-
+import { IndexUpdateStrategy } from './strategy/update/index_update_strategy';
+import { FirstUpdateStrategy } from './strategy/update/first_update_strategy';
+import { SecondUpdateStrategy } from './strategy/update/second_update_strategy';
+import { ThirdUpdateStrategy } from './strategy/update/third_update_strategy';
+import { FourthUpdateStrategy } from './strategy/update/fourth_update_strategy';
+import { UpdateComicDto } from './dto/update-comic.dto';
+import { CreateComicDto } from './dto/create-comic.dto';
 
 @Injectable() // O Nest garante que isso aqui é um Singleton automático por padrão
 export class ComicService {
   private searchUnreadStrategy: SearchUnreadStrategy;
   private searchUnreadByCategoryStrategy: SearchUnreadByCategoryStrategy;
 
-  constructor(private readonly supabase: SupabaseService) {
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly firstUpdateStrategy: FirstUpdateStrategy,
+    private readonly secondUpdateStrategy: SecondUpdateStrategy,
+    private readonly thirdUpdateStrategy: ThirdUpdateStrategy,
+    private readonly fourthUpdateStrategy: FourthUpdateStrategy,
+  ) {
     this.searchUnreadStrategy = new SearchUnreadStrategy(supabase.getInstance());
     this.searchUnreadByCategoryStrategy = new SearchUnreadByCategoryStrategy(supabase.getInstance());
   }
@@ -156,9 +168,48 @@ export class ComicService {
   }
 
   async getUserComicsOnHistoric(user_id: string): Promise<StartedComicInfo[]>
+  // CREATE FUNCTION public.get_user_comics_on_historic(user_id uuid) 
+  // RETURNS TABLE(
+  //   id integer,
+  //   image_url text, 
+  //   first boolean,
+  //   second boolean,
+  //   third boolean,
+  //   fourth boolean
+  // )
+  // AS $$
+  //   SELECT c.id, c.image_url, h.first, h.second, h.third, h.fourth
+  //   FROM "Comic" AS c JOIN "Historic" AS h ON c.id = h.id_comic
+  //   WHERE h.id_user = user_id;
+  // $$ LANGUAGE sql;
   {
     const { data, error } = await this.supabase.getInstance().rpc("get_user_comics_on_historic",{user_id: user_id});
     if(error) throw new Error(error.message);
     return data;
   }
+
+  async getBothUrlImages(comic_id: number, index: number): Promise<{uncolored_image_url: string, colored_image_url: string}> {
+        const { data, error } = await this.supabase.getInstance().from('Image').select("uncolored_image_url, colored_image_url").match({id_comic: comic_id, enum: index}).single();
+        if(error) throw new Error(error.message);
+        return data;
+  }
+
+  async insertComic(createComicDto: CreateComicDto): Promise<number> {
+    const { error } = await this.supabase.getInstance().from('Historic').insert({id_user: createComicDto.user_id, id_comic: createComicDto.comic_id, first: true});
+    if(error) throw new Error(error.message);
+    return 200;
+  }
+
+  //STRATEGY
+  async updateComic(updateComicDto: UpdateComicDto): Promise<number> {
+    let indexUpdateStrategy: IndexUpdateStrategy;
+    if(updateComicDto.index === 'first') indexUpdateStrategy = this.firstUpdateStrategy;
+    else if (updateComicDto.index === 'second') indexUpdateStrategy = this.secondUpdateStrategy; 
+    else if (updateComicDto.index === 'third') indexUpdateStrategy = this.thirdUpdateStrategy; 
+    else indexUpdateStrategy = this.fourthUpdateStrategy; 
+    const status = await indexUpdateStrategy.update(updateComicDto.user_id, updateComicDto.comic_id);
+    return status;
+  }
+
+
 }
