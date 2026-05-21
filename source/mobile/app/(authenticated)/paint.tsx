@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import {
   Pressable,
+  type GestureResponderEvent,
+  type LayoutChangeEvent,
   ScrollView,
   StyleSheet,
   View,
@@ -12,6 +14,7 @@ import {
   Image as SkiaImage,
   useImage,
 } from "@shopify/react-native-skia";
+import type { SkImage } from "@shopify/react-native-skia";
 
 import { Services } from "@/utils/services";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -134,7 +137,7 @@ class PaintingService {
     width: number,
     selectedX: number,
     selectedY: number,
-    referenceImage: any,
+    referenceImage: SkImage | null,
     selectedColor: string | undefined,
   ) {
     const BRANCO = 235;
@@ -186,7 +189,7 @@ class PaintingService {
     const LIMIAR_BORDA = 150;
 
     const pilha: [number, number][] = [[startX, startY]];
-    const visitados = new Set<string>();
+    const visitados = new Set<number>();
 
     function getIndex(x: number, y: number) {
       return (y * width + x) * 4;
@@ -199,7 +202,7 @@ class PaintingService {
         continue;
       }
 
-      const key = `${x},${y}`;
+      const key = y * width + x;
 
       if (visitados.has(key)) {
         continue;
@@ -233,11 +236,13 @@ class PaintingService {
   }
 
   static fill(
-    image: any,
-    referenceImage: any,
+    image: SkImage | null,
+    referenceImage: SkImage | null,
     selectedColor: string | undefined,
     x: number,
     y: number,
+    canvasWidth: number,
+    canvasHeight: number,
   ) {
     if (!selectedColor || !image) return null;
 
@@ -247,11 +252,8 @@ class PaintingService {
     const imageWidth = image.width();
     const imageHeight = image.height();
 
-    const canvasWidth = 300;
-    const canvasHeight = 300;
-
-    const realX = Math.floor((x / canvasWidth) * imageWidth);
-    const realY = Math.floor((y / canvasHeight) * imageHeight);
+    const realX = Math.round((x / canvasWidth) * imageWidth);
+    const realY = Math.round((y / canvasHeight) * imageHeight);
 
     if (
       realX < 0 ||
@@ -301,11 +303,15 @@ export default function Paint() {
   const [uncoloredImageUri, setUncoloredImageUri] = useState<string>();
   const [coloredImageUri, setColoredImageUri] = useState<string>();
   const [selectedColor, setSelectedColor] = useState<string>();
-  const [editedImage, setEditedImage] = useState<any>(null);
+  const [editedImage, setEditedImage] = useState<SkImage | null>(null);
   const loadedImage = useImage(uncoloredImageUri ?? "");
   const loadedColoredImage = useImage(coloredImageUri ?? "");
   const image = editedImage ?? loadedImage;
   const [lastingPixels, setLastingPixels] = useState<number>(0);
+  const [canvasLayout, setCanvasLayout] = useState({
+    width: 300,
+    height: 300,
+  });
   // lista das cores disponíveis para pintar
   const [uniqueColors, setUniqueColors] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -323,15 +329,15 @@ export default function Paint() {
       const { remainingPixels, uniqueColors: colors } =
         await PaintingService.countRemainingPixels(colored_image_url);
       setLastingPixels(remainingPixels);
-      setUniqueColors((prev) => Array.from(new Set([...prev, ...colors])));
+      setUniqueColors((prev: string[]) => Array.from(new Set([...prev, ...colors])));
       setFetched(true);
     }
     fetchData();
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     // console.log(lastingPixels);
-    if(!lastingPixels && fetched) {
+    if (lastingPixels <= 0 && fetched) {
       setEditedImage(loadedColoredImage);
       async function final() {
         if(status === 'first') {
@@ -344,33 +350,35 @@ export default function Paint() {
       }
       final();
     }
-  },[lastingPixels])
+  }, [lastingPixels]);
 
-  useEffect(()=>{
-    if(painted) setPath('painted');
-  },[painted]);
+  useEffect(() => {
+    if (painted) setPath('painted');
+  }, [painted]);
 
-  useEffect(()=>{
-    setSelectedColor(uniqueColors[0])
-  },[uniqueColors]);
+  useEffect(() => {
+    setSelectedColor(uniqueColors[0]);
+  }, [uniqueColors]);
 
-function handleTouch(x: number, y: number) {
-  const result = PaintingService.fill(
-    image,
-    loadedColoredImage,
-    selectedColor,
-    x,
-    y,
-  );
+  function handleTouch(x: number, y: number) {
+    const result = PaintingService.fill(
+      image,
+      loadedColoredImage,
+      selectedColor,
+      x,
+      y,
+      canvasLayout.width,
+      canvasLayout.height,
+    );
 
-  if (!result) return;
+    if (!result) return;
 
-  setLastingPixels((current) => current - result.paintedPixelsCount);
+    setLastingPixels((current: number) => current - result.paintedPixelsCount);
 
-  if (result.newImage) {
-    setEditedImage(result.newImage);
+    if (result.newImage) {
+      setEditedImage(result.newImage);
+    }
   }
-}
   return (
 
     <View style={styles.container}>
@@ -379,12 +387,20 @@ function handleTouch(x: number, y: number) {
       
       {image &&
         <View style={styles.subcontainer}>
-            <View style={styles.comic}>
+            <View
+              style={styles.comic}
+              onLayout={(e: LayoutChangeEvent) => {
+                setCanvasLayout({
+                  width: e.nativeEvent.layout.width,
+                  height: e.nativeEvent.layout.height,
+                });
+              }}
+            >
                 <Canvas style={{ flex: 1 }}>
                     <SkiaImage image={image} x={0} y={0} width={300} height={300} fit="fill"/>
                 </Canvas>
 
-                <Pressable style={styles.pressable} onPress={(e) => { const x = e.nativeEvent.locationX;
+                <Pressable style={styles.pressable} onPress={(e: GestureResponderEvent) => { const x = e.nativeEvent.locationX;
                                                                       const y = e.nativeEvent.locationY;
                                                                       handleTouch(x, y); }}/>
             </View>
@@ -399,11 +415,11 @@ function handleTouch(x: number, y: number) {
             contentContainerStyle={styles.colorBar}
             style={styles.colorBarScroll}
           >
-            {uniqueColors.map((c) => (
+            {uniqueColors.map((c: string) => (
               <Pressable
                 key={c}
                 onPress={() => setSelectedColor(c)}
-                style={({ pressed }) => [
+                style={({ pressed }: { pressed: boolean }) => [
                   styles.colorDot,
                   { backgroundColor: c },
                   selectedColor === c && styles.colorDotSelected,
