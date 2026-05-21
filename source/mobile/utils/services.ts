@@ -70,8 +70,8 @@ export class Services {
         return this.getData(`comics/not-started/${user_id}/category/${category_id}`);
     }
 
-    static async getCategories(): Promise<ICategory[]> {
-        return this.getData('category');
+    static async getNotReadCategories(user_id: string): Promise<ICategory[]> {
+        return this.getData(`category/not-read/${user_id}`);
     }
 
     static async getNotStartedComic(comic_id: number): Promise<IGetComic> {
@@ -107,3 +107,4 @@ export class Services {
         return this.patchData('comic/update', body);
     }
 }
+
