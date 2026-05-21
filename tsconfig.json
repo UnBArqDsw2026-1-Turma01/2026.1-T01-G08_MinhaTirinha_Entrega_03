@@ -19,6 +19,6 @@
     "noFallthroughCasesInSwitch": false,
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "source/server/src/comic/comic-progress.facade.ts"],
   "exclude": ["node_modules", "dist", "source", "**/*.spec.ts"]
 }

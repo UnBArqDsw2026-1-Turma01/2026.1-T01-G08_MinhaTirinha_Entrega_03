@@ -22,7 +22,7 @@ export class ComicProgressFacade {
     const { error: updateError } = await supabase
       .from('Historic')
       .update({ 
-        [field]: true,
+        [field]: true, // atualização dinâmica
       })
       //filtra qual registro será atualizado
       .eq('id_user', userId)
@@ -32,7 +32,7 @@ export class ComicProgressFacade {
       throw updateError;
     }
 
-    // Busca progresso atualizado
+    // Busca progresso atualizado 
     const { data, error } = await supabase
       .from('Historic')
       .select('*') //busca o estado atual do quadrinho
