@@ -15,8 +15,6 @@ import {
 
 import { Services } from "@/utils/services";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { AppSidebar } from "@/components/AppSidebar";
-import { Image } from "expo-image";
 
 import { NavigationHeaderWithBackButton } from "@/components/header/navigation-header-with-back-button";
 
@@ -370,8 +368,6 @@ function handleTouch(x: number, y: number) {
   return (
 
     <View style={styles.container}>
-
-    <AppSidebar visible={sidebarOpen} userId={uid} activeRoute="paint" onClose={()=>{setSidebarOpen(false)}}/>
 
     <NavigationHeaderWithBackButton setSidebarOpenTrue={()=>setSidebarOpen(true)} setSidebarOpenFalse={()=>setSidebarOpen(false)}visible={sidebarOpen} route="paint" userId={uid} push={`/comic?path=${path}&user_id=${uid}&comic_id=${cid}&origin=${origin}`}/>
       
