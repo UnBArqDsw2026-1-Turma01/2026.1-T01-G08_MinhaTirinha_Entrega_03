@@ -1,0 +1,195 @@
+/* =========================================================
+   MinhaTirinha — Paleta Pastel Personalizada
+   ========================================================= */
+
+:root {
+  /* Cores base pastéis */
+  --pastel-lilac:      #C9B8E8;
+  --pastel-lilac-dark: #9D87C7;
+  --pastel-rose:       #F2B8C6;
+  --pastel-mint:       #B8E4D8;
+  --pastel-sky:        #B8D4F0;
+  --pastel-peach:      #F5CEBA;
+  --pastel-cream:      #F8F4FF;
+  --pastel-text:       #4A3F5C;
+  --pastel-text-light: #7B6E91;
+
+  /* Overrides das variáveis internas do Material Design */
+  --md-primary-fg-color:        var(--pastel-lilac-dark) !important;
+  --md-primary-fg-color--dark:  var(--pastel-lilac-dark) !important;
+  --md-primary-fg-color--light: var(--pastel-lilac) !important;
+  
+  --md-accent-fg-color:         var(--pastel-rose) !important;
+  
+  --md-default-bg-color:        var(--pastel-cream);
+  --md-default-fg-color:        var(--pastel-text);
+  --md-default-fg-color--light: var(--pastel-text-light);
+}
+
+/* ── Header / barra de navegação superior ── */
+[data-md-color-scheme="default"] .md-header {
+  background: linear-gradient(135deg, var(--pastel-lilac) 0%, var(--pastel-rose) 100%) !important;
+  color: var(--pastel-text) !important;
+  box-shadow: 0 2px 8px rgba(180, 150, 200, 0.25) !important;
+}
+
+/* Fix para o mobile sidebar header (aquele que estava rosa choque) */
+.md-nav__title[for="__drawer"] {
+  background: linear-gradient(135deg, var(--pastel-lilac) 0%, var(--pastel-rose) 100%) !important;
+  color: var(--pastel-text) !important;
+}
+
+[data-md-color-scheme="default"] .md-header__title {
+  color: var(--pastel-text) !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+[data-md-color-scheme="default"] .md-header__topic {
+  color: var(--pastel-text) !important;
+}
+
+/* Links do header */
+[data-md-color-scheme="default"] .md-header a,
+[data-md-color-scheme="default"] .md-header button,
+[data-md-color-scheme="default"] .md-header label {
+  color: var(--pastel-text) !important;
+}
+
+/* ── Abas de navegação ── */
+[data-md-color-scheme="default"] .md-tabs {
+  background: linear-gradient(135deg, var(--pastel-lilac-dark) 0%, var(--pastel-rose) 100%) !important;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link {
+  color: var(--pastel-cream) !important;
+  opacity: 0.85;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link--active,
+[data-md-color-scheme="default"] .md-tabs__link:hover {
+  color: #fff !important;
+  opacity: 1;
+}
+
+/* ── Sidebar / navegação lateral ── */
+[data-md-color-scheme="default"] .md-nav__link--active,
+[data-md-color-scheme="default"] .md-nav__link:hover {
+  color: var(--pastel-lilac-dark) !important;
+}
+
+[data-md-color-scheme="default"] .md-nav__item--active > .md-nav__link {
+  color: var(--pastel-lilac-dark) !important;
+  font-weight: 600;
+}
+
+/* ── Fundo geral da página ── */
+[data-md-color-scheme="default"] .md-main,
+[data-md-color-scheme="default"] body {
+  background-color: var(--pastel-cream) !important;
+}
+
+/* ── Conteúdo principal ── */
+[data-md-color-scheme="default"] .md-content {
+  background-color: #fff !important;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(180, 150, 200, 0.12);
+  padding: 1rem;
+}
+
+/* ── Títulos ── */
+[data-md-color-scheme="default"] h1 {
+  color: var(--pastel-lilac-dark) !important;
+  border-bottom: 2px solid var(--pastel-lilac) !important;
+  padding-bottom: 0.3em;
+}
+
+[data-md-color-scheme="default"] h2 {
+  color: var(--pastel-text) !important;
+  border-left: 4px solid var(--pastel-rose) !important;
+  padding-left: 0.6em;
+}
+
+[data-md-color-scheme="default"] h3 {
+  color: var(--pastel-text-light) !important;
+}
+
+/* ── Links inline ── */
+[data-md-color-scheme="default"] .md-content a {
+  color: var(--pastel-lilac-dark) !important;
+}
+
+[data-md-color-scheme="default"] .md-content a:hover {
+  color: var(--pastel-rose) !important;
+  text-decoration: underline;
+}
+
+/* ── Blocos de código ── */
+[data-md-color-scheme="default"] .highlight,
+[data-md-color-scheme="default"] code {
+  background-color: #F3EEF9 !important;
+  border-radius: 6px;
+}
+
+/* ── Tabelas ── */
+[data-md-color-scheme="default"] .md-typeset table:not([class]) th {
+  background-color: var(--pastel-lilac) !important;
+  color: var(--pastel-text) !important;
+}
+
+[data-md-color-scheme="default"] .md-typeset table:not([class]) tr:nth-child(even) {
+  background-color: #FAF7FF !important;
+}
+
+/* ── Botão "voltar ao topo" ── */
+[data-md-color-scheme="default"] .md-top {
+  background-color: var(--pastel-lilac) !important;
+  color: var(--pastel-text) !important;
+}
+
+/* ── Footer ── */
+[data-md-color-scheme="default"] .md-footer {
+  background: linear-gradient(135deg, var(--pastel-lilac) 0%, var(--pastel-rose) 100%) !important;
+}
+
+[data-md-color-scheme="default"] .md-footer-meta {
+  background-color: var(--pastel-lilac-dark) !important;
+}
+
+/* ── Admonitions (Avisos/Notes) ── */
+.md-typeset .admonition,
+.md-typeset details {
+  border-left-color: var(--pastel-lilac) !important;
+  background-color: #FAF9FF !important;
+}
+
+.md-typeset .admonition-title,
+.md-typeset summary {
+  background-color: #EFE9FF !important;
+  color: var(--pastel-text) !important;
+}
+
+/* ── Modo escuro — paleta pastel noturna ── */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:       #9D87C7 !important;
+  --md-accent-fg-color:        #F2B8C6 !important;
+  --md-default-bg-color:       #1E1A2E !important;
+  --md-default-fg-color:       #E8DCF5 !important;
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background: linear-gradient(135deg, #2E2445 0%, #3D2A3A 100%) !important;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background: linear-gradient(135deg, #2E2445 0%, #3D2A3A 100%) !important;
+}
+
+[data-md-color-scheme="slate"] h1 {
+  color: var(--pastel-lilac) !important;
+  border-bottom-color: #3D2A3A !important;
+}
+
+[data-md-color-scheme="slate"] h2 {
+  border-left-color: var(--pastel-rose) !important;
+}
