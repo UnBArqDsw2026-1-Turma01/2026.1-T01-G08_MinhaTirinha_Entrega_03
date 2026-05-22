@@ -7,11 +7,9 @@ import { IUpdateComic } from "./entities/update-comic";
 
 export class Services {
 
-    private static url: string = "http://192.168.1.9:3000/";
-
     private static async patchData(route: string, body: any): Promise<any> {
         try {
-            const response = await fetch(`${this.url}${route}`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER!}/${route}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -30,7 +28,7 @@ export class Services {
 
     private static async postData(route: string, body: any): Promise<any> {
         try {
-            const response = await fetch(`${this.url}${route}`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER!}/${route}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -49,7 +47,7 @@ export class Services {
 
     private static async getData(route: string): Promise<any> {
         try {
-            const response = await fetch(`${this.url}${route}`);
+            const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER!}/${route}`);
             
             if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);

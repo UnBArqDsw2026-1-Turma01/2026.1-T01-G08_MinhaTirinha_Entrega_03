@@ -6,6 +6,7 @@ import { IStartedComicInfo } from "@/utils/entities/started_comic_info";
 import { NavigationHeaderWithTitle } from "@/components/header/navigation-header-with-title";
 import { NotStarted } from "@/components/auth/gallery/not-started";
 import { StartedComicSection } from "@/components/auth/gallery/started-comic-section";
+import { Loading } from "@/components/loading";
 
 /**
  * Tela da Galeria Pessoal.
@@ -62,7 +63,7 @@ export default function GaleriaPessoal() {
         <View style={styles.container}>
             <NavigationHeaderWithTitle visible={sidebarOpen} userId={uid} route='gallery' setSidebarOpenTrue={()=>setSidebarOpen(true)} setSidebarOpenFalse={() => setSidebarOpen(false)} title='Galeria Pessoal'/>
             {loading? 
-                <></>:
+                <Loading/>:
                 <>
                     {!hasComics ? (
                         <NotStarted/>

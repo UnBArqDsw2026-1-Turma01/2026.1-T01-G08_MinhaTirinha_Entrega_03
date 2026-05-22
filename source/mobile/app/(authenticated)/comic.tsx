@@ -7,6 +7,7 @@ import { IComic } from "@/utils/entities/comic.entity";
 import { IImage } from "@/utils/entities/image.entity";
 import { NavigationHeaderWithBackButton } from "@/components/header/navigation-header-with-back-button";
 import { ComicBox } from "@/components/auth/comic/comic-box";
+import { Loading } from "@/components/loading";
 
 export default function Comic() {
     const { path, user_id, comic_id, origin } = useLocalSearchParams();
@@ -21,6 +22,7 @@ export default function Comic() {
     const [comicImages, setComicImages] = useState<IImage[]>();
     const [progress, setProgress] = useState(0);
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     
     function calculateProgress() {
         let value = 0;
@@ -33,6 +35,7 @@ export default function Comic() {
 
     useEffect(()=>{
         async function fetchData() {
+            setLoading(true);
             let response_comic;
             if(path === 'library' || path === 'first') {
                 response_comic = await Services.getNotStartedComic(cid);
@@ -44,6 +47,7 @@ export default function Comic() {
             setComicImages(response_comic!.comic_images);
         }
         fetchData();
+        setLoading(false);
     }, []);
 
     useEffect(()=>{
@@ -56,12 +60,15 @@ export default function Comic() {
 
             <NavigationHeaderWithBackButton setSidebarOpenTrue={()=>setSidebarOpen(true)} setSidebarOpenFalse={()=>setSidebarOpen(false)}visible={sidebarOpen} route={pathname} userId={uid} push={(route_origin as Href)}/>
 
-            <View style={styles.subcontainer}>
-                {(comicInfo === undefined || comicImages === undefined || comicStatus === undefined) ? 
-                    <></>:
-                    <ComicBox progress={progress} comicInfo={comicInfo} comicStatus={comicStatus} comicImages={comicImages} userId={uid} comicId={cid} origin={origin_f}/> }
-            </View>
-
+            {loading?
+                <Loading/>
+                :
+                <View style={styles.subcontainer}>
+                    {(comicInfo === undefined || comicImages === undefined || comicStatus === undefined) ? 
+                        <></>:
+                        <ComicBox progress={progress} comicInfo={comicInfo} comicStatus={comicStatus} comicImages={comicImages} userId={uid} comicId={cid} origin={origin_f}/> }
+                </View>
+            }
         </View>
     );
 }
