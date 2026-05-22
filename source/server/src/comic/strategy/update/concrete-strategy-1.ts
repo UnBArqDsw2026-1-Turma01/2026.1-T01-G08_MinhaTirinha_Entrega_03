@@ -1,12 +1,12 @@
 import { SupabaseService } from "src/supabase/supabase.service";
-import { IndexUpdateStrategy } from "./index_update_strategy";
+import { UpdateStrategy } from "./strategy";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class FirstUpdateStrategy extends IndexUpdateStrategy {
+export class FirstUpdateStrategy extends UpdateStrategy {
     
-    constructor(protected readonly supabase: SupabaseService){
-        super(supabase);
+    constructor(private readonly supabase: SupabaseService){
+        super();
     }
     
     async update(user_id:string, comic_id: number): Promise<number> {

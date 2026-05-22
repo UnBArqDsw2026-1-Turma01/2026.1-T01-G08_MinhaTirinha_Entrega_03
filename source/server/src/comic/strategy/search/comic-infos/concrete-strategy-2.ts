@@ -1,13 +1,14 @@
-import { SearchComicStrategy } from './search_comic.strategy';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { ComicInfo } from '../entities/comic_info.entity';
+import { Injectable } from '@nestjs/common';
+import { SearchNotStartedStrategy } from './strategy';
+import { ComicInfo } from 'src/comic/entities/comic_info.entity';
+import { SupabaseService } from 'src/supabase/supabase.service';
 
-export class SearchUnreadByCategoryStrategy extends SearchComicStrategy { // Adicionou o implements e nome corrigido
-
-  constructor(supabase: SupabaseClient) {
-    super(supabase);
+@Injectable()
+export class SearchNotStartedComicByCategoryStrategy extends SearchNotStartedStrategy { // Adicionou o implements e nome corrigido
+  constructor(private readonly supabase: SupabaseService) {
+    super();
   }
-  async execute(user_id: string, category_id: number): Promise<ComicInfo[]> 
+  async search(user_id: string, category_id: number): Promise<ComicInfo[]> 
   // CREATE FUNCTION public.get_unread_comics_by_category(user_id uuid, category_id integer)
   // RETURNS TABLE (
   //     id integer,
@@ -31,7 +32,7 @@ export class SearchUnreadByCategoryStrategy extends SearchComicStrategy { // Adi
   //     );
   // $$ LANGUAGE SQL;
   {
-    const { data, error } =  await this.supabase.rpc('get_unread_comics_by_category', { user_id: user_id, category_id: category_id });
+    const { data, error } =  await this.supabase.getInstance().rpc('get_unread_comics_by_category', { user_id: user_id, category_id: category_id });
     if(error) throw new Error(error.message); 
     return data}
 }
