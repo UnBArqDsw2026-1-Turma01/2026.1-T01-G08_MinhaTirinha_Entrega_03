@@ -5,6 +5,7 @@ import { ComicModule } from './comic/comic.module';
 import { CategoryModule } from './category/category.module';
 import { SupabaseModule } from './supabase/supabase.module';
 
+//padrão estrutural: decorator
 @Module({
   imports: [
     SupabaseModule, 

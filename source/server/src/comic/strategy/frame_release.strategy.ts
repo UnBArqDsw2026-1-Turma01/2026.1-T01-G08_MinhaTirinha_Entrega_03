@@ -4,6 +4,8 @@
  * Toda nova estratégia de liberação DEVE estender essa classe
  * e implementar o método execute() com sua própria lógica.
  */
+
+// contrato
 export abstract class FrameReleaseStrategy {
   abstract execute(status: {
     first: boolean;

@@ -9,6 +9,8 @@ import { FrameReleaseStrategy } from './frame_release.strategy';
  *  - Se todos forem `true` → tirinha completada, não há mais quadros a liberar.
  *  - Se todos forem `false` → ainda não começou, libera o primeiro quadro.
  */
+
+//  estratégia concreta/ lógica
 export class ReleaseNextFrameStrategy extends FrameReleaseStrategy {
   execute(status: {
     first: boolean;
