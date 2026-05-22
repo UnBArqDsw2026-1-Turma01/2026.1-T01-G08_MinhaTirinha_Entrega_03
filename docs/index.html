@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>MinhaTirinha | Wiki Oficial</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+
+  <style>
+    :root {
+      --theme-color: #FFB6C1; /* Cor Azul do seu tema */
+    }
+
+    /* ESTILO GRUPO 1: Barra Superior Completa */
+    .app-nav {
+      position: fixed;
+      margin: 0;
+      padding: 10px 50px 10px 0; /* Espaço para não bater na borda */
+      background-color: var(--theme-color);
+      width: 100%;
+      height: 40px;
+      z-index: 100;
+      text-align: right;
+    }
+
+    .app-nav a {
+      color: white !important;
+      font-weight: bold;
+      margin-left: 20px;
+      text-decoration: none;
+    }
+
+    /* Estilo da barra de busca no topo */
+    .search {
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+    
+    /* Ajuste para o conteúdo não ficar embaixo da barra fixa */
+    section.content {
+      padding-top: 60px;
+    }
+
+    /* Customização da Sidebar */
+    .sidebar {
+      padding-top: 20px;
+    }
+    .sidebar-nav b {
+      color: var(--theme-color);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">Carregando documentação...</div>
+  
+  <script>
+    window.$docsify = {
+      name: 'MinhaTirinha - G08',
+      repo: 'https://github.com/Marjoriemitzi/2026.1-T01-G08_MinhaTirinha_Entrega_02',
+      
+      loadSidebar: true,
+      loadNavbar: true,
+      subMaxLevel: 3,
+      auto2top: true,
+      
+      // Configuração da Busca igual ao Grupo 1
+      search: {
+        maxAge: 86400000,
+        paths: 'auto',
+        placeholder: 'Pesquisar...',
+        noData: 'Nenhum resultado!',
+        depth: 6
+      }
+    }
+  </script>
+
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+</body>
+</html>
