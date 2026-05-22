@@ -15,7 +15,6 @@ import { StyleSheet } from "react-native";
 type GoogleButtonProps = {
     setLoadingTrue: ()=>void,
     setLoadingFalse: ()=>void,
-
 }
 
 export function GoogleButton({setLoadingTrue, setLoadingFalse}: GoogleButtonProps) {
