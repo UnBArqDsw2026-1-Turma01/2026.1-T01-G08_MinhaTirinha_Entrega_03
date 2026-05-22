@@ -8,7 +8,7 @@
 
 <!-- * [**Página Inicial**](README) -->
 
-* **2. Modelagem**
+* **3. Padrões de Projeto**
     * [3. Padrões](PadroesDeProjeto/3.PadroesDeProjeto.md)
     * [3.1.Padrões Criacionais](PadroesDeProjeto/3.1.GoFsCriacionais.md)
     * [3.2. Padrões Estruturais](PadroesDeProjeto/3.2.GoFsEstruturais.md)
