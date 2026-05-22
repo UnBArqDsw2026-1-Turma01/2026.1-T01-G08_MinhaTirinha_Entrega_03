@@ -8,6 +8,7 @@ import { NavigationHeaderWithTitle } from "@/components/header/navigation-header
 import { Completed } from "@/components/auth/library/completed";
 import { CategorySection } from "@/components/auth/library/category/category-section";
 import { ComicSection } from "@/components/auth/library/comic/comic-section";
+import { Loading } from "@/components/loading";
 
 /**
  * =====================================================
@@ -49,9 +50,8 @@ export default function Library() {
                 if(response_comics.length === 0) setEmpty(true);
                 else setEmpty(false);
                 setLoading(false);
-                
             } catch (error) {
-                router.push('/error');
+                // router.push('/error');
             } finally {
                 setLoading(false);
             }
@@ -63,8 +63,8 @@ export default function Library() {
         <View style={styles.container}>
             <NavigationHeaderWithTitle setSidebarOpenTrue={()=>setSidebarOpen(true)} setSidebarOpenFalse={()=>setSidebarOpen(false)} visible={sidebarOpen} route={path} userId={uid} title="Biblioteca de Aventuras"/>
             {loading? 
-                <>
-                </>:
+                <Loading/>
+                :
                 <>
                     {!!empty ? 
                         <Completed/>:

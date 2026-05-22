@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import {
   Pressable,
+  type GestureResponderEvent,
+  type LayoutChangeEvent,
   ScrollView,
   StyleSheet,
   View,
@@ -12,84 +14,42 @@ import {
   Image as SkiaImage,
   useImage,
 } from "@shopify/react-native-skia";
+import type { SkImage } from "@shopify/react-native-skia";
 
 import { Services } from "@/utils/services";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { NavigationHeaderWithBackButton } from "@/components/header/navigation-header-with-back-button";
 
-/*
-  Lista de tarefas:
-  - arrumar altura do pointer            (Davi) (falhei miseravelmente)
-  - verificar quantidade de px (pre-processamento)
-  - Endpoint quando completar pintura    (Flyan)
-*/
+class ImageFactory {
+  static createFromEncoded(
+    data: Parameters<typeof Skia.Image.MakeImageFromEncoded>[0],
+  ) {
+    return Skia.Image.MakeImageFromEncoded(data);
+  }
 
-export default function Paint() {
+  static createEditableImage(
+    width: number,
+    height: number,
+    pixels: Uint8Array,
+  ) {
+    const data = Skia.Data.fromBytes(pixels);
 
-  const { user_id, comic_id, comic_index, comic_status, origin } = useLocalSearchParams();
-  const uid = Array.isArray(user_id) ? user_id[0] : user_id;
-  const cid = Number(Array.isArray(comic_id) ? comic_id[0] : comic_id);
-  const index = Number(Array.isArray(comic_index) ? comic_index[0] : comic_index);
-  const status = Array.isArray(comic_status) ? comic_status[0] : comic_status;
+    return Skia.Image.MakeImage(
+      {
+        width,
+        height,
+        alphaType: 3,
+        colorType: 4,
+      },
+      data,
+      width * 4,
+    );
+  }
+}
 
-  const router = useRouter();
-
-  const [uncoloredImageUri, setUncoloredImageUri] = useState<string>();
-  const [coloredImageUri, setColoredImageUri] = useState<string>();
-  const [selectedColor, setSelectedColor] = useState<string>();
-  const [editedImage, setEditedImage] = useState<any>(null);
-  const loadedImage = useImage(uncoloredImageUri ?? "");
-  const loadedColoredImage = useImage(coloredImageUri ?? "");
-  const image = editedImage ?? loadedImage;
-  const [lastingPixels, setLastingPixels] = useState<number>(0);
-  // lista das cores disponíveis para pintar
-  const [uniqueColors, setUniqueColors] = useState<string[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-  const [path, setPath] = useState<string>(String(status));
-  const [painted, setPainted] = useState<boolean>(false);
-  const [fetched, setFetched] = useState<boolean>(false);
-
-  useEffect(() => {
-    async function fetchData() {
-      const response = await Services.getBothUrlImages(cid, index);
-      const colored_image_url = response.colored_image_url;
-      const uncolored_image_url = response.uncolored_image_url;
-      setColoredImageUri(colored_image_url);
-      setUncoloredImageUri(uncolored_image_url);
-      const totalColoredPixels = await countColoredPixels(colored_image_url);
-      setLastingPixels(totalColoredPixels);
-      setFetched(true);
-    }
-    fetchData();
-  }, []);
-
-  useEffect(()=>{
-    // console.log(lastingPixels);
-    if(!lastingPixels && fetched) {
-      setEditedImage(loadedColoredImage);
-      async function final() {
-        if(status === 'first') {
-            const response = await Services.insertComic(uid, cid);
-        } 
-        else {
-            const response = await Services.updateComic(uid, cid, status);
-        }  
-        setPainted(true);
-      }
-      final();
-    }
-  },[lastingPixels])
-
-  useEffect(()=>{
-    if(painted) setPath('painted');
-  },[painted]);
-
-  useEffect(()=>{
-    setSelectedColor(uniqueColors[0])
-  },[uniqueColors]);
-
-  function hexToRgb(hex: string) {
+class PaintingService {
+  static hexToRgb(hex: string) {
     const cleaned = hex.replace("#", "");
     return {
       r: parseInt(cleaned.substring(0, 2), 16),
@@ -98,73 +58,61 @@ export default function Paint() {
     };
   }
 
-  function rgbToHex(r: number, g: number, b: number) {
+  static rgbToHex(r: number, g: number, b: number) {
     return `#${[r, g, b]
       .map((v) => v.toString(16).padStart(2, "0"))
       .join("")}`.toLowerCase();
   }
 
-  async function countColoredPixels(coloredImageUri: string) {
+  static async countRemainingPixels(coloredImageUri: string) {
     const imageData = await Skia.Data.fromURI(coloredImageUri);
-    const coloredImage = Skia.Image.MakeImageFromEncoded(imageData);
-    if (!coloredImage) return 0;
-    
-    const pixels = coloredImage.readPixels();
-    if (!pixels) return 0;
-    
+    const coloredImage = ImageFactory.createFromEncoded(imageData);
+    if (!coloredImage) {
+      return { remainingPixels: 0, uniqueColors: [] as string[] };
+    }
 
-    let count = 0;
+    const pixels = coloredImage.readPixels();
+    if (!pixels) {
+      return { remainingPixels: 0, uniqueColors: [] as string[] };
+    }
+
+    let remainingPixels = 0;
     const colorsSet = new Set<string>();
     const PRETO = 20;
     const BRANCO = 235;
+
     for (let i = 0; i < pixels.length; i += 4) {
       const r = pixels[i];
       const g = pixels[i + 1];
       const b = pixels[i + 2];
 
-      const isBlack =
-        r <= PRETO &&
-        g <= PRETO &&
-        b <= PRETO;
-
-      const isWhite =
-        r >= BRANCO &&
-        g >= BRANCO &&
-        b >= BRANCO;
+      const isBlack = r <= PRETO && g <= PRETO && b <= PRETO;
+      const isWhite = r >= BRANCO && g >= BRANCO && b >= BRANCO;
 
       if (!isBlack && !isWhite) {
-        count += 1;
-        // pixel colorido: salvar a cor em formato hex na lista de cores únicas
-        const hex = rgbToHex(r, g, b);
-        colorsSet.add(hex);
+        remainingPixels += 1;
+        colorsSet.add(this.rgbToHex(r, g, b));
       }
     }
 
-    const colorsArray = Array.from(colorsSet);
-    // atualiza estado de cores únicas: mescla as cores já adicionadas pra não ter duplicatas
-    setUniqueColors((prev) => Array.from(new Set([...prev, ...colorsArray])));
-    return count;
+    return {
+      remainingPixels,
+      uniqueColors: Array.from(colorsSet),
+    };
   }
 
-  // retorna 1 se a cor do pixel da imagem colorida de referência bater com
-  // a cor hex atualmente selecionada. Retorna 0 caso contrário.
-  function isColorMatching(
+  static isColorMatching(
     pixels: Uint8Array | Float32Array,
     width: number,
     selectedX: number,
     selectedY: number,
+    selectedColor: string | undefined,
   ) {
     function getIndex(x: number, y: number, w: number) {
       return (y * w + x) * 4;
     }
 
-    // checa bounds básicos do buffer atual
-    if (
-      selectedX < 0 ||
-      selectedY < 0 ||
-      selectedX >= width ||
-      !pixels
-    ) {
+    if (selectedX < 0 || selectedY < 0 || selectedX >= width || !pixels) {
       return 0;
     }
 
@@ -178,21 +126,19 @@ export default function Paint() {
     const gReference = pixels[idx + 1];
     const bReference = pixels[idx + 2];
 
-    const referenceHex = rgbToHex(rReference, gReference, bReference);
+    const referenceHex = this.rgbToHex(rReference, gReference, bReference);
     const selectedHex = selectedColor?.toLowerCase();
-    const matches = referenceHex === selectedHex;
 
-    if (matches) {
-      return 1;
-    }
-    return 0;
+    return referenceHex === selectedHex ? 1 : 0;
   }
 
-  function isPaintingAvailable(
+  static canPaint(
     pixels: Uint8Array,
     width: number,
     selectedX: number,
     selectedY: number,
+    referenceImage: SkImage | null,
+    selectedColor: string | undefined,
   ) {
     const BRANCO = 235;
 
@@ -208,56 +154,55 @@ export default function Paint() {
 
     const isWhite = r >= BRANCO && g >= BRANCO && b >= BRANCO;
 
-    const referencePixels = loadedColoredImage?.readPixels();
+    const referencePixels = referenceImage?.readPixels();
 
-    if (!referencePixels || !loadedColoredImage) return false;
+    if (!referencePixels || !referenceImage) return false;
 
-    if (!isColorMatching(referencePixels, loadedColoredImage.width(), selectedX, selectedY)) return false; 
-    
-    if (!isWhite) return false; //pixel diferente de branco
-    
-      //ver se o pixel é branco na imagem original se for cancela pintura
-    return true; //pixel branco pode pintar
+    if (
+      !this.isColorMatching(
+        referencePixels,
+        referenceImage.width(),
+        selectedX,
+        selectedY,
+        selectedColor,
+      )
+    ) {
+      return false;
+    }
+
+    if (!isWhite) return false;
+
+    return true;
   }
 
-  function floodFill(
+  static floodFill(
     pixels: Uint8Array,
     width: number,
     height: number,
     startX: number,
     startY: number,
-    hexColor: string
+    hexColor: string,
   ) {
     let count = 0;
 
-    const { r: nr, g: ng, b: nb } =
-      hexToRgb(hexColor);
-
+    const { r: nr, g: ng, b: nb } = this.hexToRgb(hexColor);
     const LIMIAR_BORDA = 150;
 
-    const pilha: [number, number][] =
-      [[startX, startY]];
-
-    const visitados = new Set<string>();
+    const pilha: [number, number][] = [[startX, startY]];
+    const visitados = new Set<number>();
 
     function getIndex(x: number, y: number) {
       return (y * width + x) * 4;
     }
 
     while (pilha.length > 0) {
-
       const [x, y] = pilha.pop()!;
 
-      if (
-        x < 0 ||
-        y < 0 ||
-        x >= width ||
-        y >= height
-      ) {
+      if (x < 0 || y < 0 || x >= width || y >= height) {
         continue;
       }
 
-      const key = `${x},${y}`;
+      const key = y * width + x;
 
       if (visitados.has(key)) {
         continue;
@@ -269,11 +214,7 @@ export default function Paint() {
       const g = pixels[idx + 1];
       const b = pixels[idx + 2];
 
-      if (
-        r < LIMIAR_BORDA &&
-        g < LIMIAR_BORDA &&
-        b < LIMIAR_BORDA
-      ) {
+      if (r < LIMIAR_BORDA && g < LIMIAR_BORDA && b < LIMIAR_BORDA) {
         continue;
       }
 
@@ -294,77 +235,150 @@ export default function Paint() {
     return count;
   }
 
-function handleTouch(x: number, y: number) {
-
-  if(!selectedColor) return;
-
-  if (!image) return;
-
-  const bitmap = image.readPixels();
-
-  if (!bitmap) return;
-
-  // tamanho REAL da imagem
-  const imageWidth = image.width();
-  const imageHeight = image.height();
-
-  // tamanho VISUAL do canvas
-  const canvasWidth = 300;
-  const canvasHeight = 300;
-
-  // coordenada proporcional EXATA
-  const realX = Math.floor((x / canvasWidth) * imageWidth);
-  const realY = Math.floor((y / canvasHeight) * imageHeight);
-
-  // evita coordenadas inválidas
-  if (
-    realX < 0 ||
-    realY < 0 ||
-    realX >= imageWidth ||
-    realY >= imageHeight
+  static fill(
+    image: SkImage | null,
+    referenceImage: SkImage | null,
+    selectedColor: string | undefined,
+    x: number,
+    y: number,
+    canvasWidth: number,
+    canvasHeight: number,
   ) {
-    return;
-  }
+    if (!selectedColor || !image) return null;
 
-  if (
-    !isPaintingAvailable(
+    const bitmap = image.readPixels();
+    if (!bitmap) return null;
+
+    const imageWidth = image.width();
+    const imageHeight = image.height();
+
+    const realX = Math.round((x / canvasWidth) * imageWidth);
+    const realY = Math.round((y / canvasHeight) * imageHeight);
+
+    if (
+      realX < 0 ||
+      realY < 0 ||
+      realX >= imageWidth ||
+      realY >= imageHeight
+    ) {
+      return null;
+    }
+
+    if (!this.canPaint(bitmap, imageWidth, realX, realY, referenceImage, selectedColor)) {
+      return null;
+    }
+
+    const paintedPixelsCount = this.floodFill(
       bitmap,
       imageWidth,
+      imageHeight,
       realX,
-      realY
-    )
-  ) {
-    return;
-  }
+      realY,
+      selectedColor,
+    );
 
-  const paintedPixelsCount = floodFill(
-    bitmap,
-    imageWidth,
-    imageHeight,
-    realX,
-    realY,
-    selectedColor
-  );
+    const newImage = ImageFactory.createEditableImage(
+      imageWidth,
+      imageHeight,
+      bitmap,
+    );
 
-  setLastingPixels((current) => current - paintedPixelsCount);
-
-  const data = Skia.Data.fromBytes(bitmap);
-
-  const newImage = Skia.Image.MakeImage(
-    {
-      width: imageWidth,
-      height: imageHeight,
-      alphaType: 3,
-      colorType: 4,
-    },
-    data,
-    imageWidth * 4
-  );
-
-  if (newImage) {
-    setEditedImage(newImage);
+    return {
+      paintedPixelsCount,
+      newImage,
+    };
   }
 }
+
+export default function Paint() {
+
+  const { user_id, comic_id, comic_index, comic_status, origin } = useLocalSearchParams();
+  const uid = Array.isArray(user_id) ? user_id[0] : user_id;
+  const cid = Number(Array.isArray(comic_id) ? comic_id[0] : comic_id);
+  const index = Number(Array.isArray(comic_index) ? comic_index[0] : comic_index);
+  const status = Array.isArray(comic_status) ? comic_status[0] : comic_status;
+
+  const router = useRouter();
+
+  const [uncoloredImageUri, setUncoloredImageUri] = useState<string>();
+  const [coloredImageUri, setColoredImageUri] = useState<string>();
+  const [selectedColor, setSelectedColor] = useState<string>();
+  const [editedImage, setEditedImage] = useState<SkImage | null>(null);
+  const loadedImage = useImage(uncoloredImageUri ?? "");
+  const loadedColoredImage = useImage(coloredImageUri ?? "");
+  const image = editedImage ?? loadedImage;
+  const [lastingPixels, setLastingPixels] = useState<number>(0);
+  const [canvasLayout, setCanvasLayout] = useState({
+    width: 300,
+    height: 300,
+  });
+  // lista das cores disponíveis para pintar
+  const [uniqueColors, setUniqueColors] = useState<string[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [path, setPath] = useState<string>(String(status));
+  const [painted, setPainted] = useState<boolean>(false);
+  const [fetched, setFetched] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await Services.getBothUrlImages(cid, index);
+      const colored_image_url = response.colored_image_url;
+      const uncolored_image_url = response.uncolored_image_url;
+      setColoredImageUri(colored_image_url);
+      setUncoloredImageUri(uncolored_image_url);
+      const { remainingPixels, uniqueColors: colors } =
+        await PaintingService.countRemainingPixels(colored_image_url);
+      setLastingPixels(remainingPixels);
+      setUniqueColors((prev: string[]) => Array.from(new Set([...prev, ...colors])));
+      setFetched(true);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // console.log(lastingPixels);
+    if (lastingPixels <= 0 && fetched) {
+      setEditedImage(loadedColoredImage);
+      async function final() {
+        if(status === 'first') {
+            const response = await Services.insertComic(uid, cid);
+        }
+        else {
+            const response = await Services.updateComic(uid, cid, status);
+        }
+        setPainted(true);
+      }
+      final();
+    }
+  }, [lastingPixels]);
+
+  useEffect(() => {
+    if (painted) setPath('painted');
+  }, [painted]);
+
+  useEffect(() => {
+    setSelectedColor(uniqueColors[0]);
+  }, [uniqueColors]);
+
+  function handleTouch(x: number, y: number) {
+    const result = PaintingService.fill(
+      image,
+      loadedColoredImage,
+      selectedColor,
+      x,
+      y,
+      canvasLayout.width,
+      canvasLayout.height,
+    );
+
+    if (!result) return;
+
+    setLastingPixels((current: number) => current - result.paintedPixelsCount);
+
+    if (result.newImage) {
+      setEditedImage(result.newImage);
+    }
+  }
   return (
 
     <View style={styles.container}>
@@ -373,12 +387,20 @@ function handleTouch(x: number, y: number) {
       
       {image &&
         <View style={styles.subcontainer}>
-            <View style={styles.comic}>
+            <View
+              style={styles.comic}
+              onLayout={(e: LayoutChangeEvent) => {
+                setCanvasLayout({
+                  width: e.nativeEvent.layout.width,
+                  height: e.nativeEvent.layout.height,
+                });
+              }}
+            >
                 <Canvas style={{ flex: 1 }}>
                     <SkiaImage image={image} x={0} y={0} width={300} height={300} fit="fill"/>
                 </Canvas>
 
-                <Pressable style={styles.pressable} onPress={(e) => { const x = e.nativeEvent.locationX;
+                <Pressable style={styles.pressable} onPress={(e: GestureResponderEvent) => { const x = e.nativeEvent.locationX;
                                                                       const y = e.nativeEvent.locationY;
                                                                       handleTouch(x, y); }}/>
             </View>
@@ -393,11 +415,11 @@ function handleTouch(x: number, y: number) {
             contentContainerStyle={styles.colorBar}
             style={styles.colorBarScroll}
           >
-            {uniqueColors.map((c) => (
+            {uniqueColors.map((c: string) => (
               <Pressable
                 key={c}
                 onPress={() => setSelectedColor(c)}
-                style={({ pressed }) => [
+                style={({ pressed }: { pressed: boolean }) => [
                   styles.colorDot,
                   { backgroundColor: c },
                   selectedColor === c && styles.colorDotSelected,

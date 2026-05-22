@@ -6,7 +6,7 @@
 
   **Repositório do Grupo 08 para a disciplina de Arquitetura e Desenho de Software — Turma 01, semestre 2026.1.**
 
-  [![GitHub Pages](https://img.shields.io/badge/Wiki-GitHub%20Pages-blue?style=for-the-badge&logo=github)](https://minhatirinha-g08.github.io/2026.1-T01-G08_MinhaTirinha_Entrega_02/)
+  [![GitHub Pages](https://img.shields.io/badge/Wiki-GitHub%20Pages-blue?style=for-the-badge&logo=github)](https://unbarqdsw2026-1-turma01.github.io/2026.1-T01-G08_MinhaTirinha_Entrega_02/#/)
 </div>
 
 ## Sobre o Projeto
@@ -34,7 +34,7 @@ A geração do site de documentação é realizada utilizando o **Docsify**. O d
 | <img src="https://github.com/DaviNegreiros.png" width="50"> | Davi Monteiro de Negreiros | [@DaviNegreiros](https://github.com/DaviNegreiros) |
 | <img src="https://github.com/GabrielSPinto.png" width="50"> | Gabriel Santos Pinto | [@GabrielSPinto](https://github.com/GabrielSPinto) |
 | <img src="https://github.com/GFlyan.png" width="50"> | Guilherme Flyan | [@GFlyan](https://github.com/GFlyan) |
-| <img src="https://github.com/Marjoriemitzi.png" width="50"> | João Marcelo | [@JoaoMarceloGCN](https://github.com/JoaoMarceloGCN) |
+| <img src="https://github.com/JoaoMarceloGCN.png" width="50"> | João Marcelo | [@JoaoMarceloGCN](https://github.com/JoaoMarceloGCN) |
 | <img src="https://github.com/SamaraAlvess.png" width="50"> | Maria Samara | [@SamaraAlvess](https://github.com/SamaraAlvess) |
 | <img src="https://github.com/Marjoriemitzi.png" width="50"> | Marjorie Mitzi | [@Marjoriemitzi](https://github.com/Marjoriemitzi) |
 | <img src="https://github.com/pedrohpsantos.png" width="50"> | Pedro Henrique Pereira Santos | [@pedrohpsantos](https://github.com/pedrohpsantos) |

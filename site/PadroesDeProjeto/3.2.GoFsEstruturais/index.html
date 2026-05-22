@@ -569,15 +569,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#323-decorator" class="md-nav__link">
+  <a href="#323-facade" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2.3. Decorator
+        3.2.3. Facade
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3.2.3. Decorator">
+    <nav class="md-nav" aria-label="3.2.3. Facade">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -823,9 +823,9 @@
 </tr>
 <tr>
 <td>Davi Monteiro de Negreiros</td>
-<td>###</td>
-<td>###</td>
-<td>###</td>
+<td>GoF Estrutural - Facade</td>
+<td>21/05</td>
+<td>23:21</td>
 </tr>
 <tr>
 <td>Gabriel Santos Pinto</td>
@@ -841,8 +841,8 @@
 </tr>
 <tr>
 <td>João Marcelo Guimarães Costa Naves</td>
-<td>GoF Estrutural - Decorator</td>
-<td>07/05</td>
+<td>GoF Estrutural - Facade</td>
+<td>21/05</td>
 <td>14:00</td>
 </tr>
 <tr>
@@ -859,14 +859,14 @@
 </tr>
 <tr>
 <td>Pedro Henrique Pereira Santos</td>
-<td>GoF Estrutural - Decorator</td>
-<td>07/05</td>
+<td>GoF Estrutural - Facade</td>
+<td>21/05</td>
 <td>14:00</td>
 </tr>
 <tr>
 <td>Raissa Silva de Oliveira</td>
-<td>GoF Estrutural - Decorator</td>
-<td>07/05</td>
+<td>GoF Estrutural - Facade</td>
+<td>21/05</td>
 <td>14:00</td>
 </tr>
 <tr>
@@ -878,67 +878,76 @@
 </tbody>
 </table>
 <h2 id="322-metodologia">3.2.2. Metodologia</h2>
-<p>O estudo dos Padrões de Projeto Comportamentais foi conduzido com uma abordagem prática e colaborativa, priorizando a aplicação dos conceitos em um sistema de software real, em vez de tratá-los apenas em nível teórico.</p>
+<p>O estudo dos Padrões de Projeto Estruturais foi conduzido com uma abordagem prática e colaborativa, priorizando a aplicação dos conceitos em um sistema de software real, em vez de tratá-los apenas em nível teórico.</p>
 <h3 id="3221-revisao-e-selecao-de-padroes">3.2.2.1. Revisão e Seleção de Padrões</h3>
-<p>O estudo foi iniciado com a revisão do catálogo de Padrões de Projeto Comportamentais da "Gang of Four" (GoF), conforme apresentado na seção anterior. A partir desse levantamento, foram selecionados os padrões mais relevantes para resolver problemas de interação e comunicação identificados no MinhaTirinha, cujo código-fonte está hospedado em um repositório separado.</p>
+<p>O estudo foi iniciado com a revisão do catálogo de Padrões de Projeto Estruturais da "Gang of Four" (GoF), conforme apresentado na seção anterior. A partir desse levantamento, foram selecionados os padrões mais relevantes para resolver problemas de interação e comunicação identificados no MinhaTirinha, cujo código-fonte está hospedado em um repositório separado.</p>
 <h3 id="3222-aplicacao-e-implementacao">3.2.2.2. Aplicação e Implementação</h3>
-<p>O padrão Decorator e ... foi implementado diretamente no código-fonte do MinhaTirinha. Essa etapa foi essencial para validar a eficácia do padrão na redução do acoplamento entre os componentes de quadrinho, na melhoria da legibilidade do código e no aumento da flexibilidade da interface ao longo do fluxo de pintura.</p>
+<p>O padrão Facade foi implementado diretamente no código-fonte do MinhaTirinha. Essa etapa foi essencial para validar a eficácia do padrão na redução do acoplamento entre os componentes de quadrinho, na melhoria da legibilidade do código e no aumento da flexibilidade da interface ao longo do fluxo de pintura.</p>
 <h3 id="3223-modelagem-e-documentacao-uml">3.2.2.3. Modelagem e Documentação UML</h3>
-<p>Para documentar visualmente a estrutura e a aplicação dos padrões, os diagramas UML (Linguagem de Modelagem Unificada) foram elaborados com o Draw.io. Os diagramas produzidos, principalmente de Classe e de Sequência, mapeiam as interações e relações entre os objetos do MinhaTirinha resultantes da aplicação dos padrões Comportamentais.</p>
+<p>Para documentar visualmente a estrutura e a aplicação dos padrões, os diagramas UML (Linguagem de Modelagem Unificada) foram elaborados com o Draw.io. Os diagramas produzidos, principalmente de Classe e de Sequência, mapeiam as interações e relações entre os objetos do MinhaTirinha resultantes da aplicação dos padrões estruturais.</p>
 <h3 id="3224-demonstracao-e-colaboracao">3.2.2.4. Demonstração e Colaboração</h3>
 <p>Para garantir a transparência do processo e registrar a contribuição de cada membro, as sessões de desenvolvimento, discussões técnicas e demonstrações de código foram gravadas via Microsoft Teams. Esses registros funcionam como artefatos de evidência, documentando a aplicação prática dos padrões, o fluxo colaborativo de trabalho e a participação individual da equipe na resolução dos problemas de design.</p>
-<h2 id="323-decorator">3.2.3. Decorator</h2>
-<p>O padrão Decorator é um padrão de projeto estrutural que permite adicionar responsabilidades a um objeto dinamicamente, envolvendo-o em objetos decoradores que estendem seu comportamento sem alterar sua estrutura original. No contexto do MinhaTirinha, sua aplicação se restringe ao frontend, onde a intenção principal é flexibilizar a composição visual dos componentes da interface sem recorrer a uma hierarquia rígida de herança.</p>
+<h2 id="323-facade">3.2.3. Facade</h2>
+<p>O padrão Facade é um padrão de projeto estrutural que fornece uma interface simplificada para uma biblioteca ou sistema complexo de classes. No contexto do MinhaTirinha, sua aplicação se restringe ao frontend, onde a intenção principal é facilitar a interação com os serviços de gerenciamento de quadrinhos, oferecendo métodos de alto nível que orquestram múltiplas operações internas.</p>
 <h3 id="3231-diagrama-uml">3.2.3.1. Diagrama UML</h3>
-<p>O padrão GoF Estrutural Decorator foi aplicado ao projeto, no seguinte código:</p>
-<p>Portanto, assim ficou modelado em UML, o padrão Decorator no código do aplicativo. Clique aqui para <a href="">acessar o diagrama completo</a></p>
-<p><img alt="UML Decorator" src="../../assets/DesignPatternDecorator.drawio.png" />
+<p>O padrão GoF Estrutural Facade foi aplicado ao projeto, no seguinte código:
+<img alt="Código Facade" src="../../assets/facadeInCode.png" /></p>
+<p>Portanto, assim ficou modelado em UML, o padrão Facade no código do aplicativo. Clique aqui para <a href="">acessar o diagrama completo</a></p>
+<p><img alt="UML Facade" src="../../assets/FacadeDiagrama.drawio.png" />
 <font size="2"><p style="text-align: center">Fonte: <a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a>, <a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a>, <a href="https://github.com/daisha19">Raissa Silva de Oliveira</a>, 2026.</p></font></p>
 <h4 id="estrutura-e-responsabilidades">Estrutura e Responsabilidades</h4>
 <ul>
 <li>
-<p><strong><code>IQuadrinho</code></strong>
-Interface que define o contrato comum da hierarquia, especificando o método <code>render(): ReactNode</code>. Ela garante que tanto o componente base quanto os decoradores sejam tratados de forma uniforme pelo restante da aplicação.</p>
+<p><strong><code>Services</code></strong>
+Fachada estática que centraliza toda a comunicação entre os componentes React Native e a API remota. Expõe uma interface simplificada dividida em grupos funcionais (Search, Read e Write Operations), ocultando completamente os detalhes de transporte HTTP dos consumidores. O atributo privado <code>url: string</code> concentra a configuração do endpoint base.</p>
 </li>
 <li>
-<p><strong><code>QuadrinhoBase</code></strong>
-Implementação concreta de <code>IQuadrinho</code> e componente mais simples da estrutura, responsável pela renderização fundamental do quadrinho. Consome o tipo <code>QuadrinhoProps</code>, que agrupa os dados necessários: <code>quadrinhoId</code>, <code>imagemUrl</code>, <code>progresso</code> e <code>concluido</code>.</p>
+<p><strong>Infraestrutura (Privada)</strong>
+Camada interna composta pelos métodos <code>getData()</code>, <code>postData()</code> e <code>patchData()</code>, que encapsulam as chamadas HTTP via <code>fetch</code>. Esses métodos não fazem parte da interface pública da fachada e são inacessíveis diretamente pelos componentes, garantindo que nenhum consumidor precise lidar com verbos HTTP, headers ou tratamento de rede.</p>
 </li>
 <li>
-<p><strong><code>QuadrinhoDecorator</code></strong>
-Classe abstrata que também implementa <code>IQuadrinho</code> e atua como base para todos os decoradores. Mantém internamente uma referência ao componente envolvido por meio do atributo <code>ComponenteEnvolvido: IQuadrinho</code>, delegando a chamada de <code>render()</code> e permitindo que os decoradores estendam o comportamento de forma encadeada.</p>
+<p><strong>Search Operations</strong>
+Conjunto de operações somente-leitura orientadas a consultas filtradas: <code>getNotStartedComics(user_id)</code> e <code>getNotStartedComicsByCategory(user_id, category_id)</code>, ambas retornando <code>Promise&lt;IComicInfo[]&gt;</code>. Correspondem internamente ao endpoint <code>GET /comics/not-started</code>.</p>
 </li>
 <li>
-<p><strong><code>WithPaintTracking</code>, <code>WithSpeechBubble</code> e <code>WithShareOption</code></strong>
-Decoradores concretos que estendem <code>QuadrinhoDecorator</code>, cada um adicionando uma responsabilidade distinta. <code>WithPaintTracking</code> aciona <code>salvaProgresso()</code> continuamente enquanto o usuário pinta. <code>WithSpeechBubble</code> aciona <code>exibeBalao()</code> ao término da pintura, revelando o balão de fala. <code>WithShareOption</code> aciona <code>exibeBotoes()</code> na conclusão, disponibilizando as opções de compartilhamento. Os três consomem o hook <code>useProgresso</code>, que centraliza o estado do quadrinho e se comunica com a API remota via Context.</p>
+<p><strong>Read Operations</strong>
+Operações de leitura geral: <code>getCategories()</code>, que retorna <code>Promise&lt;ICategory[]&gt;</code>, e <code>getBothUrlImages(comic_id, index)</code>, que retorna <code>Promise&lt;any&gt;</code>. Mapeiam respectivamente para <code>GET /category</code> e <code>GET /comics/both-images</code>.</p>
 </li>
 <li>
-<p><strong><code>CavaleteScreen</code></strong>
-Tela que utiliza <code>QuadrinhoDecorator</code> como ponto de entrada para a composição visual, disponibilizando ao usuário a paleta de cores e as ferramentas de pintura por meio dos métodos <code>exibirPaleta()</code> e <code>exibirFerramentas()</code>.</p>
+<p><strong>Write Operations</strong>
+Operações de escrita que modificam o estado persistido: <code>insertComic(user_id, comic_id)</code> e <code>updateComic(user_id, comic_id, status)</code>, ambas retornando <code>Promise&lt;number&gt;</code>. Delegam internamente para <code>POST /comic/insert</code> e <code>PATCH /comic/update</code>.</p>
+</li>
+<li>
+<p><strong><code>PaintScreen</code>, <code>LibraryScreen</code>, <code>ComicScreen</code> e <code>GalleryScreen</code></strong>
+Componentes React Native consumidores da fachada via relação <code>&lt;&lt;use&gt;&gt;</code>. Cada um acessa apenas os métodos relevantes ao seu contexto: <code>PaintScreen</code> utiliza <code>handleTouch()</code> e <code>countColoredPixels()</code>; <code>LibraryScreen</code> utiliza <code>fetchData()</code>; <code>ComicScreen</code> e <code>GalleryScreen</code> utilizam <code>calculateProgress()</code>. Nenhum deles conhece os detalhes da infraestrutura de rede.</p>
+</li>
+<li>
+<p><strong><code>API_Rest</code></strong>
+Subsistema externo que expõe os endpoints REST consumidos exclusivamente pela fachada. Os componentes da interface não possuem qualquer dependência direta sobre ele, tornando possível substituir ou versionar a API sem alterar nenhum componente de tela.</p>
 </li>
 </ul>
 <h4 id="beneficios-da-aplicacao">Benefícios da Aplicação</h4>
-<p><strong>Flexibilidade:</strong> novos comportamentos podem ser adicionados ao quadrinho criando-se novos decoradores que estendam <code>QuadrinhoDecorator</code>, sem necessidade de modificar o componente base.</p>
-<p><strong>Baixo acoplamento:</strong> o <code>QuadrinhoBase</code> permanece isolado de qualquer lógica adicional, pois cada responsabilidade é encapsulada de forma independente em seu respectivo decorador.</p>
-<p><strong>Extensibilidade:</strong> o sistema permite incorporar futuros comportamentos, como animações de transição, notificações ou integrações externas, sem alterar a estrutura principal da interface.</p>
-<p><strong>Coesão:</strong> cada classe possui uma responsabilidade única e bem delimitada, separando a renderização base, o contrato da interface, a delegação do decorator e as funcionalidades progressivas de pintura.</p>
-<p>Esse modelo demonstra a aplicação estruturada do padrão estrutural Decorator da GoF ao envolver componentes de quadrinho em camadas de comportamento independentes, permitindo que o frontend do MinhaTirinha evolua de forma modular, reutilizável e de fácil manutenção.</p>
+<p><strong>Desacoplamento:</strong> os componentes de tela dependem apenas da interface pública de <code>Services</code>, sem nenhum conhecimento sobre verbos HTTP, URLs ou estrutura da API subjacente.</p>
+<p><strong>Centralização:</strong> qualquer alteração na comunicação remota, como troca de endpoint base, adição de headers de autenticação ou mudança de protocolo, é absorvida exclusivamente pela fachada, sem propagação para os consumidores.</p>
+<p><strong>Coesão:</strong> a separação em grupos funcionais (Search, Read, Write) dentro da própria fachada reflete a semântica das operações e facilita a localização de responsabilidades durante a manutenção.</p>
+<p><strong>Testabilidade:</strong> como toda a camada de rede está encapsulada em <code>Services</code>, os componentes de tela podem ser testados com um mock único da fachada, eliminando a necessidade de interceptar chamadas HTTP individualmente.</p>
+<p>Esse modelo demonstra a aplicação do padrão estrutural Facade da GoF ao interpor uma camada estática entre os componentes React Native e o subsistema REST externo, permitindo que o frontend do MinhaTirinha evolua de forma desacoplada, com comunicação remota gerenciável e centralizada em um único ponto de controle.</p>
 <h3 id="3232-opinioes-dos-participantes">3.2.3.2. Opiniões dos Participantes</h3>
 <p>A elaboração desta etapa foi realizada de forma colaborativa em reunião pelo Microsoft Teams, onde os três membros designados estiveram presentes e participaram ativamente das discussões. O desenvolvimento do código foi conduzido no Android Studio, enquanto a criação da UML foi feita no Draw.io, ferramenta que permitiu a edição simultânea do diagrama e garantiu alinhamento entre os integrantes durante o processo.</p>
 <p>Ao longo da atividade, cada membro contribuiu com ideias e feedbacks que ajudaram a consolidar um resultado coerente com a visão do grupo. Esse processo coletivo favoreceu tanto a consistência do diagrama quanto o fortalecimento da colaboração na equipe.</p>
 <details>
   <summary><strong><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></strong></summary>
-  <p>No início, o Decorator me pareceu mais um nome bonito do que algo realmente útil. Só fui entender de verdade quando comecei a pensar nos quadrinhos do MinhaTirinha: cada quadrinho precisava de comportamentos diferentes dependendo do momento, como salvar o progresso enquanto pinta ou revelar o balão só depois que termina. Aí ficou claro que o padrão não estava complicando nada, estava organizando o que já era complexo.</p>
+  <p>No início, o Facade me pareceu mais um nome bonito do que algo realmente útil. Só fui entender de verdade quando comecei a pensar nos quadrinhos do MinhaTirinha: cada quadrinho precisava de comportamentos diferentes dependendo do momento, como salvar o progresso enquanto pinta ou revelar o balão só depois que termina. Aí ficou claro que o padrão não estava complicando nada, estava organizando o que já era complexo.</p>
 </details>
 
 <details>
   <summary><strong><a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a></strong></summary>
-  <p>Confesso que demorei um pouco para sair da lógica de "por que não colocar tudo numa classe só?". Mas quando fui implementar e vi que o QuadrinhoBase continuava limpo enquanto cada decorator cuidava de uma responsabilidade diferente, entendi o valor disso na prática. O código ficou muito mais fácil de mexer sem medo de quebrar outras partes.</p>
+  <p>Confesso que demorei um pouco para sair da lógica de "por que não colocar tudo no próprio componente?". Mas quando fui implementar e vi que o componente principal continuava limpo enquanto cada componente cuidava de uma responsabilidade diferente, entendi o valor disso na prática. O código ficou muito mais fácil de mexer sem medo de quebrar outras partes.</p>
 </details>
 
 <details>
   <summary><strong><a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a></strong></summary>
-  <p>Minha primeira reação foi ceticismo. Criar uma interface, uma classe abstrata e três decoradores só para adicionar comportamentos que poderiam estar no próprio componente me pareceu trabalho a mais. Mudei de ideia quando precisamos ajustar o gatilho do WithSpeechBubble sem tocar em nada mais. Fiz a alteração, testei, funcionou, e o resto do sistema nem percebeu. Nesse momento entendi que a estrutura não era burocracia, era proteção.</p>
+  <p>Minha primeira reação foi ceticismo. Criar uma interface, uma classe abstrata e três componentes só para adicionar comportamentos que poderiam estar no próprio componente me pareceu trabalhoso demais. Mudei de ideia quando precisamos ajustar o gatilho do WithSpeechBubble sem mexer no resto do código. Fiz a alteração, testei, funcionou, e o resto do sistema nem percebeu. Nesse momento entendi que a estrutura não era burocracia, era proteção.</p>
 </details>
 
 <h3 id="3233-video-demonstrativo">3.2.3.3. Vídeo Demonstrativo</h3>
@@ -958,7 +967,7 @@ Tela que utiliza <code>QuadrinhoDecorator</code> como ponto de entrada para a co
 <h2 id="324-referencias-bibliograficas">3.2.4. Referências Bibliográficas</h2>
 <blockquote>
 <p><a id="REF1">1.</a> GAMMA, Erich et al. <strong>Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos</strong>. Tradução de C. F. Lucena e F. S. C. da Silva. Porto Alegre: Bookman, 2007.</p>
-<p><a id="REF2">2.</a> REFACTORING.GURU. Decorator. Refactoring.Guru. Disponível em: https://refactoring.guru/pt-br/design-patterns/decorator. Acesso em: 07 mai. 2026.</p>
+<p><a id="REF2">2.</a> REFACTORING.GURU. Facade. Refactoring.Guru. Disponível em: https://refactoring.guru/pt-br/design-patterns/facade. Acesso em: 07 mai. 2026.</p>
 <p><a id="REF3">3.</a> BLOG GRAN CURSOS ONLINE. Padrões de Projetos GOF: Padrões Estruturais. Disponível em: https://blog.grancursosonline.com.br/padroes-de-projetos-gof-padroes-estruturais/. Acesso em: 07 mai. 2026.
 </p>
 </blockquote>
@@ -991,6 +1000,20 @@ Tela que utiliza <code>QuadrinhoDecorator</code> como ponto de entrada para a co
 <td style="text-align: center;">Adicionando video da reunião GoF Estrutural Decorator</td>
 <td style="text-align: center;"><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></td>
 <td style="text-align: center;"><a href="https://github.com/SamaraAlvess">Maria Samara</a></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>1.2</code></td>
+<td style="text-align: center;">21/05/2026</td>
+<td style="text-align: center;">Adicionando Documentação GoF Estrutural Facade e removendo Decorator</td>
+<td style="text-align: center;"><a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a></td>
+<td style="text-align: center;"><a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>1.3</code></td>
+<td style="text-align: center;">22/05/2026</td>
+<td style="text-align: center;">Atualizando as datas de participação</td>
+<td style="text-align: center;"><a href="https://github.com/DaviNegreiros">Davi Negreiros</a></td>
+<td style="text-align: center;"><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></td>
 </tr>
 </tbody>
 </table>
