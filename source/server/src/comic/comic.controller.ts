@@ -4,7 +4,7 @@ import { GetComic } from './entities/get_comic.entity';
 import { ComicInfo } from './entities/comic_info.entity';
 import { UpdateComicDto } from './dto/update-comic.dto';
 import { CreateComicDto } from './dto/create-comic.dto';
-
+import { StartedComicInfo } from './entities/started_comic_info';
 
 @Controller()
 export class ComicController {
@@ -16,7 +16,7 @@ export class ComicController {
   * GET Tirinhas não inicializadas pelo usuário. 
   */ 
   {
-    return this.comicService.findByStrategy('unread', userId);
+    return this.comicService.getComicInfos('not-started', userId, 0);
   }
 
   @Get('comics/not-started/:userId/category/:categoryId')
@@ -25,25 +25,25 @@ export class ComicController {
   * GET Tirinhas não inicializadas pelo usuário ordenadas por categoria. 
   */ 
   {
-    return this.comicService.findByStrategy('category', userId, categoryId);
+    return this.comicService.getComicInfos('category', userId, categoryId);
   }
 
   @Get('comic/not-started/:comic_id')
-  getNotStartedComic(@Param('comic_id') comic_id: number): Promise<GetComic> 
+  async getNotStartedComic(@Param('comic_id') comic_id: number): Promise<GetComic> 
   /**
   * GET Tirinha não inicializada pelo usuário. 
   */ 
   {
-    return this.comicService.getNotStartedComic(comic_id);
+    return this.comicService.getComic('not-started', comic_id, '');
   }
 
   @Get('comic/started/:user_id/:comic_id')
-  getUserComicOnHistoric(@Param('user_id') user_id: string, @Param('comic_id') comic_id: number): Promise<GetComic>  {
-    return this.comicService.getUserComic(user_id, comic_id);
+  async getUserComicOnHistoric(@Param('user_id') user_id: string, @Param('comic_id') comic_id: number): Promise<GetComic>  {
+    return this.comicService.getComic('started', comic_id, user_id);
   }
 
   @Get('comics/started/:user_id')
-  async getUserComicsOnHistoric(@Param('user_id') user_id: string): Promise<any> {
+  async getUserComicsOnHistoric(@Param('user_id') user_id: string): Promise<StartedComicInfo[]> {
     return this.comicService.getUserComicsOnHistoric(user_id);
   }
 
@@ -58,7 +58,7 @@ export class ComicController {
   }
 
   @Patch('comic/update')
-  async updateComic(@Body() updateComicDto: UpdateComicDto) {
+  async updateComic(@Body() updateComicDto: UpdateComicDto): Promise<number> {
     return this.comicService.updateComic(updateComicDto);
   }
 
