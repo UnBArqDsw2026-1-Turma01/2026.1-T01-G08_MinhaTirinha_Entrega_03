@@ -541,15 +541,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#313-factory" class="md-nav__link">
+  <a href="#313-singleton" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1.3. Factory
+        3.1.3. Singleton
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3.1.3. Factory">
+    <nav class="md-nav" aria-label="3.1.3. Singleton">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -619,15 +619,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#314-abstract-factory" class="md-nav__link">
+  <a href="#314-aplicacao-do-singleton-no-frontend" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1.4. Abstract Factory
+        3.1.4. Aplicação do Singleton no Frontend
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3.1.4. Abstract Factory">
+    <nav class="md-nav" aria-label="3.1.4. Aplicação do Singleton no Frontend">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -666,28 +666,6 @@
         
       </ul>
     </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3142-opinioes-dos-participantes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.1.4.2. Opiniões dos Participantes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3143-video-demonstrativo" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.1.4.3. Vídeo Demonstrativo
-      
-    </span>
-  </a>
   
 </li>
         
@@ -868,8 +846,8 @@
 
 <h1 id="31-modulo-padroes-de-projeto-gofs-criacionais">3.1. Módulo Padrões de Projeto GoFs Criacionais</h1>
 <h2 id="311-introducao">3.1.1. Introdução</h2>
-<p>Padrões de projeto Criacionais tratam da criação de objetos de forma abstrata e desacoplada, promovendo flexibilidade na instanciação e permitindo que o sistema seja independente de como seus objetos são compostos e representados. O resultado prático é um sistema mais modular, adaptável e fácil de estender sem modificar código existente.<a href="#REF1">[1]</a></p>
-<p>Esses padrões encapsulam a lógica de criação, facilitando a manutenção e evolução do sistema. Com essa separação bem estabelecida, a introdução de novos tipos de objetos ou estratégias de criação deixa de exigir mudanças em cascata pelo código, tornando-o mais resiliente, legível e preparado para o futuro.<a href="#REF2">[2]</a></p>
+<p>Padrões de projeto criacionais tratam da criação de objetos de forma controlada e desacoplada, promovendo flexibilidade na instanciação e permitindo que o sistema seja independente de como seus objetos são compostos e representados. O resultado prático é um sistema mais modular, adaptável e fácil de manter.<a href="#REF1">[1]</a></p>
+<p>Esses padrões encapsulam a lógica de criação, facilitando a evolução do sistema. Com essa separação, a introdução de novos objetos ou ajustes de configuração deixa de exigir mudanças espalhadas pelo código, tornando a solução mais resiliente e legível.<a href="#REF2">[2]</a></p>
 <h2 id="participantes">Participantes</h2>
 <p><font size="3"><p style="text-align: center">Tabela 1: Participantes</p></font></p>
 <table>
@@ -890,9 +868,9 @@
 </tr>
 <tr>
 <td>Davi Monteiro de Negreiros</td>
-<td>###</td>
-<td>###</td>
-<td>###</td>
+<td>GoF Criacional - Factory Method</td>
+<td>21/05</td>
+<td>23:21</td>
 </tr>
 <tr>
 <td>Gabriel Santos Pinto</td>
@@ -908,8 +886,8 @@
 </tr>
 <tr>
 <td>João Marcelo Guimarães Costa Naves</td>
-<td>GoF Criacional - Factory/Abstract Factory</td>
-<td>07/05</td>
+<td>GoF Criacional - Singleton</td>
+<td>21/05</td>
 <td>14:00</td>
 </tr>
 <tr>
@@ -926,14 +904,14 @@
 </tr>
 <tr>
 <td>Pedro Henrique Pereira Santos</td>
-<td>GoF Criacional - Factory/Abstract Factory</td>
-<td>07/05</td>
+<td>GoF Criacional - Singleton</td>
+<td>21/05</td>
 <td>14:00</td>
 </tr>
 <tr>
 <td>Raissa Silva de Oliveira</td>
-<td>GoF Criacional - Factory/Abstract Factory</td>
-<td>07/05</td>
+<td>GoF Criacional - Singleton</td>
+<td>21/05</td>
 <td>14:00</td>
 </tr>
 <tr>
@@ -945,150 +923,99 @@
 </tbody>
 </table>
 <h2 id="312-metodologia">3.1.2. Metodologia</h2>
-<p>O estudo dos Padrões de Projeto Criacionais foi conduzido com uma abordagem prática e colaborativa, priorizando a aplicação dos conceitos em um sistema de software real, em vez de tratá-los apenas em nível teórico.</p>
+<p>O estudo dos Padrões de Projeto Criacionais foi conduzido com uma abordagem prática e colaborativa, priorizando a aplicação dos conceitos em um sistema de software real.</p>
 <h3 id="3121-revisao-e-selecao-de-padroes">3.1.2.1. Revisão e Seleção de Padrões</h3>
-<p>O estudo foi iniciado com a revisão do catálogo de Padrões de Projeto Criacionais da "Gang of Four" (GoF), conforme apresentado na seção anterior. A partir desse levantamento, foram selecionados os padrões mais relevantes para resolver problemas de instanciação e criação de objetos identificados no MinhaTirinha, cujo código-fonte está hospedado em um repositório separado.</p>
+<p>O estudo foi iniciado com a revisão do catálogo de Padrões de Projeto Criacionais da "Gang of Four" (GoF), conforme apresentado na seção anterior. A partir desse levantamento, foi selecionado o Singleton para resolver o problema de criação compartilhada da instância do Supabase no frontend do MinhaTirinha, cujo código-fonte está hospedado em um repositório separado.</p>
 <h3 id="3122-aplicacao-e-implementacao">3.1.2.2. Aplicação e Implementação</h3>
-<p>O padrão Factory foi implementado diretamente no código-fonte do MinhaTirinha. Essa etapa foi essencial para validar a eficácia do padrão na abstração da criação de objetos, na melhoria da legibilidade do código e no aumento da flexibilidade do sistema ao longo do fluxo de geração e gerenciamento de histórias.</p>
+<p>O padrão Singleton foi implementado diretamente no código-fonte do frontend do MinhaTirinha. Essa etapa foi essencial para validar a eficácia do padrão na centralização da instância do Supabase, na melhoria da legibilidade do código e no aumento da consistência do sistema ao longo dos fluxos de autenticação, upload e atualização de dados.</p>
 <h3 id="3123-modelagem-e-documentacao-uml">3.1.2.3. Modelagem e Documentação UML</h3>
-<p>Para documentar visualmente a estrutura e a aplicação dos padrões, os diagramas UML (Linguagem de Modelagem Unificada) foram elaborados com o Draw.io. Os diagramas produzidos, principalmente de Classe e de Sequência, mapeiam as interações e relações entre os objetos do MinhaTirinha resultantes da aplicação dos padrões Criacionais.</p>
+<p>Para documentar visualmente a estrutura e a aplicação do padrão, o diagrama UML (Linguagem de Modelagem Unificada) foi elaborado com o Draw.io. O diagrama produzido, principalmente de classe, mapeia as interações e relações entre os elementos do frontend resultantes da aplicação do Singleton.</p>
 <h3 id="3124-demonstracao-e-colaboracao">3.1.2.4. Demonstração e Colaboração</h3>
-<p>Para garantir a transparência do processo e registrar a contribuição de cada membro, as sessões de desenvolvimento, discussões técnicas e demonstrações de código foram gravadas via Microsoft Teams. Esses registros funcionam como artefatos de evidência, documentando a aplicação prática dos padrões, o fluxo colaborativo de trabalho e a participação individual da equipe na resolução dos problemas de design.</p>
-<h2 id="313-factory">3.1.3. Factory</h2>
-<p>O padrão Factory é um padrão de projeto criacional que define uma interface para criar objetos, permitindo que subclasses decidam qual classe instanciar. No contexto do MinhaTirinha, sua aplicação garante que a criação de histórias seja flexível, extensível e desacoplada das classes concretas, facilitando a adição de novos tipos de stories sem impactar o código existente.</p>
+<p>Para garantir a transparência do processo e registrar a contribuição de cada membro, as sessões de desenvolvimento, discussões técnicas e demonstrações de código foram gravadas via Microsoft Teams. Esses registros funcionam como artefatos de evidência, documentando a aplicação prática do padrão, o fluxo colaborativo de trabalho e a participação individual da equipe na resolução dos problemas de design.</p>
+<h2 id="313-singleton">3.1.3. Singleton</h2>
+<p>O padrão Singleton é um padrão de projeto criacional que garante a existência de uma única instância de uma classe e fornece um ponto global de acesso a ela. No frontend do MinhaTirinha, essa instância única é o cliente Supabase exportado pelo módulo <code>source/mobile/utils/supabase.ts</code>.</p>
 <h3 id="3131-diagrama-uml">3.1.3.1. Diagrama UML</h3>
-<p>O padrão GoF Criacional Factory foi aplicado ao projeto, no seguinte código:</p>
-<p>Portanto, assim ficou modelado em UML, o padrão Factory no código do aplicativo. Clique aqui para <a href="">acessar o diagrama completo</a></p>
-<p><img alt="UML Factory" src="../../assets/DesignPatternFactory.drawio.png" />
-<font size="2"><p style="text-align: center">Fonte: <a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a>, <a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a>, <a href="https://github.com/daisha19">Raissa Silva de Oliveira</a>, 2026.</p></font></p>
+<p>O padrão GoF Criacional Singleton foi aplicado ao frontend do projeto, conforme o diagrama anexado pelo grupo.</p>
+<p><img alt="Diagrama de Classes - Singleton do Supabase no Frontend" src="../assets/SingletonDiagrama.drawio.png" /></p>
+<p><font size="2"><p style="text-align: center">Fonte: <a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a>, <a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a>, <a href="https://github.com/daisha19">Raissa Silva de Oliveira</a>, 2026.</p></font></p>
 <h4 id="estrutura-e-responsabilidades">Estrutura e Responsabilidades</h4>
 <ul>
+<li><strong><code>source/mobile/utils/supabase.ts</code></strong></li>
+<li>Centraliza <code>supabaseUrl</code> e <code>supabaseKey</code>.</li>
+<li>Cria a instância com <code>createClient(...)</code>.</li>
 <li>
-<p><strong><code>StoryFactory</code></strong>
-Interface que define o contrato comum da hierarquia, especificando o método <code>createStory(): Story</code>. Ela garante que todas as fábricas concretas implementem um mecanismo consistente de criação, sem expor a lógica de instanciação ao cliente.</p>
+<p>Exporta <code>supabase</code> como cliente único do frontend.</p>
 </li>
 <li>
-<p><strong><code>Story</code></strong>
-Classe abstrata que representa a entidade base comum a todos os tipos de histórias, implementando o comportamento compartilhado por meio do método <code>render(): ReactNode</code>. Todas as variações de Story Card herdam dessa classe.</p>
+<p><strong><code>supabase: SupabaseClient</code></strong></p>
+</li>
+<li>Instância compartilhada reutilizada por importação.</li>
+<li>
+<p>Concentra autenticação, storage e acesso ao banco.</p>
 </li>
 <li>
-<p><strong><code>NewStoryFactory</code>, <code>InProgressStoryFactory</code> e <code>CompletedStoryFactory</code></strong>
-Fábricas concretas que implementam <code>StoryFactory</code>, cada uma responsável pela criação de um tipo específico de história. <code>NewStoryFactory</code> instancia histórias ainda não iniciadas. <code>InProgressStoryFactory</code> cria histórias com progresso parcial registrado. <code>CompletedStoryFactory</code> produz histórias completamente pintadas, prontas para visualização ou compartilhamento.</p>
+<p><strong><code>GoogleButton</code></strong></p>
+</li>
+<li>Componente de login que usa <code>supabase.auth.signInWithIdToken(...)</code>.</li>
+<li>
+<p>Representa o uso do Singleton no fluxo de autenticação com Google.</p>
 </li>
 <li>
-<p><strong><code>NewStoryCard</code>, <code>InProgressStoryCard</code> e <code>CompletedStoryCard</code></strong>
-Implementações concretas de <code>Story</code>, produzidas pelas respectivas fábricas. Cada card renderiza o estado visual correspondente ao momento da história, diferenciando-se na apresentação e nas responsabilidades específicas do seu estado, mas compartilhando a mesma interface base.</p>
+<p><strong><code>ColorPicker</code> e <code>SaveCommand</code></strong></p>
 </li>
-<li>
-<p><strong><code>LibraryScreen</code> e <code>GalleryScreen</code></strong>
-Telas que utilizam as fábricas como ponto de entrada, delegando a criação das stories de acordo com seu estado atual. O código cliente precisa apenas acionar a factory apropriada, sem conhecer os detalhes concretos de instanciação.</p>
-</li>
+<li>Reutilizam a mesma instância para upload da imagem, obtenção da URL pública e atualização do registro em <code>Historic</code>.</li>
+<li>Também usam a instância no fluxo de reversão da operação.</li>
 </ul>
 <h4 id="beneficios-da-aplicacao">Benefícios da Aplicação</h4>
-<p><strong>Flexibilidade:</strong> novos tipos de história podem ser introduzidos criando-se uma nova factory e um novo card correspondente, sem alterar o código das telas ou da lógica existente.</p>
-<p><strong>Baixo acoplamento:</strong> <code>LibraryScreen</code> e <code>GalleryScreen</code> não dependem diretamente das classes concretas de Story Card, pois a responsabilidade de instanciação está encapsulada nas fábricas.</p>
-<p><strong>Extensibilidade:</strong> o sistema permite incorporar futuros estados de história, como histórias bloqueadas ou em revisão, simplesmente adicionando novas fábricas e cards sem modificar a estrutura principal.</p>
-<p><strong>Coesão:</strong> cada classe possui uma responsabilidade única e bem delimitada, separando a lógica de criação, a renderização visual e o controle de estado de cada tipo de história.</p>
-<p>Esse modelo demonstra a aplicação estruturada do padrão criacional Factory Method da GoF ao abstrair a instanciação de diferentes tipos de stories, permitindo que o frontend do MinhaTirinha evolua de forma modular, reutilizável e de fácil manutenção.</p>
+<p><strong>Centralização da configuração:</strong> o cliente Supabase fica em um único módulo.</p>
+<p><strong>Reuso da mesma instância:</strong> as telas e componentes importam o mesmo objeto já configurado.</p>
+<p><strong>Fluxo previsível:</strong> autenticação, storage e banco seguem o mesmo ponto de acesso.</p>
+<p><strong>Menor risco de divergência:</strong> evita múltiplas instâncias com configurações diferentes no frontend.</p>
+<p><strong>Manutenção simplificada:</strong> qualquer ajuste de configuração do Supabase é feito em um único local.</p>
+<p>Esse modelo demonstra a aplicação estruturada do padrão criacional Singleton no frontend do MinhaTirinha, com foco exclusivo na instância compartilhada do Supabase.</p>
 <h3 id="3132-opinioes-dos-participantes">3.1.3.2. Opiniões dos Participantes</h3>
 <p>A elaboração desta etapa foi realizada de forma colaborativa em reunião pelo Microsoft Teams, onde os três membros designados estiveram presentes e participaram ativamente das discussões. O desenvolvimento do código foi conduzido no Android Studio, enquanto a criação da UML foi feita no Draw.io, ferramenta que permitiu a edição simultânea do diagrama e garantiu alinhamento entre os integrantes durante o processo.</p>
 <p>Ao longo da atividade, cada membro contribuiu com ideias e feedbacks que ajudaram a consolidar um resultado coerente com a visão do grupo. Esse processo coletivo favoreceu tanto a consistência do diagrama quanto o fortalecimento da colaboração na equipe.</p>
 <details>
   <summary><strong><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></strong></summary>
-  <p>No início, o Factory parecia desnecessário, já que poderíamos simplesmente instanciar as classes diretamente. A sensação era de que estávamos adicionando uma camada a mais sem muita utilidade prática.Só que, conforme fui pensando na quantidade de tipos de stories que o MinhaTirinha ainda precisaria suportar, ficou claro que sem esse padrão a lógica de criação acabaria espalhada pelo sistema inteiro. Com o Factory, a adição de um novo tipo de story ficou concentrada em um único ponto, sem precisar alterar o que já estava funcionando.</p>
+  <p>No início, o Singleton parecia algo simples demais, porque a ideia de manter uma única instância compartilhada não chama tanta atenção no dia a dia. Só que, ao olhar para o frontend, ficou claro que essa centralização era importante para não espalhar a configuração do Supabase em vários lugares. Assim, o login, o upload de imagens e a atualização dos dados passaram a usar o mesmo cliente, o que deixou a aplicação mais consistente.</p>
 </details>
 
 <details>
   <summary><strong><a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a></strong></summary>
-  <p>No começo, achei que usar uma factory para algo tão simples quanto criar objetos era complexidade demais para pouca necessidade. Parecia uma camada extra que só deixava o código mais distante do problema real.Mas isso mudou durante o desenvolvimento. Quando surgiu a necessidade de adicionar um novo tipo de story, percebi como a estrutura facilitava as coisas. Toda a alteração ficou concentrada na factory responsável, sem precisar mexer no restante do sistema.</p>
+  <p>De início, pensei que importar o cliente diretamente em cada componente já resolveria tudo, sem precisar falar em Singleton. Mas o desenvolvimento mostrou que centralizar a criação do Supabase em um único módulo evitou duplicidade de configuração e deixou o fluxo mais claro. O login com Google e a tela de pintura passaram a compartilhar o mesmo ponto de acesso, o que facilitou a manutenção.</p>
 </details>
 
 <details>
   <summary><strong><a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a></strong></summary>
-  <p>No início, achei que toda aquela abstração para criar objetos fosse desnecessária e só deixasse o código mais complexo. Parecia muito esforço para algo simples.Só que, durante a implementação, ficou evidente que a ideia fazia sentido. A estrutura ajudava bastante a isolar mudanças e evitar impacto no restante do sistema. Quando surgiu a necessidade de adicionar um novo tipo de story, praticamente toda a alteração ficou concentrada na Factory, sem precisar sair modificando várias partes do projeto.</p>
+  <p>No começo, o Singleton parecia uma solução pequena diante de todo o restante da aplicação. Depois ficou evidente que ele resolvia um problema importante: garantir que o frontend usasse sempre o mesmo SupabaseClient. Com isso, a autenticação, o storage e a atualização de dados passaram a seguir uma lógica única, sem espalhar criação de objetos pelo projeto.</p>
 </details>
 
 <h3 id="3133-video-demonstrativo">3.1.3.3. Vídeo Demonstrativo</h3>
-<p>Foi gravado, na plataforma do Microsoft Teams, uma reunião para a discussão e a modelagem UML do padrão Factory.</p>
-<div style="text-align: center;">
-  <iframe 
-    width="560" 
-    height="315"
-    src="https://www.youtube.com/embed/2CuM1G-3GCA"
-    title="YouTube video player"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen>
-  </iframe>
-</div>
-
-<h2 id="314-abstract-factory">3.1.4. Abstract Factory</h2>
-<p>O padrão Abstract Factory é um padrão de projeto criacional que define uma interface para criar famílias de objetos relacionados, sem especificar suas classes concretas. No contexto do MinhaTirinha, sua aplicação garante que a criação de histórias — junto com seus elementos visuais e narrativos associados — seja flexível, extensível e desacoplada das implementações concretas, facilitando a adição de novos estilos ou temas de stories sem impactar o código existente.</p>
+<p>Foi gravado, na plataforma do Microsoft Teams, uma reunião para a discussão e a modelagem UML do padrão Singleton.</p>
+<p>A gravação pode ser acessada em: <a href="INSIRA_AQUI_O_LINK_DIRETO_DA_GRAVACAO">Vídeo demonstrativo do padrão Singleton</a>.</p>
+<h2 id="314-aplicacao-do-singleton-no-frontend">3.1.4. Aplicação do Singleton no Frontend</h2>
+<p>O Singleton no frontend do MinhaTirinha concentra a criação do cliente Supabase em um único arquivo e expõe essa instância para telas e componentes que precisam autenticar usuários, fazer upload de imagens ou atualizar dados no banco.</p>
 <h3 id="3141-diagrama-uml">3.1.4.1. Diagrama UML</h3>
-<p>O padrão GoF Criacional Abstract Factory foi aplicado ao projeto, no seguinte código:</p>
-<p>Portanto, assim ficou modelado em UML o padrão Abstract Factory no código do aplicativo.
-<strong>Observação:</strong> o arquivo do diagrama completo deve ser referenciado nesta seção assim que o recurso visual estiver disponível.
-<font size="2"><p style="text-align: center">Fonte: <a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a>, <a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a>, <a href="https://github.com/daisha19">Raissa Silva de Oliveira</a>, 2026.</p></font></p>
-<p>A seguir, apresenta-se a estrutura e as responsabilidades da implementação do padrão Abstract Factory no MinhaTirinha:</p>
-<hr />
+<p>O padrão GoF Criacional Singleton foi aplicado ao frontend do projeto, conforme o diagrama anexado nesta documentação.</p>
 <h4 id="estrutura-e-responsabilidades_1">Estrutura e Responsabilidades</h4>
 <ul>
-<li>
-<p><strong><code>ITemaTirinhaFactory</code></strong>
-Interface que define o contrato da Abstract Factory, especificando os métodos <code>criarPaletaCores(): IPaletaCores</code> e <code>criarBalaoFala(): IBalaoFala</code>. Ela garante que todas as fábricas concretas implementem um mecanismo consistente de criação de <strong>famílias inteiras de objetos relacionados</strong>, sem expor a lógica de instanciação ao cliente.</p>
-</li>
-<li>
-<p><strong><code>IPaletaCores</code> e <code>IBalaoFala</code></strong>
-Interfaces que representam os <strong>produtos abstratos</strong> da família. <code>IPaletaCores</code> expõe o método <code>obterCoresPasteis(): string[]</code>, enquanto <code>IBalaoFala</code> expõe <code>renderizarEstilo(): void</code>. Todo o código cliente interage apenas com essas interfaces, sem conhecer as implementações concretas.</p>
-</li>
-<li>
-<p><strong><code>TemaTecnologiaFactory</code> e <code>TemaInfantilFactory</code></strong>
-Fábricas concretas que implementam <code>ITemaTirinhaFactory</code>, cada uma responsável por criar uma família coesa de produtos. <code>TemaTecnologiaFactory</code> instancia <code>PaletaTecnologia</code> e <code>BalaoTecnologia</code>, enquanto <code>TemaInfantilFactory</code> instancia <code>PaletaInfantil</code> e <code>BalaoInfantil</code> — garantindo que os produtos criados por uma mesma fábrica sejam sempre compatíveis entre si.</p>
-</li>
-<li>
-<p><strong><code>PaletaTecnologia</code>, <code>PaletaInfantil</code>, <code>BalaoTecnologia</code> e <code>BalaoInfantil</code></strong>
-Implementações concretas dos produtos abstratos. Cada classe realiza o comportamento visual específico do seu tema, mas é consumida pelo cliente exclusivamente por meio das interfaces <code>IPaletaCores</code> e <code>IBalaoFala</code>.</p>
-</li>
-<li>
-<p><strong><code>CavaleteScreen</code></strong>
-Tela que atua como cliente da Abstract Factory, recebendo uma instância de <code>ITemaTirinhaFactory</code> via construtor e armazenando os produtos criados (<code>IPaletaCores</code> e <code>IBalaoFala</code>). O método <code>configurarAmbiente()</code> aciona a fábrica para montar o conjunto visual do tema, sem depender de nenhuma classe concreta diretamente.</p>
-</li>
+<li><strong><code>source/mobile/utils/supabase.ts</code></strong>: arquivo central que cria a instância compartilhada com <code>createClient(env.SUPABASE_URL, env.SUPABASE_KEY)</code> e exporta <code>supabase</code>.</li>
+<li><strong><code>GoogleButton</code></strong>: componente de login que usa <code>supabase.auth.signInWithIdToken(...)</code>.</li>
+<li><strong><code>ColorPicker</code></strong>: tela de pintura que usa a mesma instância para persistir a imagem colorida e atualizar o quadrinho.</li>
+<li><strong><code>SaveCommand</code></strong>: classe interna responsável por <code>storage.upload(...)</code>, <code>storage.getPublicUrl(...)</code>, <code>from('Historic').update(...)</code> e <code>storage.remove(...)</code>.</li>
 </ul>
-<hr />
 <h4 id="beneficios-da-aplicacao_1">Benefícios da Aplicação</h4>
-<p><strong>Consistência entre produtos:</strong> como cada fábrica concreta cria todos os objetos de uma mesma família, é impossível misturar, por exemplo, uma <code>PaletaTecnologia</code> com um <code>BalaoInfantil</code> — a compatibilidade é garantida pela própria estrutura do padrão.</p>
-<p><strong>Baixo acoplamento:</strong> <code>CavaleteScreen</code> depende apenas das abstrações <code>ITemaTirinhaFactory</code>, <code>IPaletaCores</code> e <code>IBalaoFala</code>, nunca das classes concretas. A troca de tema exige apenas substituir a fábrica injetada.</p>
-<p><strong>Extensibilidade:</strong> a adição de um novo tema — como <code>TemaRetroFactory</code> — exige apenas a criação de uma nova fábrica concreta e seus produtos correspondentes, sem modificar nenhuma classe existente.</p>
-<p><strong>Coesão:</strong> cada classe possui uma responsabilidade única e bem delimitada, separando a lógica de criação (fábricas), a renderização visual (produtos) e a orquestração do ambiente (tela cliente).</p>
-<p>Esse modelo demonstra a aplicação estruturada do padrão criacional <strong>Abstract Factory</strong> da GoF ao abstrair a criação de <strong>famílias de objetos visuais interdependentes</strong>, permitindo que o MinhaTirinha suporte múltiplos temas de forma modular, reutilizável e de fácil manutenção.</p>
-<hr />
-<h3 id="3142-opinioes-dos-participantes">3.1.4.2. Opiniões dos Participantes</h3>
-<p>A elaboração desta etapa foi realizada de forma colaborativa em reunião pelo Microsoft Teams, onde os três membros designados estiveram presentes e participaram ativamente das discussões. O desenvolvimento do código foi conduzido no Android Studio, enquanto a criação da UML foi feita no Draw.io, ferramenta que permitiu a edição simultânea do diagrama e garantiu alinhamento entre os integrantes durante o processo.</p>
-<p>Ao longo da atividade, cada membro contribuiu com ideias e feedbacks que ajudaram a consolidar um resultado coerente com a visão do grupo. Esse processo coletivo favoreceu tanto a consistência do diagrama quanto o fortalecimento da colaboração na equipe.</p>
-<details>
-  <summary><strong><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></strong></summary>
-  <p>No início, o Abstract Factory parecia excessivo para o que precisávamos. A sensação era de que estávamos criando interfaces, fábricas e produtos demais para simplesmente montar a tela com um tema visual. Parecia abstração pela abstração, sem ganho real. Só que, conforme fui entendendo a proposta, ficou claro que o padrão resolvia um problema que ainda nem tínhamos enfrentado de verdade: a consistência entre os elementos de um mesmo tema. Sem ele, nada impediria que uma paleta de um tema fosse misturada com o balão de fala de outro. Com o Abstract Factory, essa compatibilidade passa a ser garantida pela própria estrutura, sem depender de disciplina manual de quem for adicionar novos temas no futuro.</p>
-</details>
-
-<details>
-  <summary><strong><a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a></strong></summary>
-  <p>De início, achei que o Abstract Factory era complexidade demais para o escopo do projeto. Criar uma interface de fábrica, duas fábricas concretas, interfaces de produto e quatro implementações só para montar um tema parecia muito esforço para pouca necessidade. Mas isso mudou durante o desenvolvimento. Quando surgiu a possibilidade de adicionar um novo tema, percebi como toda a estrutura já sabia exatamente onde cada coisa deveria entrar. Bastava criar uma nova fábrica concreta com seus produtos correspondentes, e o restante do sistema continuava intocado. A complexidade inicial virou clareza.</p>
-</details>
-
-<details>
-  <summary><strong><a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a></strong></summary>
-  <p>No começo, toda aquela hierarquia de interfaces e fábricas para criar objetos visuais me pareceu desnecessária. Parecia muito esforço para algo que poderia ser resolvido de forma mais direta. Só que, durante a implementação, o que antes parecia excesso virou estrutura. Ficou evidente que o padrão não estava apenas organizando a criação dos objetos, mas garantindo que os elementos de cada tema sempre fossem compatíveis entre si. Quando precisamos adicionar um novo tema, toda a alteração ficou concentrada na nova fábrica e nos seus produtos, sem precisar tocar em nada que já estava funcionando.</p>
-</details>
-
-<h3 id="3143-video-demonstrativo">3.1.4.3. Vídeo Demonstrativo</h3>
-<p>Foi gravado, na plataforma do Microsoft Teams, uma reunião para a discussão e a modelagem UML do padrão Abstract Factory.</p>
-<p>A gravação pode ser acessada em: <a href="INSIRA_AQUI_O_LINK_DIRETO_DA_GRAVACAO">Vídeo demonstrativo do padrão Abstract Factory</a>.</p>
+<p><strong>Centralização da configuração:</strong> o cliente Supabase fica em um único módulo.</p>
+<p><strong>Reuso da mesma instância:</strong> as telas e componentes importam o mesmo objeto já configurado.</p>
+<p><strong>Fluxo previsível:</strong> autenticação, storage e banco seguem o mesmo ponto de acesso.</p>
+<p><strong>Menor risco de divergência:</strong> evita múltiplas instâncias com configurações diferentes no frontend.</p>
+<p>Esse modelo demonstra a aplicação do padrão Singleton no frontend do MinhaTirinha, com foco exclusivo na instância compartilhada do Supabase.</p>
 <h2 id="315-referencias-bibliograficas">3.1.5. Referências Bibliográficas</h2>
 <blockquote>
 <p><a id="REF1">1.</a> GAMMA, Erich et al. <strong>Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos</strong>. Tradução de C. F. Lucena e F. S. C. da Silva. Porto Alegre: Bookman, 2007.</p>
-<p><a id="REF2">2.</a> REFACTORING.GURU. Factory Method. Refactoring.Guru. Disponível em: https://refactoring.guru/pt-br/design-patterns/factory-method. Acesso em: 07 mai. 2026.</p>
-<p><a id="REF3">3.</a> BLOG GRAN CURSOS ONLINE. Padrões de Projetos GOF: Padrões Criacionais. Disponível em: https://blog.grancursosonline.com.br/padroes-de-projetos-gof-padroes-de-criacao/. Acesso em: 07 mai. 2026.
-</p>
+<p><a id="REF2">2.</a> REFACTORING.GURU. Singleton. Refactoring.Guru. Disponível em: https://refactoring.guru/pt-br/design-patterns/singleton. Acesso em: 07 mai. 2026.</p>
+<p><a id="REF3">3.</a> BLOG GRAN CURSOS ONLINE. Padrões de Projetos GOF: Padrões Criacionais. Disponível em: https://blog.grancursosonline.com.br/padroes-de-projetos-gof-padroes-de-criacao/. Acesso em: 07 mai. 2026.</p>
 </blockquote>
 <h2 id="316-bibliografia">3.1.6. Bibliografia</h2>
 <blockquote>
@@ -1108,23 +1035,37 @@ Tela que atua como cliente da Abstract Factory, recebendo uma instância de <cod
 <tr>
 <td style="text-align: center;"><code>1.0</code></td>
 <td style="text-align: center;">07/05/2026</td>
-<td style="text-align: center;">Adicionando Documentação GoF Criacional Factory</td>
+<td style="text-align: center;">Adicionando Documentação GoF Criacional Singleton</td>
 <td style="text-align: center;"><a href="https://github.com/JoaoMarceloGCN">João Marcelo Guimarães Costa Naves</a></td>
 <td style="text-align: center;"><a href="https://github.com/YasminDayrell">Yasmin Dayrell</a></td>
 </tr>
 <tr>
 <td style="text-align: center;"><code>1.1</code></td>
 <td style="text-align: center;">08/05/2026</td>
-<td style="text-align: center;">Adicionando Documentação GoF Criacional Factory</td>
+<td style="text-align: center;">Ajustando a Documentação GoF Criacional Singleton</td>
 <td style="text-align: center;"><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></td>
 <td style="text-align: center;"><a href="https://github.com/anawcarol">Ana Carolina Madeira Fialho</a></td>
 </tr>
 <tr>
 <td style="text-align: center;"><code>1.2</code></td>
 <td style="text-align: center;">14/05/2026</td>
-<td style="text-align: center;">Adicionando Documentação GoF Criacional Abstract Factory</td>
+<td style="text-align: center;">Consolidando a Aplicação GoF Criacional Singleton no Frontend</td>
 <td style="text-align: center;"><a href="https://github.com/pedrohpsantos">Pedro Henrique Pereira Santos</a></td>
 <td style="text-align: center;"><a href="https://github.com/GFlyan">Guilherme Flyan</a></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>1.3</code></td>
+<td style="text-align: center;">21/05/2026</td>
+<td style="text-align: center;">Atualizando as datas de participação e consolidando o histórico do Singleton no frontend</td>
+<td style="text-align: center;"><a href="https://github.com/SamaraAlvess">Maria Samara</a></td>
+<td style="text-align: center;"><a href="https://github.com/YasminDayrell">Yasmin Dayrell</a></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>1.4</code></td>
+<td style="text-align: center;">22/05/2026</td>
+<td style="text-align: center;">Atualizando as datas de participação</td>
+<td style="text-align: center;"><a href="https://github.com/DaviNegreiros">Davi Negreiros</a></td>
+<td style="text-align: center;"><a href="https://github.com/daisha19">Raissa Silva de Oliveira</a></td>
 </tr>
 </tbody>
 </table>
