@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#repositoriotemplate" class="md-skip">
+        <a href="#apresentacao-do-projeto" class="md-skip">
           Pular para conteúdo
         </a>
       
@@ -269,6 +269,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="." class="md-nav__link md-nav__link--active">
         
   
@@ -285,6 +303,80 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introducao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introdução
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#funcionalidades-principais" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Funcionalidades Principais
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitetura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitetura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrantes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#historico-de-versoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Histórico de versões
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -566,47 +658,110 @@
   
 
 
-<h1 id="repositoriotemplate">RepositorioTemplate</h1>
-<p>Esse repositório é para ser utilizado pelos grupos como um template inicial.
-As seções do Template NÃO DEVEM SER OMITIDAS, sendo TODAS RELEVANTES.
-Demais diretrizes constam no Moodle.</p>
-<p><strong>!! Atenção: Renomeie o seu repositório para (Ano.Semestre)(Turma)<em>(Grupo)</em>(NomeDoProjeto)_(Entrega_03)*. !!</strong> </p>
-<p><strong>!! <em>Não coloque os nomes dos alunos no título do repositório</em>. !!</strong></p>
-<p><strong>!! <em>Exemplo de título correto: 2026.1(T01)_G1_JogoSustentabilidade_Entrega_03</em>. !!</strong> </p>
-<p>(Apague esses comentários)</p>
-<h1 id="nome-do-projeto">Nome do Projeto</h1>
-<p><strong>Código da Disciplina</strong>: FGA0208<br>
-<strong>Número do Grupo</strong>: XX<br>
-<strong>Entrega</strong>: 03<br></p>
-<h2 id="alunos">Alunos</h2>
+<h1 id="apresentacao-do-projeto">Apresentação do projeto</h1>
+<h2 id="introducao">Introdução</h2>
+<p>Este projeto foi desenvolvido para a disciplina <strong>Arquitetura e Desenho de Software</strong>, ministrada pela professora <strong>Milene Serrano</strong>.</p>
+<p><strong>MinhaTirinha</strong> é um aplicativo interativo de histórias em formato de gibi, no qual o usuário participa ativamente da narrativa por meio da <strong>pintura dos cenários</strong>. A proposta central é oferecer uma experiência simples, intuitiva e envolvente, onde a progressão da história acontece de forma guiada, condicionada às interações do usuário.</p>
+<p>O aplicativo é baseado em histórias previamente estruturadas — não há criação de conteúdo por parte do usuário. Cada história é composta por uma sequência de quadrinhos já definidos, contendo cenários e elementos visuais que poderão ser pintados. A principal mecânica do sistema consiste no <strong>desbloqueio dos balões de fala</strong>: inicialmente, os diálogos ficam ocultos e só são revelados após o usuário concluir a pintura do respectivo cenário.</p>
+<h2 id="funcionalidades-principais">Funcionalidades Principais</h2>
+<ul>
+<li><strong>Galeria de histórias</strong> organizada por temas: infantil, humor, tecnologia e educação.</li>
+<li><strong>Pintura interativa</strong> de quadrinhos com desbloqueio progressivo de balões de fala.</li>
+<li><strong>Armazenamento de progresso</strong>: o usuário pode retornar e continuar de onde parou.</li>
+<li><strong>Revisitação</strong> de histórias já concluídas pela galeria.</li>
+<li><strong>Interface</strong> com tons pastéis, layout clean e suporte a música de fundo para maior imersão.</li>
+</ul>
+<h2 id="arquitetura">Arquitetura</h2>
+<p>O projeto é estruturado de forma modular, separando responsabilidades entre:</p>
+<ul>
+<li><strong>Interface</strong> — camada de apresentação e interação com o usuário.</li>
+<li><strong>Lógica de negócio</strong> — regras de progressão, desbloqueio de conteúdo e validação de pintura.</li>
+<li><strong>Gerenciamento de dados</strong> — persistência de progresso e carregamento das histórias.</li>
+</ul>
+<p>A arquitetura adotada prioriza escalabilidade, organização do código e facilidade de manutenção.</p>
+<h2 id="integrantes">Integrantes</h2>
+<table align="center">
+  <tr>
+    <td align="center" colspan="3">
+      <img src="https://avatars.githubusercontent.com/anawcarol?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Ana Carolina Fialho</b><br>
+      <a href="https://github.com/anawcarol">@anawcarol</a>
+    </td>
+    <td align="center" colspan="3">
+      <img src="https://avatars.githubusercontent.com/SamaraAlvess?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Maria Samara A. Silva</b><br>
+      <a href="https://github.com/SamaraAlvess">@SamaraAlvess</a>
+    </td>
+    <td align="center" colspan="3">
+      <img src="https://avatars.githubusercontent.com/GFlyan?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Guilherme Flyan Araujo</b><br>
+      <a href="https://github.com/GFlyan">@GFlyan</a>
+    </td>
+    <td align="center" colspan="3">
+      <img src="https://avatars.githubusercontent.com/daisha19?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Raissa Silva de Oliveira</b><br>
+      <a href="https://github.com/daisha19">@daisha19</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="4">
+      <img src="https://avatars.githubusercontent.com/Marjoriemitzi?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Marjorie Mitzi C. Rodrigues</b><br>
+      <a href="https://github.com/Marjoriemitzi">@Marjoriemitzi</a>
+    </td>
+    <td align="center" colspan="4">
+      <img src="https://avatars.githubusercontent.com/JoaoMarceloGCN?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>João Marcelo G. C. Naves</b><br>
+      <a href="https://github.com/JoaoMarceloGCN">@JoaoMarceloGCN</a>
+    </td>
+    <td align="center" colspan="4">
+      <img src="https://avatars.githubusercontent.com/pedrohpsantos?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Pedro Henrique P. Santos</b><br>
+      <a href="https://github.com/pedrohpsantos">@pedrohpsantos</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="4">
+      <img src="https://avatars.githubusercontent.com/DaviNegreiros?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Davi Monteiro de Negreiros</b><br>
+      <a href="https://github.com/DaviNegreiros">@DaviNegreiros</a>
+    </td>
+    <td align="center" colspan="4">
+      <img src="https://avatars.githubusercontent.com/GabrielSPinto?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Gabriel Santos Pinto</b><br>
+      <a href="https://github.com/GabrielSPinto">@GabrielSPinto</a>
+    </td>
+    <td align="center" colspan="4">
+      <img src="https://avatars.githubusercontent.com/YasminDayrell?v=4" width=100 style="border-radius: 50%;"><br>
+      <b>Yasmin Dayrell Albuquerque</b><br>
+      <a href="https://github.com/YasminDayrell">@YasminDayrell</a>
+    </td>
+  </tr>
+</table>
+
+<h2 id="historico-de-versoes">Histórico de versões</h2>
+<p><font size="3"><p style="text-align: center">Tabela 1: Histórico de versões</p></font></p>
 <table>
 <thead>
 <tr>
-<th>Matrícula</th>
-<th>Aluno</th>
+<th style="text-align: center;">Versão</th>
+<th style="text-align: center;">Descrição</th>
+<th style="text-align: center;">Autor</th>
+<th style="text-align: center;">Data</th>
+<th style="text-align: center;">Revisor</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>xx/xxxxxx</td>
-<td>xxxx xxxx xxxxx</td>
-</tr>
-<tr>
-<td>xx/xxxxxx</td>
-<td>xxxx xxxx xxxxx</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">Criação do documento</td>
+<td style="text-align: center;">Grupo 08</td>
+<td style="text-align: center;">30/03/2026</td>
+<td style="text-align: center;">—</td>
 </tr>
 </tbody>
 </table>
-<h2 id="sobre">Sobre</h2>
-<p>Contextualize, usando referências, links, e outros materiais como fontes.</p>
-<h2 id="screenshots-da-terceira-entrega">Screenshots da Terceira Entrega</h2>
-<p>Adicione 2 ou mais screenshots em termos de artefatos realizados na entrega.</p>
-<h2 id="ha-algo-a-ser-executado">Há algo a ser executado?</h2>
-<p>( ) SIM</p>
-<p>( ) NÃO</p>
-<p>Se SIM, insira um manual (ou um script) para auxiliar ainda mais os interessados na execução.</p>
-<h2 id="informacoes-complementares">Informações Complementares</h2>
-<p>Quaisquer outras informações adicionais podem ser descritas nessa seção.</p>
+<p><font size="2"><p style="text-align: center">Fonte: Grupo 08, 2026.</p></font></p>
 
 
 
