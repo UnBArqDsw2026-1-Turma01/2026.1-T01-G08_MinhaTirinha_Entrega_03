@@ -1,9 +1,61 @@
 site_name: MinhaTirinha - Entrega 03
 site_description: Documentação do projeto MinhaTirinha - Padrões de Projeto
-site_url: https://unbarqdsw2026-1-turma01.github.io/2026.1-T01-G08_MinhaTirinha_Entrega_03/
+site_url: https://github.com/UnBArqDsw2026-1-Turma01/2026.1-T01-G08_MinhaTirinha_Entrega_03
+
 repo_url: https://github.com/UnBArqDsw2026-1-Turma01/2026.1-T01-G08_MinhaTirinha_Entrega_03
-repo_name: MinhaTirinha Entrega 03
-docs_dir: docs
+repo_name: GitHub
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/UnBArqDsw2026-1-Turma01/2026.1-T01-G08_MinhaTirinha_Entrega_03
+
+theme:
+  name: material
+  font:
+    text: Nunito
+    code: Fira Code
+  palette:
+
+    # Modo claro — tons pastéis
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: pink
+      accent: purple
+      toggle:
+        icon: material/weather-night
+        name: Mudar para modo escuro
+
+    # Modo escuro — pastel noturno
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: pink
+      accent: purple
+      toggle:
+        icon: material/weather-sunny
+        name: Mudar para modo claro
+
+  features:
+    - navigation.tabs
+    - content.code.copy
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.top
+    - navigation.sections
+
+extra_css:
+  - stylesheets/pastel.css
+
+plugins:
+  - search
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
 
 nav:
   - Home: index.md
@@ -16,31 +68,7 @@ nav:
     - 3.4. Participações: PadroesDeProjeto/3.4.ParticipacoesPadroes.md
     - 3.5. Iniciativas Extras: PadroesDeProjeto/3.5.IniciativasExtras.md
 
-theme:
-  name: material
-  language: pt-BR
-  palette:
-    - scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Modo escuro
-    - scheme: slate
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-4
-        name: Modo claro
-  features:
-    - navigation.sections
-    - navigation.expand
-    - toc.integrate
-
 markdown_extensions:
-  - tables
-  - attr_list
-  - md_in_html
   - admonition
   - pymdownx.details
   - pymdownx.superfences
